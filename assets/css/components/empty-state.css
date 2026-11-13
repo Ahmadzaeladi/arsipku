@@ -1,0 +1,84 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: EMPTY STATE
+   --------------------------------------------------------------------------
+   Peta dari views/components/empty-state.php. Tiga bagian wajib ada:
+   ikon, judul ("Apa ini?"), deskripsi ("Kenapa kosong & apa selanjutnya?").
+   ========================================================================== */
+
+.ark-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ark-space-1);
+  padding: var(--ark-space-12) var(--ark-space-6);
+  text-align: center;
+  background-color: var(--ark-surface-canvas);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-lg);
+}
+
+.ark-empty--flush {
+  padding: var(--ark-space-10) var(--ark-space-4);
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+
+/* Ikon = garis biasa, ukuran dari --ark-icon-size, warna netral.
+   Sengaja TANPA kotak bewarna ber-border: pola itu dilarang
+   (docs/design-refactor-audit.md §temuan C) dan membuat satu ikon
+   terlihat seperti tombol. */
+.ark-empty__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  --ark-icon-size: 28px;
+  margin-bottom: var(--ark-space-2);
+  color: var(--ark-text-tertiary);
+}
+
+.ark-empty__title {
+  font-size: var(--ark-text-lg);
+  font-weight: var(--ark-weight-semibold);
+  line-height: var(--ark-leading-snug);
+  color: var(--ark-text-primary);
+}
+
+.ark-empty__desc {
+  max-width: 46ch;
+  font-size: var(--ark-text-sm);
+  line-height: var(--ark-leading-normal);
+  color: var(--ark-text-secondary);
+}
+
+.ark-empty__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ark-space-2);
+  margin-top: var(--ark-space-4);
+}
+
+/* Empty state di dalam baris tabel: satu baris teks, bukan kartu penuh. */
+.ark-empty--inline {
+  display: flex;
+  flex-direction: row;
+  gap: var(--ark-space-2x5);
+  padding: var(--ark-space-6) var(--ark-space-4);
+  text-align: left;
+  border: 0;
+}
+.ark-empty--inline .ark-empty__icon {
+  --ark-icon-size: 20px;
+  margin-bottom: 0;
+}
+.ark-empty--inline .ark-empty__title { font-size: var(--ark-text-md); }
+
+/* Kondisi "hasil filter nol": tawarkan reset, bukan unggah. */
+.ark-empty__hint {
+  margin-top: var(--ark-space-1);
+  font-size: var(--ark-text-xs);
+  color: var(--ark-text-tertiary);
+}

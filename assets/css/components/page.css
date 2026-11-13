@@ -1,0 +1,392 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: PAGE (komposisi halaman datar)
+   --------------------------------------------------------------------------
+   Primitif pembentuk halaman isi: kepala halaman, seksi, list, meter, tile.
+   Aturan main (docs/design-refactor-audit.md §3): halaman TIDAK dibangun dari
+   tumpukan card. Yang boleh berpanel hanya permukaan yang benar-benar
+   berinteraksi (modal, menu, popover) dan kontainer tabel. Sisanya:
+   judul + ruang + separator halus.
+   ========================================================================== */
+
+/* --- 1. Kepala halaman --------------------------------------------------
+   Judul (24/600) + sub (13, sekunder) di kiri, satu aksi primer di kanan.
+   Tidak ada card, tidak ada border, tidak ada breadcrumb ganda di sini. */
+.ark-page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ark-space-4);
+}
+
+.ark-page-head__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ark-space-1);
+  min-width: 0;
+}
+
+.ark-page-head__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-2);
+  flex-shrink: 0;
+}
+
+/* --- 2. Seksi -----------------------------------------------------------
+   Header seksi (16/600) + aksi sekunder ("Lihat semua") lalu isinya.
+   Pemisah default = ruang. --ruled menambahkan hairline di bawah judul,
+   dipakai hanya bila seksi langsung berisi list/tabel.
+   Jarak antar seksi TIDAK diatur di sini; itu tugas .ark-content__body
+   (--ark-gap-stack-lg) supaya satu halaman cuma punya satu sumber ritme. */
+.ark-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ark-space-3);
+}
+
+.ark-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ark-space-3);
+}
+
+.ark-section__title {
+  font-size: var(--ark-text-xl);
+  font-weight: var(--ark-weight-semibold);
+  line-height: var(--ark-leading-snug);
+  letter-spacing: var(--ark-tracking-tight);
+  color: var(--ark-text-primary);
+}
+
+.ark-section__hint {
+  font-size: var(--ark-text-sm);
+  color: var(--ark-text-secondary);
+}
+
+.ark-section__more {
+  font-size: var(--ark-text-sm);
+  font-weight: var(--ark-weight-medium);
+  color: var(--ark-text-accent);
+  white-space: nowrap;
+}
+
+.ark-section--ruled > .ark-section__head {
+  padding-bottom: var(--ark-space-2);
+  border-bottom: 1px solid var(--ark-border-default);
+}
+
+/* Tombol yang berdiri sendiri di dalam seksi tidak melebar jadi baris penuh. */
+.ark-section > .ark-btn { align-self: flex-start; }
+
+/* --- 3. List datar ------------------------------------------------------
+   Aktivitas, pintasan folder, anggota, hasil pencarian. Baris = ikon netral
+   + judul + meta + ekor (waktu/aksi). Tanpa latar, tanpa bayangan.
+   Padding blok 6px sama dengan sel tabel, jadi list dan tabel yang berdiri
+   berdekatan punya irama baris yang identik.
+   --link: baris dapat diklik (hover = surface-hover, bukan translate/scale). */
+.ark-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ark-list--inset {
+  margin-inline: calc(-1 * var(--ark-space-2));
+}
+
+.ark-list__row {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-3);
+  min-height: var(--ark-row-h);
+  padding: var(--ark-space-1x5) var(--ark-space-2);
+  text-align: left;
+  color: inherit;
+}
+
+.ark-list__row + .ark-list__row {
+  border-top: 1px solid var(--ark-border-subtle);
+}
+
+.ark-list--dense .ark-list__row {
+  min-height: var(--ark-control-h-md);
+  padding-block: var(--ark-space-1);
+}
+
+button.ark-list__row--link,
+a.ark-list__row--link {
+  border-radius: var(--ark-radius-md);
+  cursor: pointer;
+  transition: background-color var(--ark-dur-instant) var(--ark-ease-standard);
+}
+
+button.ark-list__row--link:hover,
+a.ark-list__row--link:hover {
+  background-color: var(--ark-surface-hover);
+  text-decoration: none;
+}
+
+/* Ikon baris/tile: garis netral, bukan ikon di dalam kotak bewarna. */
+.ark-list__icon,
+.ark-tile__icon {
+  --ark-icon-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--ark-text-secondary);
+}
+
+.ark-list__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ark-space-0x5);
+  min-width: 0;
+}
+
+.ark-list__title {
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-medium);
+  line-height: var(--ark-leading-snug);
+  color: var(--ark-text-primary);
+}
+
+.ark-list__meta {
+  font-size: var(--ark-text-xs);
+  line-height: var(--ark-leading-snug);
+  color: var(--ark-text-secondary);
+}
+
+.ark-list__end {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-2);
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: var(--ark-text-xs);
+  color: var(--ark-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- 4. Meter ringkas ---------------------------------------------------
+   Indikator penyimpanan: label · track 4px · nilai. Bukan kartu, bukan donat,
+   bukan angka 24px yang berdiri sendiri. Nilai diisi lewat --ark-meter-value. */
+.ark-meter {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-3);
+}
+
+.ark-meter__label {
+  font-size: var(--ark-text-sm);
+  font-weight: var(--ark-weight-medium);
+  color: var(--ark-text-primary);
+  white-space: nowrap;
+}
+
+.ark-meter__track {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: var(--ark-space-16);
+  height: var(--ark-space-1);
+  background-color: var(--ark-surface-press);
+  border-radius: var(--ark-radius-full);
+  overflow: hidden;
+}
+
+.ark-meter__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--ark-meter-value, 0%);
+  background-color: var(--ark-accent);
+  border-radius: inherit;
+}
+
+.ark-meter.is-warning .ark-meter__fill { background-color: var(--ark-warning); }
+.ark-meter.is-critical .ark-meter__fill { background-color: var(--ark-danger); }
+
+.ark-meter__value {
+  font-size: var(--ark-text-xs);
+  color: var(--ark-text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* --- 5. Tile grid -------------------------------------------------------
+   Tampilan kisi dokumen: satu border, tanpa bayangan, tanpa zoom ikon.
+   Bedanya dengan list hanya bentuk; isinya tetap nama + meta + aksi. */
+.ark-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--ark-tile-min), 1fr));
+  gap: var(--ark-space-3);
+}
+
+.ark-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ark-space-2);
+  padding: var(--ark-pad-card);
+  background-color: var(--ark-surface-canvas);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-lg);
+  transition: border-color var(--ark-dur-instant) var(--ark-ease-standard);
+}
+
+.ark-tile:hover { border-color: var(--ark-border-strong); }
+
+.ark-tile.is-selected {
+  border-color: var(--ark-border-accent);
+  background-color: var(--ark-surface-selected);
+}
+
+.ark-tile__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ark-space-2x5);
+  min-width: 0;
+}
+
+.ark-tile__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ark-space-0x5);
+  min-width: 0;
+}
+
+.ark-tile__name {
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-medium);
+  line-height: var(--ark-leading-snug);
+  text-align: left;             /* dipakai juga sebagai <button> pratinjau */
+  color: var(--ark-text-primary);
+}
+.ark-tile__name:hover { color: var(--ark-text-accent); }
+
+.ark-tile__meta {
+  font-size: var(--ark-text-xs);
+  line-height: var(--ark-leading-snug);
+  color: var(--ark-text-secondary);
+}
+
+.ark-tile__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ark-space-1);
+  margin-top: auto;
+  padding-top: var(--ark-space-1);
+}
+
+/* --- 6. Toolbar penyaring -----------------------------------------------
+   Deretan kontrol di atas daftar: cari, penyaring, hitungan, pemilih
+   tampilan. Datar — tidak dibungkus kartu dan tidak diberi border. */
+.ark-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ark-space-3);
+}
+
+.ark-toolbar__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ark-space-2);
+  min-width: 0;
+}
+
+.ark-toolbar__search { width: 260px; max-width: 100%; }
+
+/* Chip penyaring aktif: .ark-badge.ark-badge--neutral + tautan pembuang. */
+.ark-chip a,
+.ark-chip button {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ark-text-tertiary);
+}
+.ark-chip a:hover,
+.ark-chip button:hover { color: var(--ark-text-primary); }
+
+/* --- 7. Split dua kolom -------------------------------------------------
+   Untuk pasangan blok pendek (daftar aktivitas + indikator). Bukan kartu:
+   hanya ritme kolom; garis tiap blok tetap dimiliki seksinya sendiri. */
+.ark-split {
+  display: grid;
+  gap: var(--ark-space-4);
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+/* --- 8. Catatan status --------------------------------------------------
+   Informasi yang mengubah tindakan pengguna (retensi sampah, kuota,
+   percobaan login). Tetap datar: hairline + ikon garis. Warna dipakai
+   HANYA untuk tingkat risiko, bukan sebagai dekorasi. */
+.ark-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ark-space-2x5);
+  padding: var(--ark-space-3);
+  font-size: var(--ark-text-sm);
+  line-height: var(--ark-leading-normal);
+  color: var(--ark-text-secondary);
+  background-color: var(--ark-surface-subtle);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-md);
+}
+
+.ark-notice__icon {
+  --ark-icon-size: 16px;
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--ark-text-tertiary);
+}
+
+.ark-notice__text { min-width: 0; }
+.ark-notice__text strong { font-weight: var(--ark-weight-semibold); color: var(--ark-text-primary); }
+
+.ark-notice--warning {
+  background-color: var(--ark-warning-subtle);
+  border-color: var(--ark-warning-border);
+}
+.ark-notice--warning .ark-notice__icon { color: var(--ark-text-warning); }
+
+.ark-notice--danger {
+  background-color: var(--ark-danger-subtle);
+  border-color: var(--ark-danger-border);
+}
+.ark-notice--danger .ark-notice__icon { color: var(--ark-text-danger); }
+
+.ark-notice--success {
+  background-color: var(--ark-success-subtle);
+  border-color: var(--ark-success-border);
+}
+.ark-notice--success .ark-notice__icon { color: var(--ark-text-success); }
+
+/* --- 9. Batas lebar baca -------------------------------------------------
+   Halaman formulir/penjelasan (pengaturan, penagihan) tidak perlu selebar
+   konten. Tetap satu kolom ritme: gap internalnya memakai token ritme yang
+   sama dengan .ark-content__body, jadi jarak antar seksi tidak berubah. */
+.ark-measure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ark-gap-stack-lg);
+  max-width: 56rem;
+}
+
+/* --- 10. Responsif -------------------------------------------------------
+   Split jadi satu kolom begitu sidebar berubah jadi drawer (< 1024px);
+   di bawah 768px kepala halaman menumpuk: judul dulu, lalu aksi rata kiri
+   (bukan kolom penuh supaya tombol tidak melebar jadi baris penuh). */
+@media (max-width: 1023px) {
+  .ark-split { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 767px) {
+  .ark-page-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ark-space-3);
+  }
+}

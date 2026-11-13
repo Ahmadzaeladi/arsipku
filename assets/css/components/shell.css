@@ -1,0 +1,152 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: SHELL (kerangka aplikasi)
+   --------------------------------------------------------------------------
+   Menempati tiga area halaman: sidebar tetap di kiri, kolom kanan berisi
+   header sticky + kontainer konten. Berkas ini hanya mengurus TATA LETAK
+   (lebar, posisi, breakpoint, drawer). Isi sidebar ada di sidebar.css, isi
+   header ada di header.css.
+
+   Kontrak DOM (lihat docs/app-shell.html):
+     <div class="ark-shell" id="ark-shell">
+       <aside class="ark-sidebar">…</aside>
+       <div class="ark-drawer-scrim" data-drawer-scrim></div>
+       <div class="ark-main">
+         <header class="ark-header">…</header>
+         <main class="ark-content">…</main>
+       </div>
+     </div>
+
+   Lebar sidebar dikendalikan satu properti lokal (--ark-side-w) sehingga
+   mode rail dan mode drawer tidak saling menimpa.
+   ========================================================================== */
+
+.ark-shell {
+  --ark-side-w: var(--ark-sidebar-w);
+  min-height: 100vh;
+  background-color: var(--ark-surface-app);
+}
+
+/* --- Sidebar ------------------------------------------------------------ */
+.ark-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: var(--ark-side-w);
+  /* Drawer (30) < sidebar < scrim di atas drawer dihitung dari sini: scrim
+     memakai --ark-z-drawer, sidebar selapis di atasnya. */
+  z-index: calc(var(--ark-z-drawer) + 1);
+  background-color: var(--ark-surface-canvas);
+  border-right: 1px solid var(--ark-border-default);
+  transition: width var(--ark-dur-base) var(--ark-ease-standard);
+}
+
+.ark-shell.is-collapsed { --ark-side-w: var(--ark-sidebar-w-collapsed); }
+
+/* --- Kolom kanan -------------------------------------------------------- */
+.ark-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: var(--ark-side-w);
+  transition: margin-left var(--ark-dur-base) var(--ark-ease-standard);
+}
+
+/* --- Kontainer konten ---------------------------------------------------
+   Satu kontainer untuk semua halaman: lebar maksimum + ritme ruang yang sama,
+   supaya judul halaman dan baris alat tidak melompat antar halaman.
+
+   z-index: 0 membuat halaman menjadi stacking context sendiri, jadi kelas
+   z-index di dalam view (mis. .dropdown-menu Tailwind z-40) tidak bisa lagi
+   menyalip chrome kerangka: header 11, sidebar 31. Overlay tingkat halaman
+   (#toast-container, #multi-select-bar, modals.php) berada di luar elemen
+   ini sehingga tetap di atas chrome. */
+.ark-content {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  max-width: var(--ark-content-max);
+  margin-inline: auto;
+  padding: var(--ark-space-5) var(--ark-space-6) var(--ark-space-8);
+}
+
+/* Isi halaman: satu ritme vertikal untuk semua blok, tanpa margin per blok.
+   Kepala halaman memakai .ark-page-head (components/page.css). */
+.ark-content__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ark-gap-stack-lg);
+}
+
+/* Permukaan isi halaman (panel/kartu). Hierarki digerjakan border + ruang,
+   bukan bayangan tebal. */
+.ark-panel {
+  background-color: var(--ark-surface-canvas);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-lg);
+  padding: var(--ark-pad-card);
+}
+
+.ark-panel--flush { padding: 0; overflow: hidden; }
+
+/* --- Drawer (tablet ke bawah) ------------------------------------------- */
+.ark-drawer-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ark-z-drawer);
+  background-color: var(--ark-surface-scrim);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--ark-dur-base) var(--ark-ease-standard),
+    visibility 0s linear var(--ark-dur-base);
+}
+
+.ark-shell.is-drawer-open .ark-drawer-scrim {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--ark-dur-base) var(--ark-ease-standard);
+}
+
+@media (max-width: 1023px) {
+  /* Rail tidak berlaku di bawah 1024px: sidebar sudah keluar alir, jadi
+     status is-collapsed tidak boleh menyisakan margin 72px. */
+  .ark-shell,
+  .ark-shell.is-collapsed { --ark-side-w: 0px; }
+
+  .ark-sidebar {
+    width: min(var(--ark-sidebar-w), 86vw);
+    transform: translateX(-100%);
+    transition: transform var(--ark-dur-slow) var(--ark-ease-exit);
+    border-right: 1px solid var(--ark-border-default);
+    box-shadow: var(--ark-shadow-lg);
+  }
+
+  .ark-shell.is-drawer-open .ark-sidebar {
+    transform: translateX(0);
+    transition-timing-function: var(--ark-ease-entrance);
+  }
+
+  .ark-main { margin-left: 0; }
+  .ark-drawer-scrim { display: block; }
+}
+
+@media (min-width: 1024px) {
+  .ark-drawer-scrim { display: none; }
+}
+
+@media (max-width: 767px) {
+  .ark-content { padding: var(--ark-space-4) var(--ark-space-4) var(--ark-space-6); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ark-sidebar,
+  .ark-main,
+  .ark-drawer-scrim { transition: none; }
+}
+
+/* Saat drawer terbuka, halaman di belakangnya tidak boleh ikut bergulir —
+   kelas dipasang app-shell.js pada <body>, bukan pada .ark-shell. */
+body.ark-drawer-lock { overflow: hidden; }

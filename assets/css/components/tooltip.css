@@ -1,0 +1,118 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: TOOLTIP
+   --------------------------------------------------------------------------
+   Versi CSS-only (untuk label pendek pada tombol ikon):
+     <button class="ark-icon-btn" data-ark-tooltip="Ubah nama">…</button>
+   Versi JS (konten panjang / needs aria-describedby):
+     <div class="ark-tooltip" role="tooltip" id="tt1">…</div>
+   Aturan: JANGAN menaruh informasi penting hanya di dalam tooltip, dan
+   tooltip wajib muncul saat :focus-visible, bukan hanya saat hover.
+   ========================================================================== */
+
+[data-ark-tooltip] { position: relative; }
+
+[data-ark-tooltip]::after {
+  content: attr(data-ark-tooltip);
+  position: absolute;
+  z-index: var(--ark-z-tooltip);
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translate(-50%, 2px);
+  padding: var(--ark-space-1) var(--ark-space-2);
+  font-family: var(--ark-font-sans);
+  font-size: var(--ark-text-xs);
+  font-weight: var(--ark-weight-regular);
+  line-height: var(--ark-leading-snug);
+  white-space: nowrap;
+  color: var(--ark-text-inverse);
+  background-color: var(--ark-surface-inverse);
+  border-radius: var(--ark-radius-sm);
+  box-shadow: var(--ark-shadow-sm);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--ark-dur-fast) var(--ark-ease-standard) var(--ark-dur-fast),
+    transform var(--ark-dur-fast) var(--ark-ease-standard) var(--ark-dur-fast),
+    visibility 0s linear var(--ark-dur-fast) calc(var(--ark-dur-fast) * 2);
+}
+
+[data-ark-tooltip]:hover::after,
+[data-ark-tooltip]:focus-visible::after,
+[data-ark-tooltip].is-open::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  transition-delay: var(--ark-dur-fast);
+}
+
+/* Panah */
+[data-ark-tooltip]::before {
+  content: "";
+  position: absolute;
+  z-index: var(--ark-z-tooltip);
+  left: 50%;
+  bottom: calc(100% + 2px);
+  width: 6px;
+  height: 6px;
+  transform: translate(-50%, 2px) rotate(45deg);
+  background-color: var(--ark-surface-inverse);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--ark-dur-fast) var(--ark-ease-standard) var(--ark-dur-fast);
+}
+[data-ark-tooltip]:hover::before,
+[data-ark-tooltip]:focus-visible::before,
+[data-ark-tooltip].is-open::before { opacity: 1; visibility: visible; }
+
+/* --- Penempatan --------------------------------------------------------- */
+[data-ark-tooltip-position="bottom"]::after { bottom: auto; top: calc(100% + 6px); transform: translate(-50%, -2px); }
+[data-ark-tooltip-position="bottom"]:hover::after,
+[data-ark-tooltip-position="bottom"]:focus-visible::after { transform: translate(-50%, 0); }
+[data-ark-tooltip-position="bottom"]::before { bottom: auto; top: calc(100% + 2px); transform: translate(-50%, -2px) rotate(45deg); }
+
+[data-ark-tooltip-position="left"]::after {
+  bottom: 50%; left: auto; right: calc(100% + 6px);
+  transform: translate(2px, 50%);
+}
+[data-ark-tooltip-position="left"]:hover::after,
+[data-ark-tooltip-position="left"]:focus-visible::after { transform: translate(0, 50%); }
+[data-ark-tooltip-position="left"]::before {
+  bottom: 50%; left: auto; right: calc(100% + 2px);
+  transform: translate(2px, 50%) rotate(45deg);
+}
+
+[data-ark-tooltip-position="right"]::after {
+  bottom: 50%; left: calc(100% + 6px); right: auto;
+  transform: translate(-2px, 50%);
+}
+[data-ark-tooltip-position="right"]:hover::after,
+[data-ark-tooltip-position="right"]:focus-visible::after { transform: translate(0, 50%); }
+[data-ark-tooltip-position="right"]::before {
+  bottom: 50%; left: calc(100% + 2px); right: auto;
+  transform: translate(-2px, 50%) rotate(45deg);
+}
+
+/* --- Variabel wrap untuk teks panjang (mode JS) ------------------------ */
+.ark-tooltip {
+  position: absolute;
+  z-index: var(--ark-z-tooltip);
+  max-width: 260px;
+  padding: var(--ark-space-1x5) var(--ark-space-2x5);
+  font-size: var(--ark-text-xs);
+  line-height: var(--ark-leading-snug);
+  color: var(--ark-text-inverse);
+  background-color: var(--ark-surface-inverse);
+  border-radius: var(--ark-radius-sm);
+  box-shadow: var(--ark-shadow-sm);
+  white-space: normal;
+}
+
+.ark-tooltip[hidden] { display: none; }
+
+.ark-tooltip__title { font-weight: var(--ark-weight-medium); }
+.ark-tooltip__meta {
+  margin-top: 2px;
+  color: #D1D5DB;               /* teks tersier di atas latar gelap: 9.4:1 */
+  font-variant-numeric: tabular-nums;
+}

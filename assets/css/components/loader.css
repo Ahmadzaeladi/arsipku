@@ -1,0 +1,133 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: LOADING
+   --------------------------------------------------------------------------
+   Tiga keadaan, tiga alat:
+   .ark-spinner   aksi singkat (< 1 detik) atau tombol running
+   .ark-skeleton  muat awal halaman/tabel — jaga tata letak agar tidak melompat
+   .ark-progress  durasi yang diketahui: unggah berkas, kuota terpakai
+   Elemen yang menunggu WAJIB memakai [aria-busy="true"].
+   ========================================================================== */
+
+.ark-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--ark-radius-full);
+  opacity: 0.75;
+  animation: ark-spin 700ms linear infinite;
+}
+
+.ark-spinner--sm { width: 12px; height: 12px; border-width: 2px; }
+.ark-spinner--lg { width: 24px; height: 24px; border-width: 3px; }
+.ark-spinner--accent { color: var(--ark-accent); }
+
+@keyframes ark-spin { to { transform: rotate(360deg); } }
+
+/* --- Skeleton ---------------------------------------------------------- */
+.ark-skeleton {
+  position: relative;
+  overflow: hidden;
+  height: 12px;
+  background-color: var(--ark-surface-subtle);
+  border-radius: var(--ark-radius-sm);
+}
+
+.ark-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: ark-shimmer 1.4s var(--ark-ease-standard) infinite;
+}
+
+@keyframes ark-shimmer { to { transform: translateX(100%); } }
+
+.ark-skeleton--text { height: var(--ark-text-sm); }
+.ark-skeleton--title { height: var(--ark-text-lg); }
+.ark-skeleton--icon { width: 28px; height: 28px; border-radius: var(--ark-radius-sm); }
+.ark-skeleton--circle { width: 32px; height: 32px; border-radius: var(--ark-radius-full); }
+.ark-skeleton--row { height: var(--ark-row-h); border-radius: var(--ark-radius-md); }
+
+/* Blok skeleton yang meniru satu baris tabel */
+.ark-skeleton-line {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-2x5);
+  height: var(--ark-row-h);
+  padding: 0 var(--ark-space-4);
+  border-bottom: 1px solid var(--ark-border-subtle);
+}
+.ark-skeleton-line:last-child { border-bottom: 0; }
+
+/* --- Progress ---------------------------------------------------------- */
+.ark-progress {
+  width: 100%;
+  height: 6px;
+  background-color: var(--ark-surface-subtle);
+  border-radius: var(--ark-radius-full);
+  overflow: hidden;
+}
+
+.ark-progress__bar {
+  /* Elemen <span>: tanpa display block, lebar persennya diabaikan. */
+  display: block;
+  height: 100%;
+  width: var(--ark-progress-value, 0%);
+  background-color: var(--ark-accent);
+  border-radius: var(--ark-radius-full);
+  transition: width var(--ark-dur-base) var(--ark-ease-standard);
+}
+
+.ark-progress--thin { height: 4px; }
+
+.ark-progress__bar--success { background-color: var(--ark-success); }
+.ark-progress__bar--warning { background-color: var(--ark-warning); }
+.ark-progress__bar--danger { background-color: var(--ark-danger); }
+.ark-progress__bar--indeterminate { width: 40%; animation: ark-slide 1.2s var(--ark-ease-standard) infinite; }
+
+@keyframes ark-slide {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(320%); }
+}
+
+/* Label di atas bar (mis. "42% · 21,3 GB dari 50 GB") */
+.ark-progress-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ark-space-2);
+  margin-bottom: var(--ark-space-1x5);
+  font-size: var(--ark-text-xs);
+  color: var(--ark-text-secondary);
+}
+.ark-progress-label__value {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--ark-weight-medium);
+  color: var(--ark-text-primary);
+}
+
+/* Area muat penuh (bukan spinner mengambang di atas konten kosong) */
+.ark-loading-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ark-space-3);
+  min-height: 180px;
+  color: var(--ark-text-secondary);
+  font-size: var(--ark-text-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ark-spinner { animation-duration: 1.6s; }
+  .ark-skeleton::after { animation: none; opacity: 0.55; transform: none; }
+  .ark-progress__bar--indeterminate { animation: none; width: 100%; opacity: 0.35; }
+}

@@ -1,0 +1,200 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: TABLE
+   --------------------------------------------------------------------------
+   Daftar arsip = antarmuka utama. Density default: baris 40px, isi 14px,
+   kolom sekunder (meta) 12-13px. Pemisah baris = border subtle, bukan card.
+   Header menempel (sticky) dan memakai .ark-label-caps supaya tidak bersaing
+   dengan isi. Tindakan baris SELALU terlihat (bukan hover-only) demi
+   aksesibilitas keyboard dan sentuh. Tanpa bayangan: tabel adalah permukaan
+   datar, bukan lapisan mengambang.
+   ========================================================================== */
+
+/* min-width:0 wajib: kontainer ini flex item di dalam .ark-section, dan
+   tabel punya min-content lebih lebar dari layar ponsel. Tanpa aturan ini,
+   halaman yang ikut melebar (luber horizontal); dengan itu, tabel yang
+   menggulir di dalam wadahnya sendiri. */
+.ark-table-wrap {
+  position: relative;
+  min-width: 0;
+  overflow: auto;
+  background-color: var(--ark-surface-canvas);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-lg);
+}
+
+.ark-table {
+  width: 100%;
+  font-size: var(--ark-text-md);
+  color: var(--ark-text-primary);
+}
+
+.ark-table caption {
+  caption-side: top;
+  height: 1px;
+  overflow: hidden;
+  color: var(--ark-text-secondary);
+}
+
+/* --- Header ------------------------------------------------------------- */
+.ark-table__head th {
+  position: sticky;
+  top: 0;
+  z-index: var(--ark-z-sticky);
+  height: 36px;
+  padding: 0 var(--ark-space-3);
+  text-align: left;
+  font-size: var(--ark-text-2xs);
+  font-weight: var(--ark-weight-medium);
+  letter-spacing: var(--ark-tracking-wide);
+  text-transform: uppercase;
+  color: var(--ark-text-secondary);
+  background-color: var(--ark-surface-subtle);
+  border-bottom: 1px solid var(--ark-border-default);
+  white-space: nowrap;
+}
+
+.ark-table__head th:first-child { padding-left: var(--ark-space-4); }
+.ark-table__head th:last-child { padding-right: var(--ark-space-4); }
+
+/* --- Baris & sel --------------------------------------------------------
+   Baris satu baris = 40px. Baris nama berkas (nama + meta, dua baris)
+   ≈ 50px. Selain itu tidak ada tinggi eksplisit di komponen. */
+.ark-table__body td {
+  height: var(--ark-row-h);
+  padding: var(--ark-space-1x5) var(--ark-space-3);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--ark-border-subtle);
+  color: var(--ark-text-primary);
+}
+
+.ark-table__body td:first-child { padding-left: var(--ark-space-4); }
+.ark-table__body td:last-child { padding-right: var(--ark-space-4); }
+
+.ark-table__body tr {
+  transition: background-color var(--ark-dur-instant) var(--ark-ease-standard);
+}
+
+.ark-table__body tr:hover { background-color: var(--ark-surface-hover); }
+
+.ark-table__body tr:last-child td { border-bottom: 0; }
+
+.ark-table__body tr.is-selected {
+  background-color: var(--ark-surface-selected);
+  box-shadow: inset 2px 0 0 var(--ark-accent);
+}
+
+.ark-table__body tr:focus-visible {
+  outline: 2px solid var(--ark-border-focus);
+  outline-offset: -2px;
+}
+
+/* Kolom */
+.ark-th--num, .ark-td--num { text-align: right; font-variant-numeric: tabular-nums; }
+.ark-table__head th.ark-th--center,
+.ark-table__body td.ark-td--center { text-align: center; }
+.ark-table__head th.ark-th--actions,
+.ark-table__body td.ark-td--actions { width: 72px; white-space: nowrap; text-align: center; }
+.ark-th--check, .ark-td--check { width: 40px; padding-right: 0; }
+.ark-table__head th.ark-th--file-name { padding-left: calc(var(--ark-space-3) + 26px); }
+.ark-table__head th.ark-th--file-name--favorite { padding-left: calc(var(--ark-space-3) + 52px); }
+.ark-td--nowrap { white-space: nowrap; }
+
+.ark-table__col--hide-md { display: table-cell; }
+.ark-table__col--hide-sm { display: table-cell; }
+
+/* Kolom yang bisa diurutkan */
+.ark-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ark-space-1);
+  font: inherit;
+  color: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  border-radius: var(--ark-radius-sm);
+  padding: 2px var(--ark-space-1);
+  margin-left: calc(-1 * var(--ark-space-1));
+}
+.ark-sort:hover { color: var(--ark-text-primary); background-color: var(--ark-surface-press); }
+.ark-sort[aria-sort="ascending"], .ark-sort[aria-sort="descending"] { color: var(--ark-text-primary); }
+.ark-sort__caret {
+  --ark-icon-size: 12px;
+  width: 12px;
+  height: 12px;
+  opacity: 0;
+  transition: opacity var(--ark-dur-instant) var(--ark-ease-standard),
+              transform var(--ark-dur-fast) var(--ark-ease-standard);
+}
+.ark-sort[aria-sort="ascending"] .ark-sort__caret { opacity: 1; transform: rotate(180deg); }
+.ark-sort[aria-sort="descending"] .ark-sort__caret { opacity: 1; }
+
+/* --- Sel nama berkas: ikon + nama + meta (pola manajemen dokumen) ------- */
+.ark-file {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-2x5);
+  min-width: 0;
+}
+
+/* Ikon berkas = garis biasa berwarna netral, BUKAN ikon di dalam kotak
+   bewarna (docs/design-refactor-audit.md §temuan C). Tipe berkas sudah
+   terbaca dari ekstensi pada nama dan dari badge, jadi warna tidak
+   perlu membawa informasi. */
+.ark-file__glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  --ark-icon-size: 16px;
+  flex-shrink: 0;
+  color: var(--ark-text-secondary);
+}
+
+.ark-file__main {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.ark-file__name {
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-medium);
+  line-height: var(--ark-leading-snug);
+  text-align: left;             /* dipakai juga sebagai <button> pratinjau */
+  color: var(--ark-text-primary);
+  max-width: 420px;
+}
+.ark-file__name:hover { color: var(--ark-text-accent); }
+
+/* Favorit: penanda berupa bentuk bintang + warna, bukan kotak bewarna. */
+.ark-fav { color: var(--ark-text-tertiary); }
+.ark-fav:hover { color: var(--ark-text-secondary); }
+.ark-fav[aria-pressed="true"] { color: var(--ark-warning); background-color: transparent; }
+
+.ark-file__meta {
+  font-size: var(--ark-text-xs);
+  line-height: var(--ark-leading-snug);
+  color: var(--ark-text-secondary);
+}
+
+/* Meta yang memuat badge (mis. "Paket aktif" pada daftar paket): baris ini
+   dipakai tanpa inline style, jadi jeda antar item dimiliki komponennya. */
+.ark-file__meta.ark-row { gap: var(--ark-space-1x5); }
+.ark-file__meta.ark-row .ark-badge { flex-shrink: 0; }
+
+/* --- Varian ------------------------------------------------------------- */
+.ark-table--compact .ark-table__body td { height: 36px; padding-top: var(--ark-space-1); padding-bottom: var(--ark-space-1); }
+.ark-table--dividers .ark-table__body td + td { border-left: 1px solid var(--ark-border-subtle); }
+
+.ark-table__body tr[aria-busy="true"] { color: var(--ark-text-secondary); }
+.ark-table__body tr.is-pending { background-color: var(--ark-warning-subtle); }
+
+/* --- Responif: sembunyikan kolom sekunder, bukan tabel horizontal ------- */
+@media (max-width: 1024px) {
+  .ark-table__col--hide-md { display: none; }
+}
+@media (max-width: 768px) {
+  .ark-table__col--hide-sm { display: none; }
+  .ark-table__body td:first-child,
+  .ark-table__head th:first-child { padding-left: var(--ark-space-2x5); }
+}

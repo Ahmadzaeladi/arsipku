@@ -1,0 +1,152 @@
+/* ArsipKu - Custom Design System Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --color-primary: #4F46E5;
+  --color-primary-dark: #4338CA;
+  --color-primary-light: #EEF2FF;
+  --color-bg: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-subtle: #F1F5F9;
+  --color-border: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: #0F172A;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Sidebar collapsed state */
+body.sidebar-collapsed #sidebar {
+  width: 72px;
+}
+body.sidebar-collapsed .sidebar-text,
+body.sidebar-collapsed .sidebar-storage-box {
+  display: none;
+}
+body.sidebar-collapsed .sidebar-icon-center {
+  justify-content: center;
+}
+body.sidebar-collapsed #sidebar .logo-text {
+  display: none;
+}
+body.sidebar-collapsed #main-wrapper {
+  margin-left: 72px;
+}
+
+/* Modal animation */
+.modal-backdrop {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+.modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-content {
+  transform: scale(0.96) translateY(8px);
+  opacity: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-backdrop.active .modal-content {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Dropzone dragover effect */
+.dropzone.dragover {
+  border-color: #4F46E5;
+  background-color: #EEF2FF;
+}
+
+/* Floating multi-select toolbar. Parkir penuh di luar layar: 120% saja masih
+   menyisakan ~13px bilah gelap di bawah viewport karena tingginya 54px dan
+   offset bawahnya 24px. */
+#multi-select-bar {
+  transform: translateY(calc(100% + 2rem));
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#multi-select-bar.show {
+  transform: translateY(0);
+}
+
+/* Toast animations */
+.toast-item {
+  animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.toast-item.hide {
+  animation: toastOut 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.95);
+  }
+}
+
+/* Subtle transitions for buttons & cards */
+.btn-interactive {
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+}
+.btn-interactive:active {
+  transform: scale(0.98);
+}
+
+/* Accessibility: Consistent Focus Rings */
+:focus-visible {
+  outline: 2px solid #4F46E5 !important;
+  outline-offset: 2px !important;
+}
+
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: none !important;
+  border-color: #4F46E5 !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18) !important;
+}
+
+/* Respect Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

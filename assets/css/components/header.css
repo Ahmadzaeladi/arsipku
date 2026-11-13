@@ -1,0 +1,212 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: HEADER (bar alat halaman)
+   --------------------------------------------------------------------------
+   Empat area, urutan tetap: [navigasi/breadcrumb] [cari global] [aksi
+   kontekstual] [akun]. Tinggi 56px — cukup untuk kontrol 32px plus ruang
+   napas, tanpa memakan wilayah konten.
+
+   Header menempel di atas (sticky) dan punya permukaan sendiri (canvas) agar
+   teks yang lewat di bawahnya tidak tembus ke mata.
+   ========================================================================== */
+
+.ark-header {
+  position: sticky;
+  top: 0;
+  /* Satu selapis di atas --ark-z-sticky: kepala tabel yang di-stick memakai
+     z-index yang sama, dan karena letaknya setelah header di DOM, ia akan
+     menimpa dropdown header (menu akun/workspace) tanpa kenaikan ini. */
+  z-index: calc(var(--ark-z-sticky) + 1);
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-3);
+  height: var(--ark-header-h);
+  padding: 0 var(--ark-space-5);
+  background-color: var(--ark-surface-canvas);
+  border-bottom: 1px solid var(--ark-border-default);
+}
+
+/* --- Kiri: toggle + breadcrumb ------------------------------------------ */
+.ark-header__trail {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-2);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Judul pendek hanya dipakai saat breadcrumb tidak muat (lihat breakpoint). */
+.ark-header__title {
+  display: none;
+  min-width: 0;
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-medium);
+  color: var(--ark-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- Cari global --------------------------------------------------------
+   Elemen ini ikut memakai kelas .ark-search (position + isi); yang di sini
+   hanya bagian dari tata letak header. */
+.ark-header__search {
+  flex: 0 1 320px;
+  min-width: 0;
+}
+
+/* Petunjuk pintasan menempel di kanan field, jadi ruang teksnya menyempit. */
+.ark-header__search .ark-search__field { padding-right: var(--ark-space-10); }
+
+.ark-header__divider {
+  flex-shrink: 0;
+  width: 1px;
+  height: var(--ark-space-6);
+  background-color: var(--ark-border-default);
+}
+
+/* --- Aksi kontekstual --------------------------------------------------- */
+.ark-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-1);
+  flex-shrink: 0;
+}
+
+/* --- Akun --------------------------------------------------------------- */
+.ark-account__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ark-space-2);
+  min-height: var(--ark-control-h-sm);
+  padding: var(--ark-space-0x5) var(--ark-space-1x5) var(--ark-space-0x5) var(--ark-space-0x5);
+  border-radius: var(--ark-radius-md);
+  transition: background-color var(--ark-dur-instant) var(--ark-ease-standard);
+}
+.ark-account__trigger:hover { background-color: var(--ark-surface-hover); }
+.ark-account__trigger[aria-expanded="true"] { background-color: var(--ark-surface-press); }
+
+.ark-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  width: var(--ark-control-h-sm);
+  height: var(--ark-control-h-sm);
+  font-size: var(--ark-text-2xs);
+  font-weight: var(--ark-weight-semibold);
+  letter-spacing: var(--ark-tracking-wide);
+  color: var(--ark-text-secondary);
+  background-color: var(--ark-surface-subtle);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-full);
+}
+
+.ark-avatar--lg {
+  width: var(--ark-control-h-md);
+  height: var(--ark-control-h-md);
+  font-size: var(--ark-text-xs);
+}
+
+.ark-avatar__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ark-avatar--preview {
+  width: 64px;
+  height: 64px;
+  font-size: var(--ark-text-lg);
+}
+
+.ark-account__name {
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-medium);
+  color: var(--ark-text-primary);
+  white-space: nowrap;
+}
+
+/* Baris identitas di puncak menu akun: bukan item yang bisa ditekan. */
+.ark-account__id {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-2x5);
+  padding: var(--ark-space-2) var(--ark-space-2x5);
+  margin-bottom: var(--ark-space-1);
+  background-color: var(--ark-surface-subtle);
+  border-radius: var(--ark-radius-md);
+}
+.ark-account__id-text { min-width: 0; }
+.ark-account__id-name,
+.ark-account__id-mail {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ark-account__id-name {
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-medium);
+  color: var(--ark-text-primary);
+}
+.ark-account__id-mail {
+  font-size: var(--ark-text-xs);
+  color: var(--ark-text-secondary);
+}
+
+/* --- Pemicu cari versi ikon (layar sempit) ------------------------------ */
+.ark-header__search-toggle { display: none; }
+
+/* Tombol drawer hanya ada di layar sempit; padanannya di desktop adalah
+   tombol rail di kepala sidebar (lihat sidebar.css). */
+@media (min-width: 1024px) {
+  .ark-header__trail [data-drawer="menu"] { display: none; }
+}
+
+/* --- Responsif ---------------------------------------------------------- */
+@media (max-width: 1279px) {
+  .ark-header { padding: 0 var(--ark-space-4); }
+  .ark-header__search { flex-basis: 240px; }
+}
+
+@media (max-width: 1023px) {
+  .ark-header { gap: var(--ark-space-2); padding: 0 var(--ark-space-3); }
+  .ark-header__search-toggle { display: inline-flex; }
+  .ark-account__name { display: none; }
+
+  /* Field cari ditutup total, bukan digeser keluar: dua field sekaligus
+     membingungkan dan tetap ikut terbaca oleh tab order kalau hanya
+     di-opacity. */
+  .ark-header__search { display: none; }
+
+  /* Saat dibuka, ia menjadi baris penuh di bawah header (header = sticky,
+     jadi posisi absolutnya mengikuti header, bukan halaman). */
+  .ark-header.is-search-open .ark-header__search {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: flex;
+    padding: var(--ark-space-2) var(--ark-space-3);
+    background-color: var(--ark-surface-canvas);
+    border-bottom: 1px solid var(--ark-border-default);
+    box-shadow: var(--ark-shadow-sm);
+  }
+}
+
+@media (max-width: 767px) {
+  /* Breadcrumb tidak muat; judul halaman pendek diambil alih .ark-header__title. */
+  .ark-header__crumbs { display: none; }
+  .ark-header__title { display: block; }
+  .ark-header__divider { display: none; }
+
+  /* Aksi kontekstual turun menjadi ikon; label tetap ada di aria-label. */
+  .ark-header__actions .ark-btn {
+    width: var(--ark-control-h-md);
+    padding: 0;
+    justify-content: center;
+  }
+  .ark-header__actions .ark-btn__label { display: none; }
+}

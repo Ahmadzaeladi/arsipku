@@ -1,0 +1,149 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: MENU (dropdown / popover daftar)
+   --------------------------------------------------------------------------
+   Kontrak aksesibilitas:
+     <button class="ark-menu__trigger" aria-haspopup="menu" aria-expanded="false"
+             aria-controls="m1">…</button>
+     <div class="ark-menu" id="m1" role="menu" hidden>
+       <button class="ark-menu__item" role="menuitem">Pindahkan</button>
+       <div class="ark-menu__separator" role="separator"></div>
+       <button class="ark-menu__item ark-menu__item--danger" role="menuitem">Hapus</button>
+     </div>
+   Pembuka/tutup + panah keyboard adalah tanggung jawab JS (lihat
+   assets/js/design-system.js arkMenu()).
+   ========================================================================== */
+
+.ark-menu {
+  position: absolute;
+  top: calc(100% + var(--ark-space-1x5));
+  left: 0;
+  z-index: var(--ark-z-dropdown);
+  /* Tanpa max-content, lebar panel di-cap oleh lebar pembungkusnya (selebar
+     pemicu) sehingga label + pintasan terpotong. */
+  width: max-content;
+  min-width: var(--ark-menu-w-min);
+  max-width: var(--ark-menu-w-max);
+  max-height: 320px;
+  overflow-y: auto;
+  padding: var(--ark-space-1);
+  background-color: var(--ark-surface-canvas);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-lg);
+  box-shadow: var(--ark-shadow-md);
+  transform-origin: top left;
+}
+
+.ark-menu--right { left: auto; right: 0; transform-origin: top right; }
+
+.ark-menu--floating {
+  position: fixed;
+  right: auto;
+  bottom: auto;
+}
+
+.ark-menu[hidden] { display: none; }
+
+.ark-menu.is-animating {
+  animation: ark-menu-in var(--ark-dur-base) var(--ark-ease-entrance);
+}
+
+@keyframes ark-menu-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ark-menu__label {
+  padding: var(--ark-space-1x5) var(--ark-space-2x5) var(--ark-space-1);
+  font-size: var(--ark-text-2xs);
+  font-weight: var(--ark-weight-medium);
+  letter-spacing: var(--ark-tracking-wide);
+  text-transform: uppercase;
+  color: var(--ark-text-secondary);
+}
+
+.ark-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-2);
+  width: 100%;
+  min-height: var(--ark-control-h-md);
+  padding: var(--ark-space-1) var(--ark-space-2x5);
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-regular);
+  text-align: left;
+  color: var(--ark-text-primary);
+  border-radius: var(--ark-radius-md);
+  transition: background-color var(--ark-dur-instant) var(--ark-ease-standard);
+}
+
+.ark-menu__item svg {
+  width: 15px;
+  height: 15px;
+  color: var(--ark-text-secondary);
+  flex-shrink: 0;
+}
+
+.ark-menu__item:hover,
+.ark-menu__item:focus-visible {
+  background-color: var(--ark-surface-hover);
+  outline: none;
+}
+.ark-menu__item:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--ark-accent);
+}
+
+.ark-menu__item:active { background-color: var(--ark-surface-press); }
+
+.ark-menu__item[aria-selected="true"],
+.ark-menu__item.is-selected {
+  color: var(--ark-text-accent);
+  background-color: var(--ark-surface-selected);
+  font-weight: var(--ark-weight-medium);
+}
+
+.ark-menu__item:disabled,
+.ark-menu__item[aria-disabled="true"] {
+  color: var(--ark-text-disabled);
+  background-color: transparent;
+  cursor: not-allowed;
+}
+
+.ark-menu__item--danger { color: var(--ark-text-danger); }
+.ark-menu__item--danger svg { color: var(--ark-text-danger); }
+.ark-menu__item--danger:hover { background-color: var(--ark-danger-subtle); }
+
+.ark-menu__text { flex: 1 1 auto; min-width: 0; }
+
+.ark-menu__shortcut {
+  margin-left: auto;
+  font-family: var(--ark-font-mono);
+  font-size: var(--ark-text-xs);
+  color: var(--ark-text-tertiary);
+}
+
+.ark-menu__meta {
+  font-size: var(--ark-text-xs);
+  color: var(--ark-text-secondary);
+}
+
+.ark-menu__separator {
+  height: 1px;
+  margin: var(--ark-space-1) var(--ark-space-1);
+  background-color: var(--ark-border-default);
+}
+
+/* Pemicu menu = tombol sekunder + chevron yang ikut berputar. */
+.ark-menu__chevron { --ark-icon-size: 14px; }
+
+.ark-menu__trigger[aria-expanded="true"] {
+  background-color: var(--ark-surface-hover);
+  border-color: var(--ark-border-strong);
+}
+.ark-menu__trigger .ark-menu__chevron {
+  transition: transform var(--ark-dur-fast) var(--ark-ease-standard);
+}
+.ark-menu__trigger[aria-expanded="true"] .ark-menu__chevron { transform: rotate(180deg); }
+
+/* Pembungkus posisi (trigger + panel) */
+.ark-menu-wrap { position: relative; display: inline-flex; }
+.ark-menu-wrap--block { display: block; }

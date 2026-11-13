@@ -1,0 +1,209 @@
+/* ==========================================================================
+   ArsipKu Design System — Layer 1/3: TOKENS
+   --------------------------------------------------------------------------
+   Satu-satunya sumber nilai visual. Komponen tidak boleh menulis hex, px atau
+   ms literal; kalau perlu nilai baru, tambahkan token di sini.
+   Prefix --ark- menghindari tabrakan dengan --color-* lama di assets/css/style.css.
+   ========================================================================== */
+
+:root {
+  /* --- 1. COLOR: surfaces ------------------------------------------------
+     Netral-first. Warna hanya dipakai sebagai penanda, bukan dekorasi. */
+  --ark-surface-canvas: #FFFFFF;      /* permukaan utama: card, panel, modal */
+  --ark-surface-app: #F8FAFC;         /* latar aplikasi / kanvas halaman */
+  --ark-surface-subtle: #F3F4F6;      /* zona header tabel, blok metadata */
+  --ark-surface-hover: #F3F4F6;       /* hover baris, item menu, tombol sekunder */
+  --ark-surface-press: #E5E7EB;       /* state :active */
+  --ark-surface-selected: #EEF2FF;    /* baris/item terpilih (accent paling terang) */
+  --ark-surface-accent: #4F46E5;      /* fill tombol primer */
+  --ark-surface-inverse: #111827;     /* tooltip, toast error, menu kontras tinggi */
+  --ark-surface-scrim: rgba(17, 24, 39, 0.55); /* latar modal */
+
+  /* --- 2. COLOR: text ---------------------------------------------------
+     Rasio terhadap --ark-surface-canvas (dicek WCAG, lihat docs/design-system.md §7):
+     primary 16.1:1 · secondary 4.8:1 · accent-link 7.4:1 · danger 4.9:1 · success 5.0:1 */
+  --ark-text-primary: #111827;
+  --ark-text-secondary: #6B7280;
+  --ark-text-tertiary: #9CA3AF;   /* HANYA non-esensial: placeholder, ikon dekoratif, counter "0" */
+  --ark-text-disabled: #9CA3AF;
+  --ark-text-inverse: #FFFFFF;
+  --ark-text-accent: #4338CA;     /* tautan/teks aksi di atas putih — lebih gelap dari fill */
+  --ark-text-danger: #DC2626;
+  --ark-text-success: #15803D;
+  --ark-text-warning: #B45309;
+
+  /* --- 3. COLOR: border ------------------------------------------------- */
+  --ark-border-subtle: #F1F5F9;   /* pemisah internal card, grid halus */
+  --ark-border-default: #E5E7EB;  /* outline card, table, modal */
+  --ark-border-strong: #D1D5DB;   /* border kontrol form saat diam (input, select) */
+  --ark-border-accent: #C7D2FE;
+  --ark-border-danger: #FCA5A5;
+  --ark-border-focus: #4F46E5;    /* dipakai ulang oleh ring fokus */
+
+  /* --- 4. COLOR: accent + semantic (fill / hover / press / soft) -------- */
+  --ark-accent: #4F46E5;
+  --ark-accent-hover: #4338CA;
+  --ark-accent-press: #3730A3;
+  --ark-accent-subtle: #EEF2FF;
+  --ark-accent-subtle-hover: #E0E7FF;
+  --ark-on-accent: #FFFFFF;
+
+  --ark-danger: #DC2626;
+  --ark-danger-hover: #B91C1C;
+  --ark-danger-press: #991B1B;
+  --ark-danger-subtle: #FEF2F2;
+  --ark-danger-border: #FECACA;
+
+  --ark-success: #15803D;
+  --ark-success-hover: #166534;
+  --ark-success-subtle: #F0FDF4;
+  --ark-success-border: #BBF7D0;
+
+  --ark-warning: #B45309;
+  --ark-warning-hover: #92400E;
+  --ark-warning-subtle: #FFFBEB;
+  --ark-warning-border: #FDE68A;
+
+  /* --- 5. COLOR: hue kategori berkas ------------------------------------
+     Dipakai badge tipe dokumen. Tetap senada dengan palet yang dikirim
+     src/Helpers.php (rose/blue/emerald/amber/purple/slate) supaya adopsi
+     bertahap tidak mengubah makna warna. */
+  --ark-hue-pdf-bg: #FFF1F2;    --ark-hue-pdf-fg: #BE123C;    --ark-hue-pdf-border: #FECDD3;
+  --ark-hue-doc-bg: #EFF6FF;    --ark-hue-doc-fg: #1D4ED8;    --ark-hue-doc-border: #BFDBFE;
+  --ark-hue-sheet-bg: #ECFDF5;  --ark-hue-sheet-fg: #047857;  --ark-hue-sheet-border: #A7F3D0;
+  --ark-hue-image-bg: #FFFBEB;  --ark-hue-image-fg: #B45309;  --ark-hue-image-border: #FDE68A;
+  --ark-hue-zip-bg: #FAF5FF;    --ark-hue-zip-fg: #7E22CE;    --ark-hue-zip-border: #E9D5FF;
+  --ark-hue-plain-bg: #F3F4F6;  --ark-hue-plain-fg: #4B5563;  --ark-hue-plain-border: #E5E7EB;
+
+  /* --- 6. TYPOGRAPHY ----------------------------------------------------
+     Baseline UI = 14px untuk BODI & isi tabel; kontrol form ikut 14px.
+     Lantai absolut 11px. Judul halaman 24/600 adalah ukuran terbesar yang
+     boleh muncul di halaman isi (lihat docs/design-refactor-audit.md §3). */
+  --ark-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --ark-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  --ark-text-2xs: 11px;  /* micro label UPPERCASE, counter, caret */
+  --ark-text-xs: 12px;   /* meta sekunder: timestamp, ukuran, pemilik */
+  --ark-text-sm: 13px;   /* teks bantu, caption, item rapat */
+  --ark-text-md: 14px;   /* BODI, isi tabel, kontrol form, label nav */
+  --ark-text-lg: 15px;   /* judul dalam panel */
+  --ark-text-xl: 16px;   /* heading seksi */
+  --ark-text-2xl: 20px;  /* judul panel hero (jarang) */
+  --ark-text-3xl: 24px;  /* JUDUL HALAMAN · juga angka metrik, tabular-nums */
+
+  --ark-leading-tight: 1.25;
+  --ark-leading-snug: 1.4;
+  --ark-leading-normal: 1.55;
+  --ark-leading-relaxed: 1.7;
+
+  --ark-weight-regular: 400;
+  --ark-weight-medium: 500;
+  --ark-weight-semibold: 600;
+  --ark-weight-bold: 700;   /* jarang: judul halaman + angka metrik saja */
+
+  /* Tracking negatif halus pada ukuran besar (Linear-like), positif pada micro label. */
+  --ark-tracking-tight: -0.013em;  /* >= 17px */
+  --ark-tracking-normal: 0;
+  --ark-tracking-wide: 0.03em;     /* micro label uppercase */
+  --ark-tracking-caps: 0.06em;     /* section heading uppercase */
+
+  /* --- 7. SPACING (basis 4px) ------------------------------------------- */
+  --ark-space-0: 0;
+  --ark-space-0x5: 2px;
+  --ark-space-1: 4px;
+  --ark-space-1x5: 6px;
+  --ark-space-2: 8px;
+  --ark-space-2x5: 10px;
+  --ark-space-3: 12px;
+  --ark-space-4: 16px;
+  --ark-space-5: 20px;
+  --ark-space-6: 24px;
+  --ark-space-8: 32px;
+  --ark-space-10: 40px;
+  --ark-space-12: 48px;
+  --ark-space-16: 64px;
+
+  /* Alias semantik — komponen memakai ini, bukan angka telanjang. */
+  --ark-pad-control-sm: 0 var(--ark-space-2x5);
+  --ark-pad-control-md: 0 var(--ark-space-3);
+  --ark-pad-control-lg: 0 var(--ark-space-4);
+  --ark-pad-card: var(--ark-space-4);        /* 16px — default panel */
+  --ark-pad-card-lg: var(--ark-space-5);     /* 20px — panel berisi tabel/form */
+  --ark-pad-panel: var(--ark-space-5);
+  --ark-gap-row: var(--ark-space-2);
+  --ark-gap-stack-sm: var(--ark-space-2);
+  --ark-gap-stack-md: var(--ark-space-4);
+  --ark-gap-stack-lg: var(--ark-space-6);    /* antar seksi pada halaman datar */
+
+  /* --- 8. RADII ---------------------------------------------------------
+     Disiplin: kontrol & panel = md(6)/lg(8). xl(12) HANYA modal besar,
+     sm(4)/xs(3) HANYA chip/badge/kbd. Memilih radius lain berarti menambah
+     token di sini, bukan menulis angka di komponen. */
+  --ark-radius-xs: 3px;   /* badge mungil, kbd */
+  --ark-radius-sm: 4px;   /* chip, ikon kecil */
+  --ark-radius-md: 6px;   /* kontrol form + tombol kecil (default) */
+  --ark-radius-lg: 8px;   /* card/panel, menu, modal kecil, tombol primer */
+  --ark-radius-xl: 12px;  /* HANYA modal besar */
+  --ark-radius-full: 9999px;
+
+  /* --- 9. ELEVATION -----------------------------------------------------
+     Bayangan khusus lapisan MENGAMBANG (menu, modal, toast, tooltip).
+     Panel/kartu halaman datar: TIDAK memakai bayangan sama sekali —
+     hierarki digerjakan border 1px + ruang (lihat .ark-panel di shell.css). */
+  --ark-shadow-xs: 0 1px 1px rgba(17, 24, 39, 0.04);
+  --ark-shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.06), 0 1px 1px rgba(17, 24, 39, 0.04);
+  --ark-shadow-md: 0 2px 4px -1px rgba(17, 24, 39, 0.06), 0 6px 16px -6px rgba(17, 24, 39, 0.10);
+  --ark-shadow-lg: 0 4px 8px -3px rgba(17, 24, 39, 0.08), 0 14px 32px -10px rgba(17, 24, 39, 0.20);
+  --ark-shadow-ring: 0 0 0 3px rgba(79, 70, 229, 0.20);
+  --ark-shadow-ring-danger: 0 0 0 3px rgba(220, 38, 38, 0.18);
+  --ark-shadow-inset-divider: inset 0 -1px 0 var(--ark-border-default);
+
+  /* --- 10. Z-INDEX (skala, bukan angka arbitrer) ------------------------ */
+  --ark-z-raised: 1;
+  --ark-z-sticky: 10;
+  --ark-z-dropdown: 20;
+  --ark-z-drawer: 30;
+  --ark-z-scrim: 40;
+  --ark-z-modal: 50;
+  --ark-z-toast: 60;
+  --ark-z-tooltip: 70;
+
+  /* --- 11. MOTION ------------------------------------------------------- */
+  --ark-dur-instant: 80ms;
+  --ark-dur-fast: 120ms;
+  --ark-dur-base: 180ms;
+  --ark-dur-slow: 240ms;
+  --ark-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ark-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ark-ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* --- 12. DIMENSI LAYOUT & KONTROL ------------------------------------
+     Tiga tingkat kontrol: sm 28 khusus aksi ikon-only di baris tabel,
+     md 32 = kontrol default (rentang "compact" brief), lg 40 = aksi primer.
+     Keduanya sengaja di dalam rentang brief; sm adalah penyimpangan sadar
+     yang terdaftar di docs/design-refactor-audit.md §4. */
+  --ark-control-h-sm: 28px;
+  --ark-control-h-md: 32px;
+  --ark-control-h-lg: 40px;
+  --ark-target-min: 44px;          /* target sentuh (pointer kasar) */
+  --ark-row-h: 40px;               /* baris tabel: padat, 14px + ruang 13px */
+  --ark-sidebar-w: 248px;         /* navigasi utama; drawer di bawah 1024px */
+  --ark-sidebar-w-collapsed: 72px;/* rail ikon (desktop saja) */
+  --ark-header-h: 56px;           /* bar alat: kontrol 32px + 2x ruang 12px */
+  --ark-content-max: 1240px;
+  --ark-menu-w-min: 208px;
+  --ark-menu-w-max: 320px;
+  --ark-tile-min: 220px;          /* kolom terkecil grid tile dokumen */
+}
+
+/* Pointer kasar: kontrol form/tabel melebar ke 44px tanpa mengubah markup. */
+@media (pointer: coarse) {
+  :root {
+    --ark-control-h-sm: 36px;
+    --ark-control-h-md: 44px;
+    --ark-control-h-lg: 48px;
+    --ark-row-h: 52px;
+  }
+}

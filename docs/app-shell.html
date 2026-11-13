@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ArsipKu — Kerangka Aplikasi</title>
+<meta name="description" content="Pratinjau layout aplikasi ArsipKu: sidebar, header, dan kontainer konten di atas design system ark-*. Tanpa isi halaman.">
+
+<!-- Dimuat manual dan berurutan: token -> base -> komponen. Tidak ada build step. -->
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components/buttons.css">
+<link rel="stylesheet" href="../assets/css/components/forms.css">
+<link rel="stylesheet" href="../assets/css/components/menu.css">
+<link rel="stylesheet" href="../assets/css/components/badge.css">
+<link rel="stylesheet" href="../assets/css/components/breadcrumb.css">
+<link rel="stylesheet" href="../assets/css/components/tooltip.css">
+<link rel="stylesheet" href="../assets/css/components/loader.css">
+<link rel="stylesheet" href="../assets/css/components/empty-state.css">
+<link rel="stylesheet" href="../assets/css/components/table.css">
+<link rel="stylesheet" href="../assets/css/components/page.css">
+<link rel="stylesheet" href="../assets/css/components/shell.css">
+<link rel="stylesheet" href="../assets/css/components/sidebar.css">
+<link rel="stylesheet" href="../assets/css/components/header.css">
+</head>
+
+<body>
+<!-- data-shell-page hanya dipakai saat halaman tidak membawa ?page= (pratinjau
+     statis). Di aplikasi, ?page= dari router yang jadi sumber kebenaran. -->
+<div class="ark-shell" data-shell-page="dashboard">
+
+  <aside class="ark-sidebar" id="app-nav" aria-label="Navigasi utama">
+    <div class="ark-sidebar__head">
+      <div class="ark-menu-wrap ark-menu-wrap--block ark-ws">
+        <button type="button" class="ark-ws__trigger" data-menu="#ws-menu"
+                aria-haspopup="menu" aria-expanded="false" aria-controls="ws-menu">
+          <span class="ark-ws__mark" aria-hidden="true">AD</span>
+          <span class="ark-ws__meta">
+            <span class="ark-ws__name">Arsip Dinas</span>
+            <span class="ark-ws__plan">Tim · 21,3 / 50 GB</span>
+          </span>
+          <span class="ark-menu__chevron" data-icon="chevron-down"></span>
+        </button>
+
+        <div class="ark-menu" id="ws-menu" role="menu" aria-label="Ganti workspace" hidden>
+          <p class="ark-menu__label">Workspace aktif</p>
+          <button type="button" class="ark-menu__item" role="menuitem" aria-selected="true">
+            <span class="ark-ws__item-mark" aria-hidden="true">AD</span>
+            <span class="ark-menu__text">Arsip Dinas</span>
+            <span class="ark-ws__tick" data-icon="check"></span>
+          </button>
+          <button type="button" class="ark-menu__item" role="menuitem">
+            <span class="ark-ws__item-mark" aria-hidden="true">KD</span>
+            <span class="ark-menu__text">Kantor Dewi</span>
+            <span class="ark-menu__meta">8 GB</span>
+          </button>
+          <div class="ark-menu__separator" role="separator"></div>
+          <a class="ark-menu__item" role="menuitem" href="?page=members">
+            <span data-icon="users"></span>
+            <span class="ark-menu__text">Kelola anggota</span>
+          </a>
+          <a class="ark-menu__item" role="menuitem" href="?page=settings">
+            <span data-icon="settings"></span>
+            <span class="ark-menu__text">Pengaturan workspace</span>
+          </a>
+          <button type="button" class="ark-menu__item" role="menuitem">
+            <span data-icon="plus"></span>
+            <span class="ark-menu__text">Buat workspace baru</span>
+          </button>
+        </div>
+      </div>
+
+      <button type="button" class="ark-icon-btn ark-icon-btn--sm ark-sidebar__collapse"
+              data-drawer="collapse" data-ark-tooltip="Ciutkan navigasi" aria-label="Ciutkan navigasi">
+        <span data-icon="panel-left"></span>
+      </button>
+      <button type="button" class="ark-icon-btn ark-icon-btn--sm ark-sidebar__close"
+              data-drawer="close" aria-label="Tutup navigasi">
+        <span data-icon="x"></span>
+      </button>
+    </div>
+
+    <nav class="ark-sidebar__nav">
+      <div class="ark-nav__group">
+        <p class="ark-nav__group-label ark-label-caps">Arsip</p>
+        <div class="ark-nav__list">
+          <a class="ark-nav__item" data-nav="dashboard" href="?page=dashboard">
+            <span class="ark-nav__icon" data-icon="home"></span>
+            <span class="ark-nav__text">Beranda</span>
+          </a>
+          <a class="ark-nav__item" data-nav="documents" href="?page=documents">
+            <span class="ark-nav__icon" data-icon="archive"></span>
+            <span class="ark-nav__text">Semua Dokumen</span>
+            <span class="ark-badge ark-badge--count">1.284</span>
+          </a>
+          <a class="ark-nav__item" data-nav="folders" href="?page=folders">
+            <span class="ark-nav__icon" data-icon="folder"></span>
+            <span class="ark-nav__text">Folder</span>
+            <span class="ark-badge ark-badge--count">36</span>
+          </a>
+          <a class="ark-nav__item" data-nav="recent" href="?page=recent">
+            <span class="ark-nav__icon" data-icon="clock"></span>
+            <span class="ark-nav__text">Terbaru</span>
+          </a>
+          <a class="ark-nav__item" data-nav="favorites" href="?page=favorites">
+            <span class="ark-nav__icon" data-icon="star-fill"></span>
+            <span class="ark-nav__text">Favorit</span>
+            <span class="ark-badge ark-badge--count">9</span>
+          </a>
+          <a class="ark-nav__item" data-nav="shared" href="?page=shared">
+            <span class="ark-nav__icon" data-icon="share"></span>
+            <span class="ark-nav__text">Dibagikan</span>
+          </a>
+          <a class="ark-nav__item" data-nav="trash" href="?page=trash">
+            <span class="ark-nav__icon" data-icon="trash"></span>
+            <span class="ark-nav__text">Sampah</span>
+            <span class="ark-badge ark-badge--count">12</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="ark-nav__group">
+        <p class="ark-nav__group-label ark-label-caps">Workspace</p>
+        <div class="ark-nav__list">
+          <a class="ark-nav__item" data-nav="members" href="?page=members">
+            <span class="ark-nav__icon" data-icon="users"></span>
+            <span class="ark-nav__text">Anggota</span>
+            <span class="ark-badge ark-badge--count">14</span>
+          </a>
+          <a class="ark-nav__item" data-nav="settings" href="?page=settings">
+            <span class="ark-nav__icon" data-icon="settings"></span>
+            <span class="ark-nav__text">Pengaturan</span>
+          </a>
+          <a class="ark-nav__item" data-nav="billing" href="?page=billing">
+            <span class="ark-nav__icon" data-icon="credit-card"></span>
+            <span class="ark-nav__text">Langganan</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="ark-sidebar__foot">
+      <div class="ark-usage">
+        <div class="ark-usage__row">
+          <span>Penyimpanan</span>
+          <span class="ark-usage__value">43%</span>
+        </div>
+        <div class="ark-progress ark-progress--thin" role="progressbar"
+             aria-label="Pemakaian penyimpanan" aria-valuenow="43" aria-valuemin="0" aria-valuemax="100"
+             style="--ark-progress-value: 43%">
+          <span class="ark-progress__bar"></span>
+        </div>
+        <a class="ark-usage__link" href="?page=billing">
+          <span data-icon="credit-card"></span>
+          Tambah kapasitas
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <div class="ark-drawer-scrim" data-drawer-scrim></div>
+
+  <div class="ark-main">
+    <header class="ark-header">
+      <div class="ark-header__trail">
+        <button type="button" class="ark-icon-btn" data-drawer="menu" aria-label="Buka navigasi" aria-expanded="false" aria-controls="app-nav">
+          <span data-icon="list"></span>
+        </button>
+        <nav class="ark-crumbs-nav ark-header__crumbs" aria-label="Breadcrumb">
+          <ol class="ark-crumbs">
+            <li class="ark-crumbs__item"><a class="ark-crumbs__link" href="?page=dashboard">Arsip Dinas</a></li>
+            <li class="ark-crumbs__sep" aria-hidden="true"><span data-icon="chevron-right"></span></li>
+            <li class="ark-crumbs__item"><span class="ark-crumbs__current" aria-current="page">Beranda</span></li>
+          </ol>
+        </nav>
+        <span class="ark-header__title">Beranda</span>
+      </div>
+
+      <div class="ark-search ark-header__search">
+        <span class="ark-search__icon" data-icon="search"></span>
+        <input class="ark-search__field" type="search"
+               placeholder="Cari berkas atau folder"
+               aria-label="Cari di workspace ini">
+        <kbd class="ark-kbd ark-search__hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ark-header__divider" aria-hidden="true"></div>
+
+      <div class="ark-header__actions">
+        <button type="button" class="ark-icon-btn ark-header__search-toggle"
+                data-search-toggle aria-label="Cari" aria-expanded="false">
+          <span data-icon="search"></span>
+        </button>
+        <button type="button" class="ark-btn ark-btn--primary ark-btn--sm">
+          <span data-icon="upload-cloud"></span>
+          <span class="ark-btn__label">Unggah</span>
+        </button>
+        <button type="button" class="ark-icon-btn" data-ark-tooltip="Ganti tampilan" aria-label="Ganti tampilan">
+          <span data-icon="grid"></span>
+        </button>
+
+        <div class="ark-menu-wrap">
+          <button type="button" class="ark-account__trigger" data-menu="#account-menu"
+                  aria-haspopup="menu" aria-expanded="false" aria-controls="account-menu">
+            <span class="ark-avatar" aria-hidden="true">RN</span>
+            <span class="ark-account__name">Rani N.</span>
+            <span class="ark-menu__chevron" data-icon="chevron-down"></span>
+          </button>
+          <div class="ark-menu ark-menu--right" id="account-menu" role="menu" aria-label="Akun" hidden>
+            <div class="ark-account__id">
+              <span class="ark-avatar ark-avatar--lg" aria-hidden="true">RN</span>
+              <span class="ark-account__id-text">
+                <span class="ark-account__id-name">Rani Nurhayati</span>
+                <span class="ark-account__id-mail">rani@arsipdinas.go.id</span>
+              </span>
+            </div>
+            <button type="button" class="ark-menu__item" role="menuitem">
+              <span data-icon="user"></span>
+              <span class="ark-menu__text">Profil saya</span>
+            </button>
+            <a class="ark-menu__item" role="menuitem" href="?page=settings">
+              <span data-icon="settings"></span>
+              <span class="ark-menu__text">Preferensi</span>
+              <span class="ark-menu__shortcut">,</span>
+            </a>
+            <div class="ark-menu__separator" role="separator"></div>
+            <button type="button" class="ark-menu__item" role="menuitem">
+              <span data-icon="help"></span>
+              <span class="ark-menu__text">Bantuan &amp; dokumentasi</span>
+            </button>
+            <button type="button" class="ark-menu__item ark-menu__item--danger" role="menuitem">
+              <span data-icon="log-out"></span>
+              <span class="ark-menu__text">Keluar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="ark-content">
+      <div class="ark-content__body">
+      <div class="ark-page-head">
+        <div class="ark-page-head__text">
+          <h1 class="ark-title-page">Beranda</h1>
+          <p class="ark-title-sub">Ringkasan aktivitas arsip workspace ini.</p>
+        </div>
+        <div class="ark-page-head__actions">
+          <button class="ark-btn" type="button"><span data-icon="folder-plus"></span><span class="ark-btn__label">Buat folder</span></button>
+          <button class="ark-btn ark-btn--primary" type="button"><span data-icon="upload"></span><span class="ark-btn__label">Unggah dokumen</span></button>
+        </div>
+      </div>
+
+      <div class="ark-panel ark-panel--flush">
+        <table class="ark-table">
+          <caption class="ark-sr-only">Berkas yang baru diunggah</caption>
+          <thead class="ark-table__head">
+            <tr>
+              <th scope="col">Berkas</th>
+              <th scope="col" class="ark-table__col--hide-md">Folder</th>
+              <th scope="col" class="ark-th--num">Ukuran</th>
+              <th scope="col" class="ark-th--actions"><span class="ark-sr-only">Aksi</span></th>
+            </tr>
+          </thead>
+          <tbody class="ark-table__body">
+            <tr>
+              <td colspan="4"><span class="ark-skeleton ark-skeleton--row"></span></td>
+            </tr>
+            <tr>
+              <td colspan="4"><span class="ark-skeleton ark-skeleton--row"></span></td>
+            </tr>
+            <tr>
+              <td colspan="4"><span class="ark-skeleton ark-skeleton--row"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ark-empty">
+        <span class="ark-empty__icon" data-icon="share"></span>
+        <p class="ark-empty__title">Belum ada berkas dibagikan</p>
+        <p class="ark-empty__desc">Berkas yang Anda bagikan lewat tautan akan muncul di sini.</p>
+      </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/js/icons.js"></script>
+<script src="../assets/js/app-shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: BUTTONS
+   --------------------------------------------------------------------------
+   Markas kontrak:
+     <button class="ark-btn ark-btn--primary" type="button">
+       <svg class="ark-btn__icon" ...></svg>
+       <span class="ark-btn__label">Unggah berkas</span>
+     </button>
+   State digerjakan pseudo-class + atribut (bukan kelas state) supaya markup
+   dan tampilan tidak bisa berbeda:
+     hover  :hover            focus  :focus-visible
+     active :active           disabled :disabled | aria-disabled="true"
+     loading aria-busy="true"
+   ========================================================================== */
+
+.ark-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ark-space-1x5);
+  height: var(--ark-control-h-md);
+  padding: 0 var(--ark-space-3);
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-medium);
+  line-height: 1;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  color: var(--ark-text-primary);
+  background-color: var(--ark-surface-canvas);
+  border: 1px solid var(--ark-border-strong);
+  border-radius: var(--ark-radius-lg);
+  transition:
+    background-color var(--ark-dur-fast) var(--ark-ease-standard),
+    border-color var(--ark-dur-fast) var(--ark-ease-standard),
+    color var(--ark-dur-fast) var(--ark-ease-standard),
+    transform var(--ark-dur-instant) var(--ark-ease-standard);
+}
+
+.ark-btn__icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.85;
+}
+
+/* Ikon yang disuntik lewat <span data-icon> mengikuti kontrak yang sama. */
+.ark-btn [data-icon] { opacity: 0.85; }
+
+.ark-btn:active { transform: translateY(0.5px); }
+
+/* --- Varian: primer (satu per tampilan, aksi utama) --------------------- */
+.ark-btn--primary {
+  color: var(--ark-on-accent);
+  background-color: var(--ark-accent);
+  border-color: var(--ark-accent);
+}
+.ark-btn--primary:hover { background-color: var(--ark-accent-hover); border-color: var(--ark-accent-hover); }
+.ark-btn--primary:active { background-color: var(--ark-accent-press); border-color: var(--ark-accent-press); }
+
+/* --- Varian: sekunder (default .ark-btn sudah sekunder) ----------------- */
+.ark-btn--secondary:hover {
+  background-color: var(--ark-surface-hover);
+  border-color: var(--ark-border-strong);
+}
+.ark-btn--secondary:active { background-color: var(--ark-surface-press); }
+
+/* --- Varian: ghost / tertier (di dalam toolbar, tabel, modal close) ----- */
+.ark-btn--ghost {
+  color: var(--ark-text-secondary);
+  background-color: transparent;
+  border-color: transparent;
+}
+.ark-btn--ghost:hover { color: var(--ark-text-primary); background-color: var(--ark-surface-hover); }
+.ark-btn--ghost:active { background-color: var(--ark-surface-press); }
+
+/* --- Varian: bahaya ----------------------------------------------------- */
+.ark-btn--danger {
+  color: var(--ark-on-accent);
+  background-color: var(--ark-danger);
+  border-color: var(--ark-danger);
+}
+.ark-btn--danger:hover { background-color: var(--ark-danger-hover); border-color: var(--ark-danger-hover); }
+.ark-btn--danger:active { background-color: var(--ark-danger-press); border-color: var(--ark-danger-press); }
+
+.ark-btn--danger-ghost {
+  color: var(--ark-text-danger);
+  background-color: transparent;
+  border-color: transparent;
+}
+.ark-btn--danger-ghost:hover { background-color: var(--ark-danger-subtle); border-color: var(--ark-danger-border); }
+
+/* --- Varian: tautan ---------------------------------------------------- */
+.ark-btn--link {
+  height: auto;
+  padding: 0;
+  color: var(--ark-text-accent);
+  background: none;
+  border: 0;
+  border-radius: var(--ark-radius-xs);
+}
+.ark-btn--link:hover { text-decoration: underline; }
+.ark-btn--link:active { color: var(--ark-accent-press); }
+
+/* --- Ukuran ------------------------------------------------------------- */
+.ark-btn--sm {
+  --ark-icon-size: 14px;
+  height: var(--ark-control-h-sm);
+  padding: 0 var(--ark-space-2x5);
+  font-size: var(--ark-text-sm);
+  gap: var(--ark-space-1);
+  border-radius: var(--ark-radius-md);
+}
+.ark-btn--sm .ark-btn__icon { width: 14px; height: 14px; }
+
+.ark-btn--lg {
+  --ark-icon-size: 18px;
+  height: var(--ark-control-h-lg);
+  padding: 0 var(--ark-space-4);
+  font-size: var(--ark-text-md);
+  border-radius: var(--ark-radius-lg);
+}
+.ark-btn--lg .ark-btn__icon { width: 18px; height: 18px; }
+
+.ark-btn--block { width: 100%; }
+
+/* --- Tombol ikon (barsis, aksi baris, penutup) -------------------------- */
+.ark-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ark-control-h-md);
+  height: var(--ark-control-h-md);
+  color: var(--ark-text-secondary);
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--ark-radius-md);
+  transition:
+    background-color var(--ark-dur-fast) var(--ark-ease-standard),
+    color var(--ark-dur-fast) var(--ark-ease-standard);
+}
+.ark-icon-btn svg { width: 16px; height: 16px; }
+.ark-icon-btn:hover { color: var(--ark-text-primary); background-color: var(--ark-surface-hover); }
+.ark-icon-btn:active { background-color: var(--ark-surface-press); }
+.ark-icon-btn--sm { width: var(--ark-control-h-sm); height: var(--ark-control-h-sm); }
+.ark-icon-btn--sm svg { width: 14px; height: 14px; }
+.ark-icon-btn--danger:hover { color: var(--ark-text-danger); background-color: var(--ark-danger-subtle); }
+.ark-icon-btn[aria-pressed="true"],
+.ark-icon-btn.is-active {
+  color: var(--ark-text-accent);
+  background-color: var(--ark-accent-subtle);
+}
+
+/* --- Loading & disabled ------------------------------------------------- */
+.ark-btn[aria-busy="true"] {
+  cursor: progress;
+  pointer-events: none;
+}
+.ark-btn[aria-busy="true"] .ark-btn__label { opacity: 0.55; }
+.ark-btn[aria-busy="true"] .ark-btn__icon,
+.ark-btn[aria-busy="true"] [data-icon] { display: none; }
+.ark-btn[aria-busy="true"]::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--ark-radius-full);
+  animation: ark-btn-spin 600ms linear infinite;
+}
+@keyframes ark-btn-spin { to { transform: rotate(360deg); } }
+
+.ark-btn:disabled,
+.ark-btn[aria-disabled="true"],
+.ark-icon-btn:disabled {
+  color: var(--ark-text-disabled);
+  background-color: var(--ark-surface-subtle);
+  border-color: var(--ark-border-default);
+  cursor: not-allowed;
+  transform: none;
+}
+.ark-btn--ghost:disabled,
+.ark-btn--link:disabled { background-color: transparent; border-color: transparent; }
+.ark-btn--primary:disabled,
+.ark-btn--danger:disabled {
+  color: var(--ark-text-disabled);
+  background-color: var(--ark-border-default);
+  border-color: var(--ark-border-default);
+}
+
+/* --- Grup tombol berdempetan (filter, toolbar) -------------------------- */
+.ark-btn-group { display: inline-flex; }
+.ark-btn-group .ark-btn { border-radius: 0; margin-left: -1px; }
+.ark-btn-group .ark-btn:first-child { border-radius: var(--ark-radius-md) 0 0 var(--ark-radius-md); margin-left: 0; }
+.ark-btn-group .ark-btn:last-child { border-radius: 0 var(--ark-radius-md) var(--ark-radius-md) 0; }
+.ark-btn-group .ark-btn:hover { position: relative; z-index: var(--ark-z-raised); }

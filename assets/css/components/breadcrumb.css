@@ -1,0 +1,96 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: BREADCRUMB
+   --------------------------------------------------------------------------
+   <nav class="ark-crumbs-nav" aria-label="Breadcrumb">
+     <ol class="ark-crumbs">
+       <li class="ark-crumbs__item"><a href="...">Arsip Utama</a></li>
+       <li class="ark-crumbs__sep" aria-hidden="true"><svg/></li>
+       <li class="ark-crumbs__item"><span aria-current="page">Administrasi</span></li>
+     </ol>
+   </nav>
+   Item aktif memakai aria-current, BUKAN kelas warna — supaya tidak bisa
+   tertinggal saat markup dirender ulang.
+   ========================================================================== */
+
+.ark-crumbs-nav { min-width: 0; }
+
+.ark-crumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ark-space-1);
+  font-size: var(--ark-text-sm);
+  line-height: var(--ark-leading-snug);
+  min-width: 0;
+}
+
+.ark-crumbs__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ark-space-1);
+  min-width: 0;
+}
+
+.ark-crumbs__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ark-space-1);
+  padding: 2px var(--ark-space-1);
+  margin-left: calc(-1 * var(--ark-space-1));
+  border-radius: var(--ark-radius-sm);
+  color: var(--ark-text-secondary);
+  font-weight: var(--ark-weight-regular);
+  transition:
+    color var(--ark-dur-instant) var(--ark-ease-standard),
+    background-color var(--ark-dur-instant) var(--ark-ease-standard);
+}
+
+.ark-crumbs__link:hover {
+  color: var(--ark-text-primary);
+  background-color: var(--ark-surface-hover);
+  text-decoration: none;
+}
+
+.ark-crumbs__link svg,
+.ark-crumbs__current svg {
+  width: 14px;
+  height: 14px;
+  color: var(--ark-text-tertiary);
+}
+
+.ark-crumbs__current {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ark-space-1);
+  padding: 2px var(--ark-space-1);
+  color: var(--ark-text-primary);
+  font-weight: var(--ark-weight-medium);
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ark-crumbs__sep {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ark-text-tertiary);
+}
+.ark-crumbs__sep svg { width: 13px; height: 13px; }
+
+/* Baris breadcrumb di atas judul halaman: pemisah tipis di bawahnya. */
+.ark-crumbs--bar {
+  padding-bottom: var(--ark-space-2);
+  border-bottom: 1px solid var(--ark-border-subtle);
+}
+
+/* Versi dalam baris tabel (nama folder induk) — tanpa navigasi. */
+.ark-crumbs--inline { font-size: var(--ark-text-xs); }
+.ark-crumbs--inline .ark-crumbs__link { color: var(--ark-text-secondary); padding: 0; margin: 0; }
+.ark-crumbs--inline .ark-crumbs__link:hover { background: none; text-decoration: underline; }
+
+@media (max-width: 640px) {
+  /* Jangan potong jalur di tengah: sisakan akar + halaman aktif. */
+  .ark-crumbs__item--hide-sm { display: none; }
+  .ark-crumbs__sep--hide-sm { display: none; }
+}

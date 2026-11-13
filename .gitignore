@@ -1,0 +1,47 @@
+# Local secrets and environment-specific configuration
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.local.php
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+
+# User uploads and local runtime data
+/uploads/*
+!/uploads/.gitkeep
+/storage/
+/logs/
+*.log
+error_log
+
+# Local database files and backup exports (keep database.sql as the setup schema)
+*.sqlite
+*.sqlite3
+*.db
+*.db-*
+*.dump
+*.sql.gz
+*.sql.zip
+*.bak
+*.backup
+*.old
+
+# Dependencies, generated bundles, and local tooling output
+/vendor/
+/frontend/node_modules/
+/assets/js/dist/
+/.audit-shots/
+/.phpunit.cache/
+/.phpunit.result.cache
+/.coverage*
+
+# Operating system files
+.DS_Store
+Thumbs.db

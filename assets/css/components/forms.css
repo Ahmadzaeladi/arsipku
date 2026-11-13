@@ -1,0 +1,368 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: FORMS
+   --------------------------------------------------------------------------
+   Markup kontrak:
+     <div class="ark-field">
+       <label class="ark-label" for="x">Nama</label>
+       <input class="ark-input" id="x" type="text">
+       <p class="ark-helper" id="x-help">...</p>
+     </div>
+   Error memakai atribut, bukan kelas: [aria-invalid="true"] + [data-state="error"].
+   ========================================================================== */
+
+.ark-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ark-space-1x5);
+  min-width: 0;
+}
+
+.ark-field__label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ark-space-2);
+}
+
+.ark-field__optional {
+  font-size: var(--ark-text-xs);
+  font-weight: var(--ark-weight-regular);
+  color: var(--ark-text-tertiary);
+}
+
+/* --- Pembungkus field ---------------------------------------------------
+   <form class="ark-form"> (atau <div>) memegang jarak antar field supaya
+   view tidak menulis gap inline. --tight untuk blok pendek dalam modal. */
+.ark-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ark-space-4);
+}
+
+.ark-form--tight { gap: var(--ark-space-3); }
+
+.ark-profile-image {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-4);
+}
+
+.ark-profile-image__controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ark-space-2);
+}
+
+.ark-profile-image__preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ark-profile-image [hidden] { display: none; }
+
+/* --- Grid field ----------------------------------------------------------
+   Dua kolom rata untuk pasangan field singkat (kategori + slug). Di bawah
+   640px menumpuk sendiri, jadi view tidak perlu menulis grid inline. */
+.ark-field-grid {
+  display: grid;
+  gap: var(--ark-space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 640px) {
+  .ark-field-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* --- Baris aksi formulir -------------------------------------------------
+   Satu aksi primer rata kanan; pembatal/pengelak memakai .ark-btn--ghost
+   atau .ark-btn--danger di dalam baris ini. */
+.ark-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ark-space-2);
+}
+
+/* --- Kontrol teks ------------------------------------------------------- */
+.ark-input,
+.ark-select,
+.ark-textarea {
+  width: 100%;
+  height: var(--ark-control-h-md);
+  padding: 0 var(--ark-space-2x5);
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-regular);
+  color: var(--ark-text-primary);
+  background-color: var(--ark-surface-canvas);
+  border: 1px solid var(--ark-border-strong);
+  border-radius: var(--ark-radius-md);
+  transition:
+    border-color var(--ark-dur-fast) var(--ark-ease-standard),
+    box-shadow var(--ark-dur-fast) var(--ark-ease-standard),
+    background-color var(--ark-dur-fast) var(--ark-ease-standard);
+}
+
+.ark-input::placeholder,
+.ark-textarea::placeholder {
+  color: var(--ark-text-tertiary);
+  opacity: 1;
+}
+
+.ark-input:hover:not(:disabled),
+.ark-select:hover:not(:disabled),
+.ark-textarea:hover:not(:disabled) { border-color: var(--ark-border-strong); background-color: var(--ark-surface-hover); }
+
+.ark-input:focus-visible,
+.ark-select:focus-visible,
+.ark-textarea:focus-visible {
+  background-color: var(--ark-surface-canvas);
+  border-color: var(--ark-accent);
+  box-shadow: var(--ark-shadow-ring);
+}
+
+.ark-textarea {
+  height: auto;
+  min-height: 88px;
+  padding: var(--ark-space-2) var(--ark-space-2x5);
+  line-height: var(--ark-leading-normal);
+  resize: vertical;
+}
+
+.ark-input:disabled,
+.ark-select:disabled,
+.ark-textarea:disabled {
+  color: var(--ark-text-disabled);
+  background-color: var(--ark-surface-subtle);
+  border-color: var(--ark-border-default);
+  cursor: not-allowed;
+}
+
+/* --- State error & sukses ---------------------------------------------- */
+.ark-input[aria-invalid="true"],
+.ark-select[aria-invalid="true"],
+.ark-textarea[aria-invalid="true"] {
+  border-color: var(--ark-danger);
+}
+.ark-input[aria-invalid="true"]:focus-visible,
+.ark-select[aria-invalid="true"]:focus-visible,
+.ark-textarea[aria-invalid="true"]:focus-visible {
+  box-shadow: var(--ark-shadow-ring-danger);
+}
+
+.ark-field__message {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-1);
+  font-size: var(--ark-text-xs);
+  line-height: var(--ark-leading-normal);
+  color: var(--ark-text-secondary);
+}
+.ark-field__message svg { width: 13px; height: 13px; }
+
+.ark-field__message--error { color: var(--ark-text-danger); }
+.ark-field__message--success { color: var(--ark-text-success); }
+
+/* --- Select dengan chevron -------------------------------------------- */
+.ark-select {
+  padding-right: var(--ark-space-8);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--ark-space-2x5) center;
+  background-size: 15px 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ark-select--sm { height: var(--ark-control-h-sm); font-size: var(--ark-text-sm); }
+
+/* Select pendek di dalam baris/toolbar: lebar mengikuti isi, bukan 100%. */
+.ark-select--fit { width: auto; }
+
+/* --- Field cari --------------------------------------------------------
+   <div class="ark-search">
+     <svg class="ark-search__icon">…</svg>
+     <input class="ark-search__field" type="search" aria-label="Cari arsip">
+     <kbd class="ark-kbd ark-search__hint">Ctrl K</kbd>
+   </div> */
+.ark-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.ark-search__icon {
+  --ark-icon-size: 15px;
+  position: absolute;
+  left: var(--ark-space-2x5);
+  width: 15px;
+  height: 15px;
+  color: var(--ark-text-tertiary);
+  pointer-events: none;
+}
+
+.ark-search__field {
+  width: 100%;
+  height: var(--ark-control-h-md);
+  padding: 0 var(--ark-space-8) 0 var(--ark-space-8);
+  font-size: var(--ark-text-sm);
+  color: var(--ark-text-primary);
+  background-color: var(--ark-surface-subtle);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-md);
+  transition:
+    background-color var(--ark-dur-fast) var(--ark-ease-standard),
+    border-color var(--ark-dur-fast) var(--ark-ease-standard),
+    box-shadow var(--ark-dur-fast) var(--ark-ease-standard);
+}
+.ark-search__field::-webkit-search-cancel-button { -webkit-appearance: none; }
+.ark-search__field::placeholder { color: var(--ark-text-tertiary); }
+.ark-search__field:hover { background-color: var(--ark-surface-canvas); border-color: var(--ark-border-strong); }
+.ark-search__field:focus-visible {
+  background-color: var(--ark-surface-canvas);
+  border-color: var(--ark-accent);
+  box-shadow: var(--ark-shadow-ring);
+}
+
+.ark-search__hint {
+  position: absolute;
+  right: var(--ark-space-2);
+  pointer-events: none;
+}
+
+.ark-search--plain .ark-search__field { background-color: var(--ark-surface-canvas); }
+
+.ark-search__clear {
+  --ark-icon-size: 14px;
+  position: absolute;
+  right: var(--ark-space-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  color: var(--ark-text-tertiary);
+  border-radius: var(--ark-radius-full);
+}
+.ark-search__clear:hover { color: var(--ark-text-primary); background-color: var(--ark-surface-hover); }
+.ark-search__clear + .ark-search__hint { display: none; }
+
+/* --- Checkbox ---------------------------------------------------------- */
+.ark-check {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ark-space-2);
+  font-size: var(--ark-text-sm);
+  color: var(--ark-text-primary);
+  cursor: pointer;
+}
+
+.ark-check__box {
+  position: relative;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  background-color: var(--ark-surface-canvas);
+  border: 1px solid var(--ark-border-strong);
+  border-radius: var(--ark-radius-sm);
+  transition:
+    background-color var(--ark-dur-instant) var(--ark-ease-standard),
+    border-color var(--ark-dur-instant) var(--ark-ease-standard),
+    box-shadow var(--ark-dur-fast) var(--ark-ease-standard);
+}
+
+.ark-check:hover .ark-check__box { border-color: var(--ark-accent); }
+
+/* Input disembunyikan tapi tetap menempati kotak gambar, sehingga
+   fokus/klik keyboard mengenai visual yang sama. */
+.ark-check__input {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  transform: translateY(-50%);
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.ark-check__input:checked + .ark-check__box,
+.ark-check__box[aria-checked="mixed"] {
+  background-color: var(--ark-accent);
+  border-color: var(--ark-accent);
+}
+
+.ark-check__input:checked + .ark-check__box::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--ark-on-accent);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+  -webkit-mask-size: 11px 11px;
+  mask-size: 11px 11px;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* State indeterminate digambar lewat atribut, bukan kelas. */
+.ark-check__box[aria-checked="mixed"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  right: 3px;
+  height: 2px;
+  background-color: var(--ark-on-accent);
+  transform: translateY(-50%);
+  border-radius: var(--ark-radius-full);
+}
+
+.ark-check__input:focus-visible + .ark-check__box { box-shadow: var(--ark-shadow-ring); }
+.ark-check__input:disabled + .ark-check__box {
+  background-color: var(--ark-surface-subtle);
+  border-color: var(--ark-border-default);
+}
+.ark-check:has(.ark-check__input:disabled) { color: var(--ark-text-disabled); cursor: not-allowed; }
+
+/* --- Area unggah (peta dari .dropzone legacy) -------------------------- */
+.ark-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ark-space-2);
+  min-height: 168px;
+  padding: var(--ark-space-8) var(--ark-space-5);
+  text-align: center;
+  color: var(--ark-text-secondary);
+  background-color: var(--ark-surface-subtle);
+  border: 1px dashed var(--ark-border-strong);
+  border-radius: var(--ark-radius-lg);
+  transition:
+    background-color var(--ark-dur-base) var(--ark-ease-standard),
+    border-color var(--ark-dur-base) var(--ark-ease-standard);
+}
+.ark-dropzone:hover { border-color: var(--ark-border-accent); background-color: var(--ark-accent-subtle); }
+.ark-dropzone.is-dragover,
+.ark-dropzone[aria-dropeffect="copy"] {
+  border-color: var(--ark-accent);
+  border-style: solid;
+  background-color: var(--ark-accent-subtle);
+}
+.ark-dropzone__icon { --ark-icon-size: 28px; width: 28px; height: 28px; color: var(--ark-text-tertiary); }
+.ark-dropzone.is-dragover .ark-dropzone__icon { color: var(--ark-accent); }
+.ark-dropzone__title {
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-medium);
+  color: var(--ark-text-primary);
+}

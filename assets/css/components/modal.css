@@ -1,0 +1,151 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: MODAL
+   --------------------------------------------------------------------------
+   Kontrak aksesibilitas (WAJIB, tidak bisa dicapai dengan CSS saja):
+     <div class="ark-scrim" data-close>
+       <div class="ark-modal" role="dialog" aria-modal="true"
+            aria-labelledby="t1" aria-describedby="d1">
+         ...
+       </div>
+     </div>
+   JS wajib: pindahkan fokus ke kontrol pertama, kunci Tab di dalam dialog,
+   kembalikan fokus ke pemicu saat tertutup, tutup lewat Escape.
+   Lihat arkModal() di assets/js/design-system.js.
+   ========================================================================== */
+
+.ark-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ark-z-scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ark-space-4);
+  background-color: var(--ark-surface-scrim);
+  opacity: 0;
+  transition: opacity var(--ark-dur-base) var(--ark-ease-standard);
+}
+
+.ark-scrim[hidden] { display: none; }
+.ark-scrim.is-open { opacity: 1; }
+
+.ark-modal {
+  position: relative;
+  z-index: var(--ark-z-modal);
+  display: flex;
+  flex-direction: column;
+  width: min(520px, 100%);
+  max-height: calc(100vh - var(--ark-space-12));
+  overflow: hidden;
+  background-color: var(--ark-surface-canvas);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-xl);
+  box-shadow: var(--ark-shadow-lg);
+  transform: translateY(6px) scale(0.985);
+  opacity: 0;
+  transition:
+    transform var(--ark-dur-slow) var(--ark-ease-entrance),
+    opacity var(--ark-dur-base) var(--ark-ease-standard);
+}
+
+.ark-scrim.is-open .ark-modal { transform: none; opacity: 1; }
+
+.ark-modal--sm { width: min(400px, 100%); }
+.ark-modal--lg { width: min(720px, 100%); }
+.ark-modal--xl { width: min(920px, 100%); }
+
+/* --- Bagian ------------------------------------------------------------- */
+.ark-modal__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ark-space-3);
+  padding: var(--ark-space-4) var(--ark-space-5);
+  border-bottom: 1px solid var(--ark-border-subtle);
+}
+
+.ark-modal__titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.ark-modal__title {
+  font-size: var(--ark-text-xl);
+  font-weight: var(--ark-weight-semibold);
+  line-height: var(--ark-leading-snug);
+  letter-spacing: var(--ark-tracking-tight);
+  color: var(--ark-text-primary);
+}
+
+.ark-modal__subtitle {
+  font-size: var(--ark-text-sm);
+  color: var(--ark-text-secondary);
+}
+
+.ark-modal__close {
+  margin-left: auto;
+  flex-shrink: 0;
+  margin-top: calc(-1 * var(--ark-space-1));
+  margin-right: calc(-1 * var(--ark-space-2));
+}
+
+.ark-modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--ark-space-5);
+  font-size: var(--ark-text-sm);
+  line-height: var(--ark-leading-normal);
+  color: var(--ark-text-primary);
+}
+
+.ark-modal__body--flush { padding: 0; }
+
+/* Seksi berjudul di dalam modal (mis. "Detail berkas") */
+.ark-modal__section + .ark-modal__section {
+  margin-top: var(--ark-space-5);
+  padding-top: var(--ark-space-5);
+  border-top: 1px solid var(--ark-border-subtle);
+}
+
+.ark-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ark-space-2);
+  padding: var(--ark-space-3) var(--ark-space-5) var(--ark-space-4);
+  border-top: 1px solid var(--ark-border-subtle);
+  background-color: var(--ark-surface-canvas);
+}
+
+/* Aksi di kiri (biasanya "Hapus" atau tautan bantuan) */
+.ark-modal__footer--split { justify-content: space-between; }
+.ark-modal__footer-actions { display: flex; align-items: center; gap: var(--ark-space-2); }
+
+.ark-modal__note {
+  font-size: var(--ark-text-xs);
+  color: var(--ark-text-secondary);
+}
+
+/* Modal konfirmasi berbahaya: ikon + teks, tanpa dekorasi merah menyeluruh. */
+.ark-modal__alert-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  color: var(--ark-text-danger);
+  background-color: var(--ark-danger-subtle);
+  border: 1px solid var(--ark-danger-border);
+  border-radius: var(--ark-radius-full);
+}
+.ark-modal__alert-icon svg { width: 18px; height: 18px; }
+
+@media (max-width: 640px) {
+  .ark-scrim { padding: 0; align-items: flex-end; }
+  .ark-modal,
+  .ark-modal--lg,
+  .ark-modal--xl {
+    width: 100%;
+    max-height: 92vh;
+    border-radius: var(--ark-radius-xl) var(--ark-radius-xl) 0 0;
+    border-bottom: 0;
+  }
+}

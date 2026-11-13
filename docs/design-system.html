@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArsipKu Design System — Pratinjau Komponen</title>
+<meta name="description" content="Token, tipografi, ruang, dan komponen ArsipKu dalam HTML, CSS, dan JavaScript murni.">
+
+<!-- Layer desain: token -> base -> komponen. Tidak ada framework, tidak ada build step. -->
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components/buttons.css">
+<link rel="stylesheet" href="../assets/css/components/forms.css">
+<link rel="stylesheet" href="../assets/css/components/menu.css">
+<link rel="stylesheet" href="../assets/css/components/table.css">
+<link rel="stylesheet" href="../assets/css/components/badge.css">
+<link rel="stylesheet" href="../assets/css/components/tabs.css">
+<link rel="stylesheet" href="../assets/css/components/modal.css">
+<link rel="stylesheet" href="../assets/css/components/toast.css">
+<link rel="stylesheet" href="../assets/css/components/tooltip.css">
+<link rel="stylesheet" href="../assets/css/components/empty-state.css">
+<link rel="stylesheet" href="../assets/css/components/loader.css">
+<link rel="stylesheet" href="../assets/css/components/breadcrumb.css">
+<link rel="stylesheet" href="../assets/css/components/page.css">
+<link rel="stylesheet" href="../assets/css/components/header.css">
+
+<style>
+/* =====================================================================
+   CHROME HALAMAN PRATINJAU (.ds-*) — bukan bagian dari design system.
+   Hanya untuk mengatur navigasi, seksi, dan bidang demo.
+   ===================================================================== */
+.ds-body { display: flex; align-items: flex-start; }
+
+.ds-nav {
+  position: sticky;
+  top: 0;
+  flex: 0 0 224px;
+  width: 224px;
+  height: 100vh;
+  overflow-y: auto;
+  padding: var(--ark-space-5) var(--ark-space-3) var(--ark-space-6);
+  background-color: var(--ark-surface-canvas);
+  border-right: 1px solid var(--ark-border-default);
+}
+
+.ds-nav__brand { display: flex; flex-direction: column; gap: 2px; padding: 0 var(--ark-space-2) var(--ark-space-4); }
+.ds-nav__list { display: flex; flex-direction: column; gap: 1px; }
+.ds-nav__link {
+  display: block;
+  padding: 5px var(--ark-space-2);
+  font-size: var(--ark-text-sm);
+  color: var(--ark-text-secondary);
+  border-radius: var(--ark-radius-sm);
+}
+.ds-nav__link:hover { color: var(--ark-text-primary); background-color: var(--ark-surface-hover); text-decoration: none; }
+.ds-nav__link.is-active { color: var(--ark-text-accent); background-color: var(--ark-surface-selected); font-weight: var(--ark-weight-medium); }
+.ds-nav__group { padding: var(--ark-space-4) var(--ark-space-2) var(--ark-space-1); }
+
+.ds-main { flex: 1 1 auto; min-width: 0; padding: var(--ark-space-8) var(--ark-space-8) var(--ark-space-16); }
+.ds-container { max-width: 1040px; margin: 0 auto; }
+
+.ds-page-head { padding-bottom: var(--ark-space-5); border-bottom: 1px solid var(--ark-border-default); }
+.ds-page-head__row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--ark-space-4); }
+
+.ds-section { padding: var(--ark-space-8) 0; border-bottom: 1px solid var(--ark-border-subtle); scroll-margin-top: var(--ark-space-6); }
+.ds-section:last-of-type { border-bottom: 0; }
+.ds-section__head { margin-bottom: var(--ark-space-5); }
+.ds-section__desc { max-width: 68ch; margin-top: var(--ark-space-1); color: var(--ark-text-secondary); font-size: var(--ark-text-sm); }
+
+.ds-block + .ds-block { margin-top: var(--ark-space-6); }
+.ds-block__title { margin-bottom: var(--ark-space-3); }
+
+/* Bidang demo: kanvas netral agar komponen terbaca apa adanya. */
+.ds-stage {
+  padding: var(--ark-space-5);
+  background-color: var(--ark-surface-canvas);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-lg);
+}
+.ds-stage--tinted { background-color: var(--ark-surface-app); }
+.ds-stage--bare { padding: 0; border: 0; }
+
+.ds-grid { display: grid; gap: var(--ark-space-4); }
+.ds-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ds-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ds-grid--4 { grid-template-columns: repeat(auto-fill, minmax(184px, 1fr)); }
+
+.ds-swatch {
+  display: flex;
+  align-items: stretch;
+  gap: var(--ark-space-3);
+  padding: var(--ark-space-2);
+  background-color: var(--ark-surface-canvas);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-md);
+  cursor: copy;
+  text-align: left;
+  width: 100%;
+}
+.ds-swatch:hover { border-color: var(--ark-border-strong); background-color: var(--ark-surface-hover); }
+.ds-swatch__chip { flex: 0 0 40px; width: 40px; border-radius: var(--ark-radius-sm); border: 1px solid var(--ark-border-default); }
+.ds-swatch__info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.ds-swatch__name { font-family: var(--ark-font-mono); font-size: var(--ark-text-xs); color: var(--ark-text-primary); }
+.ds-swatch__value { font-size: var(--ark-text-xs); color: var(--ark-text-secondary); }
+.ds-swatch__use { font-size: var(--ark-text-2xs); color: var(--ark-text-tertiary); }
+
+.ds-spec { width: 100%; font-size: var(--ark-text-sm); }
+.ds-spec th {
+  text-align: left;
+  padding: var(--ark-space-2) var(--ark-space-3);
+  font-size: var(--ark-text-2xs);
+  font-weight: var(--ark-weight-medium);
+  letter-spacing: var(--ark-tracking-wide);
+  text-transform: uppercase;
+  color: var(--ark-text-secondary);
+  background-color: var(--ark-surface-subtle);
+  border-bottom: 1px solid var(--ark-border-default);
+}
+.ds-spec td { padding: var(--ark-space-2x5) var(--ark-space-3); border-bottom: 1px solid var(--ark-border-subtle); vertical-align: top; }
+.ds-spec tr:last-child td { border-bottom: 0; }
+.ds-spec code { font-size: var(--ark-text-xs); color: var(--ark-text-accent); }
+
+.ds-ratio { font-variant-numeric: tabular-nums; }
+.ds-pass { color: var(--ark-text-success); font-weight: var(--ark-weight-medium); }
+.ds-warn-text { color: var(--ark-text-warning); font-weight: var(--ark-weight-medium); }
+
+.ds-sample-row { display: flex; align-items: baseline; gap: var(--ark-space-4); padding: var(--ark-space-3) 0; border-bottom: 1px solid var(--ark-border-subtle); }
+.ds-sample-row:last-child { border-bottom: 0; }
+.ds-sample__meta { flex: 0 0 210px; display: flex; flex-direction: column; gap: 1px; }
+.ds-sample__code { font-family: var(--ark-font-mono); font-size: var(--ark-text-xs); color: var(--ark-text-accent); }
+.ds-sample__spec { font-size: var(--ark-text-xs); color: var(--ark-text-tertiary); }
+
+.ds-space-row { display: flex; align-items: center; gap: var(--ark-space-2); padding: var(--ark-space-1) 0; }
+.ds-space__bar { height: 10px; background-color: var(--ark-accent-subtle); border: 1px solid var(--ark-border-accent); border-radius: 2px; }
+.ds-space__label { width: 128px; font-family: var(--ark-font-mono); font-size: var(--ark-text-xs); color: var(--ark-text-secondary); }
+.ds-space__px { width: 48px; font-size: var(--ark-text-xs); color: var(--ark-text-tertiary); font-variant-numeric: tabular-nums; }
+
+.ds-state-caption { margin-top: var(--ark-space-2); font-size: var(--ark-text-xs); color: var(--ark-text-tertiary); }
+.ds-stack-lg > * + * { margin-top: var(--ark-space-4); }
+
+.ds-aside {
+  padding: var(--ark-space-4);
+  background-color: var(--ark-surface-subtle);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-md);
+}
+.ds-aside__title { font-size: var(--ark-text-sm); font-weight: var(--ark-weight-semibold); margin-bottom: var(--ark-space-1); }
+.ds-list { display: flex; flex-direction: column; gap: var(--ark-space-1x5); font-size: var(--ark-text-sm); color: var(--ark-text-secondary); }
+.ds-list li { position: relative; padding-left: var(--ark-space-4); line-height: var(--ark-leading-relaxed); }
+.ds-list li::before { content: ""; position: absolute; left: var(--ark-space-1); top: 8px; width: 4px; height: 4px; background-color: var(--ark-border-strong); border-radius: var(--ark-radius-full); }
+.ds-list code { white-space: nowrap; }
+
+@media (max-width: 900px) {
+  .ds-nav { display: none; }
+  .ds-main { padding: var(--ark-space-5) var(--ark-space-4) var(--ark-space-12); }
+  .ds-grid--2, .ds-grid--3 { grid-template-columns: minmax(0, 1fr); }
+  .ds-sample-row { flex-direction: column; gap: var(--ark-space-1); }
+  .ds-sample__meta { flex-basis: auto; }
+}
+</style>
+</head>
+
+<body class="ds-body">
+
+<a href="#tokens" class="ark-sr-only">Lompat ke isi</a>
+
+<nav class="ds-nav" aria-label="Bagian design system">
+  <div class="ds-nav__brand">
+    <span class="ark-title-card">ArsipKu DS</span>
+    <span class="ark-meta">v1.0 · 2026-10-28</span>
+  </div>
+  <ul class="ds-nav__list" id="ds-nav-list">
+    <li><a class="ds-nav__link" href="#prinsip">Prinsip</a></li>
+    <li class="ark-label-caps ds-nav__group">Dasar</li>
+    <li><a class="ds-nav__link" href="#tokens">Warna</a></li>
+    <li><a class="ds-nav__link" href="#kontras">Kontras</a></li>
+    <li><a class="ds-nav__link" href="#tipografi">Tipografi</a></li>
+    <li><a class="ds-nav__link" href="#ruang">Ruang &amp; skala</a></li>
+    <li class="ark-label-caps ds-nav__group">Komponen</li>
+    <li><a class="ds-nav__link" href="#tombol">Tombol</a></li>
+    <li><a class="ds-nav__link" href="#form">Form &amp; cari</a></li>
+    <li><a class="ds-nav__link" href="#menu">Menu</a></li>
+    <li><a class="ds-nav__link" href="#tabel">Tabel</a></li>
+    <li><a class="ds-nav__link" href="#badge">Badge</a></li>
+    <li><a class="ds-nav__link" href="#tab">Tab &amp; segmented</a></li>
+    <li><a class="ds-nav__link" href="#modal">Modal</a></li>
+    <li><a class="ds-nav__link" href="#toast">Toast</a></li>
+    <li><a class="ds-nav__link" href="#tooltip">Tooltip</a></li>
+    <li><a class="ds-nav__link" href="#kosong">Empty state</a></li>
+    <li><a class="ds-nav__link" href="#loading">Loading</a></li>
+    <li><a class="ds-nav__link" href="#breadcrumb">Breadcrumb</a></li>
+    <li><a class="ds-nav__link" href="#halaman">Komposisi datar</a></li>
+    <li class="ark-label-caps ds-nav__group">Bukti</li>
+    <li><a class="ds-nav__link" href="#komposisi">Komposisi halaman</a></li>
+    <li><a class="ds-nav__link" href="app-shell.html">Kerangka aplikasi &rarr;</a></li>
+    <li><a class="ds-nav__link" href="#aturan">Aturan pakai</a></li>
+  </ul>
+</nav>
+
+<main class="ds-main">
+<div class="ds-container">
+
+<header class="ds-page-head">
+  <div class="ds-page-head__row">
+    <div>
+      <p class="ark-label-caps">Design System · Enterprise SaaS</p>
+      <h1 class="ark-title-page" style="margin-top:6px">Bahasa visual ArsipKu</h1>
+      <p class="ark-title-sub" style="max-width:62ch">
+        Sistem netral-first untuk manajemen arsip digital. Seluruh nilai visual ada di token CSS,
+        komponen memakai atribut/ARIA untuk state-nya, dan halaman ini dimuat tanpa framework apa pun.
+      </p>
+    </div>
+    <div class="ark-row" style="gap:var(--ark-space-2)">
+      <button class="ark-btn ark-btn--secondary ark-btn--sm" type="button" data-toast="success"
+              data-toast-title="Pratinjau dimuat tanpa Tailwind"
+              data-toast-desc="Tidak ada CDN, tidak ada build step.">Periksa toast</button>
+    </div>
+  </div>
+</header>
+
+<!-- ================================================================ PRINSIP -->
+<section class="ds-section" id="prinsip">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Prinsip</h2>
+    <p class="ds-section__desc">Empat keputusan yang membuat seluruh sistem ini konsisten — dan yang membatasi godaan dekorasi.</p>
+  </div>
+  <div class="ds-grid ds-grid--2">
+    <div class="ds-aside">
+      <p class="ds-aside__title">Netral dulu, warna berarti</p>
+      <p class="ark-body" style="color:var(--ark-text-secondary)">
+        Putih dan abu-abu mengerjakan 95% tampilan. Satu aksen indigo hanya untuk aksi utama dan status terpilih.
+        Merah, hijau, kuning dipakai sebagai penanda, bukan sebagai latar besar.
+      </p>
+    </div>
+    <div class="ds-aside">
+      <p class="ds-aside__title">Konten adalah hierarki</p>
+      <p class="ark-body" style="color:var(--ark-text-secondary)">
+        Nama berkas, ukuran, dan tanggal yang memimpin — bukan judul bagian. Judul halaman 24px adalah ukuran
+        terbesar di halaman isi. Densitas baris 40px.
+      </p>
+    </div>
+    <div class="ds-aside">
+      <p class="ds-aside__title">State lewat atribut</p>
+      <p class="ark-body" style="color:var(--ark-text-secondary)">
+        <code>[aria-busy]</code>, <code>[aria-invalid]</code>, <code>[aria-selected]</code>,
+        <code>[aria-expanded]</code>, <code>[disabled]</code> — jadi tampilan tidak bisa tertinggal dari keadaan data.
+      </p>
+    </div>
+    <div class="ds-aside">
+      <p class="ds-aside__title">Kedalaman nyaris nol</p>
+      <p class="ark-body" style="color:var(--ark-text-secondary)">
+        Hierarki dikerjakan border 1px dan ruang, bukan bayangan. Bayangan hanya muncul pada lapisan yang benar-benar
+        melayang: menu, modal, toast. Tidak ada gradien, tidak ada blur.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== TOKENS -->
+<section class="ds-section" id="tokens">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Token warna</h2>
+    <p class="ds-section__desc">
+      Klik swatch untuk menyalin nama variabel. Nilai dipakai apa adanya dari spesifikasi palette netral-first;
+      tidak ada hex literal yang boleh muncul di berkas komponen.
+    </p>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Permukaan</p>
+    <div class="ds-grid ds-grid--4">
+      <button class="ds-swatch" type="button" data-copy="--ark-surface-canvas"><span class="ds-swatch__chip" style="background:#FFFFFF"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-surface-canvas</span><span class="ds-swatch__value">#FFFFFF</span><span class="ds-swatch__use">card, panel, modal</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-surface-app"><span class="ds-swatch__chip" style="background:#F8FAFC"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-surface-app</span><span class="ds-swatch__value">#F8FAFC</span><span class="ds-swatch__use">latar halaman</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-surface-subtle"><span class="ds-swatch__chip" style="background:#F3F4F6"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-surface-subtle</span><span class="ds-swatch__value">#F3F4F6</span><span class="ds-swatch__use">thead, blok metadata</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-surface-hover"><span class="ds-swatch__chip" style="background:#F3F4F6"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-surface-hover</span><span class="ds-swatch__value">#F3F4F6</span><span class="ds-swatch__use">hover baris &amp; item</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-surface-press"><span class="ds-swatch__chip" style="background:#E5E7EB"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-surface-press</span><span class="ds-swatch__value">#E5E7EB</span><span class="ds-swatch__use">:active</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-surface-selected"><span class="ds-swatch__chip" style="background:#EEF2FF"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-surface-selected</span><span class="ds-swatch__value">#EEF2FF</span><span class="ds-swatch__use">baris/item terpilih</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-surface-scrim"><span class="ds-swatch__chip" style="background:rgba(17,24,39,.55)"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-surface-scrim</span><span class="ds-swatch__value">rgba(17,24,39,.55)</span><span class="ds-swatch__use">latar modal</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-surface-inverse"><span class="ds-swatch__chip" style="background:#111827"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-surface-inverse</span><span class="ds-swatch__value">#111827</span><span class="ds-swatch__use">tooltip</span></span></button>
+    </div>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Teks &amp; border</p>
+    <div class="ds-grid ds-grid--4">
+      <button class="ds-swatch" type="button" data-copy="--ark-text-primary"><span class="ds-swatch__chip" style="background:#111827"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-text-primary</span><span class="ds-swatch__value">#111827 · 16.1:1</span><span class="ds-swatch__use">isi utama</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-text-secondary"><span class="ds-swatch__chip" style="background:#6B7280"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-text-secondary</span><span class="ds-swatch__value">#6B7280 · 4.8:1</span><span class="ds-swatch__use">meta, label seksi</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-text-tertiary"><span class="ds-swatch__chip" style="background:#9CA3AF"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-text-tertiary</span><span class="ds-swatch__value">#9CA3AF · 2.9:1</span><span class="ds-swatch__use">non-esensial saja</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-text-accent"><span class="ds-swatch__chip" style="background:#4338CA"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-text-accent</span><span class="ds-swatch__value">#4338CA · 7.4:1</span><span class="ds-swatch__use">tautan, teks aksi</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-border-subtle"><span class="ds-swatch__chip" style="background:#F1F5F9"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-border-subtle</span><span class="ds-swatch__value">#F1F5F9</span><span class="ds-swatch__use">pemisah internal</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-border-default"><span class="ds-swatch__chip" style="background:#E5E7EB"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-border-default</span><span class="ds-swatch__value">#E5E7EB</span><span class="ds-swatch__use">card, table, modal</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-border-strong"><span class="ds-swatch__chip" style="background:#D1D5DB"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-border-strong</span><span class="ds-swatch__value">#D1D5DB</span><span class="ds-swatch__use">border kontrol form</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-border-focus"><span class="ds-swatch__chip" style="background:#4F46E5"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-border-focus</span><span class="ds-swatch__value">#4F46E5</span><span class="ds-swatch__use">ring fokus</span></span></button>
+    </div>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Aksen &amp; semantik</p>
+    <div class="ds-grid ds-grid--4">
+      <button class="ds-swatch" type="button" data-copy="--ark-accent"><span class="ds-swatch__chip" style="background:#4F46E5"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-accent</span><span class="ds-swatch__value">#4F46E5</span><span class="ds-swatch__use">fill tombol primer</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-accent-hover"><span class="ds-swatch__chip" style="background:#4338CA"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-accent-hover</span><span class="ds-swatch__value">#4338CA</span><span class="ds-swatch__use">:hover primer</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-accent-subtle"><span class="ds-swatch__chip" style="background:#EEF2FF"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-accent-subtle</span><span class="ds-swatch__value">#EEF2FF</span><span class="ds-swatch__use">latar terpilih</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-danger"><span class="ds-swatch__chip" style="background:#DC2626"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-danger</span><span class="ds-swatch__value">#DC2626 · 4.9:1</span><span class="ds-swatch__use">hapus permanen</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-success"><span class="ds-swatch__chip" style="background:#15803D"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-success</span><span class="ds-swatch__value">#15803D · 5.0:1</span><span class="ds-swatch__use">terunggah, aktif</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-warning"><span class="ds-swatch__chip" style="background:#B45309"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-warning</span><span class="ds-swatch__value">#B45309 · 5.5:1</span><span class="ds-swatch__use">kuota &gt; 80%</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-danger-subtle"><span class="ds-swatch__chip" style="background:#FEF2F2"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-danger-subtle</span><span class="ds-swatch__value">#FEF2F2</span><span class="ds-swatch__use">latar pesan error</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-success-subtle"><span class="ds-swatch__chip" style="background:#F0FDF4"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-success-subtle</span><span class="ds-swatch__value">#F0FDF4</span><span class="ds-swatch__use">latar pesan sukses</span></span></button>
+    </div>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Hue tipe berkas</p>
+    <p class="ark-helper" style="margin-bottom:var(--ark-space-3)">
+      Sam persis dengan kelas yang dikirim <code>src/Helpers.php:getFileMeta()</code>
+      (rose/blue/emerald/amber/purple/slate) supaya pemindahan bertahap tidak mengubah arti warna di aplikasi yang berjalan.
+    </p>
+    <div class="ds-grid ds-grid--4">
+      <button class="ds-swatch" type="button" data-copy="--ark-hue-pdf-fg"><span class="ds-swatch__chip" style="background:#FFF1F2;border-color:#FECDD3"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-hue-pdf-*</span><span class="ds-swatch__value">#FFF1F2 / #BE123C</span><span class="ds-swatch__use">PDF</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-hue-doc-fg"><span class="ds-swatch__chip" style="background:#EFF6FF;border-color:#BFDBFE"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-hue-doc-*</span><span class="ds-swatch__value">#EFF6FF / #1D4ED8</span><span class="ds-swatch__use">Word</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-hue-sheet-fg"><span class="ds-swatch__chip" style="background:#ECFDF5;border-color:#A7F3D0"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-hue-sheet-*</span><span class="ds-swatch__value">#ECFDF5 / #047857</span><span class="ds-swatch__use">Spreadsheet</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-hue-image-fg"><span class="ds-swatch__chip" style="background:#FFFBEB;border-color:#FDE68A"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-hue-image-*</span><span class="ds-swatch__value">#FFFBEB / #B45309</span><span class="ds-swatch__use">Gambar</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-hue-zip-fg"><span class="ds-swatch__chip" style="background:#FAF5FF;border-color:#E9D5FF"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-hue-zip-*</span><span class="ds-swatch__value">#FAF5FF / #7E22CE</span><span class="ds-swatch__use">Arsip ZIP</span></span></button>
+      <button class="ds-swatch" type="button" data-copy="--ark-hue-plain-fg"><span class="ds-swatch__chip" style="background:#F3F4F6;border-color:#E5E7EB"></span><span class="ds-swatch__info"><span class="ds-swatch__name">--ark-hue-plain-*</span><span class="ds-swatch__value">#F3F4F6 / #4B5563</span><span class="ds-swatch__use">Teks / lainnya</span></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================= KONTRAS -->
+<section class="ds-section" id="kontras">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Kontras</h2>
+    <p class="ds-section__desc">Rasio dihitung terhadap latar tempat pasangan itu benar-benar dipakai. WCAG 2.2 AA: teks biasa 4.5:1, teks besar 3:1, batas komponen UI 3:1.</p>
+  </div>
+  <div class="ds-stage ds-stage--bare" style="overflow:auto">
+    <table class="ds-spec">
+      <thead><tr><th>Pasangan</th><th>Contoh</th><th>Rasio</th><th>AA</th><th>Catatan</th></tr></thead>
+      <tbody>
+        <tr><td><code>--ark-text-primary</code> pada putih</td><td><span style="color:#111827">Surat Perjanjian 2026</span></td><td class="ds-ratio">16.1:1</td><td class="ds-pass">Lolos</td><td>isi utama, judul</td></tr>
+        <tr><td><code>--ark-text-secondary</code> pada putih</td><td><span style="color:#6B7280">diperbarui 2 hari lalu</span></td><td class="ds-ratio">4.8:1</td><td class="ds-pass">Lolos</td><td>meta, label tabel</td></tr>
+        <tr><td><code>--ark-text-secondary</code> pada #F3F4F6</td><td><span style="color:#6B7280;background:#F3F4F6;padding:1px 4px;border-radius:3px">NAMA BERKAS</span></td><td class="ds-ratio">4.5:1</td><td class="ds-pass">Lolos (batas)</td><td>thead — jangan kecilkan lagi</td></tr>
+        <tr><td><code>--ark-text-accent</code> pada putih</td><td><span style="color:#4338CA">Pindahkan ke folder</span></td><td class="ds-ratio">7.4:1</td><td class="ds-pass">Lolos AAA</td><td>tautan &amp; teks aksi</td></tr>
+        <tr><td><code>--ark-on-accent</code> pada aksen</td><td><span style="color:#fff;background:#4F46E5;padding:1px 6px;border-radius:3px">Unggah</span></td><td class="ds-ratio">6.3:1</td><td class="ds-pass">Lolos</td><td>tombol primer</td></tr>
+        <tr><td><code>--ark-text-danger</code> pada putih</td><td><span style="color:#DC2626">Hapus permanen</span></td><td class="ds-ratio">4.9:1</td><td class="ds-pass">Lolos</td><td>label bahaya</td></tr>
+        <tr><td><code>--ark-text-success</code> pada putih</td><td><span style="color:#15803D">Tersimpan</span></td><td class="ds-ratio">5.0:1</td><td class="ds-pass">Lolos</td><td>status sukses</td></tr>
+        <tr><td><code>--ark-hue-pdf-fg</code> pada #FFF1F2</td><td><span style="color:#BE123C;background:#FFF1F2;padding:1px 6px;border-radius:3px">PDF</span></td><td class="ds-ratio">5.4:1</td><td class="ds-pass">Lolos</td><td>badge tipe berkas</td></tr>
+        <tr><td><code>--ark-text-tertiary</code> pada putih</td><td><span style="color:#9CA3AF">0 berkas</span></td><td class="ds-ratio">2.9:1</td><td class="ds-warn-text">Tidak lolos</td><td>HANYA dekoratif/non-esensial: placeholder, ikon, hitungan nol. Dilarang untuk instruksi.</td></tr>
+        <tr><td><code>--ark-border-default</code> pada putih</td><td><span style="display:inline-block;width:44px;height:16px;border:1px solid #E5E7EB;border-radius:4px"></span></td><td class="ds-ratio">1.3:1</td><td class="ds-warn-text">Tidak lolos</td><td>Batas komponen tidak boleh bergantung pada border: selalu ada label terlihat + ring fokus 6.3:1.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================== TIPOGRAFI -->
+<section class="ds-section" id="tipografi">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Tipografi</h2>
+    <p class="ds-section__desc">
+      Inter dengan fallback sistem. Baseline UI 14px, lantai absolut 11px. Tidak ada ukuran hero: judul halaman 24px
+      adalah puncaknya, dan angka metrik memakai ukuran yang sama. Setiap peran punya kelas — bukan elemen yang ditentukan ukurannya.
+    </p>
+  </div>
+
+  <div class="ds-stage">
+    <div class="ds-sample-row">
+      <div class="ds-sample__meta"><span class="ds-sample__code">.ark-title-page</span><span class="ds-sample__spec">24 / 600 / 1.25 · -0.013em</span></div>
+      <p class="ark-title-page">Semua Dokumen</p>
+    </div>
+    <div class="ds-sample-row">
+      <div class="ds-sample__meta"><span class="ds-sample__code">.ark-title-sub</span><span class="ds-sample__spec">13 / 400 / 1.55 · secondary</span></div>
+      <p class="ark-title-sub">148 arsip · 21,3 GB dari 50 GB terpakai</p>
+    </div>
+    <div class="ds-sample-row">
+      <div class="ds-sample__meta"><span class="ds-sample__code">.ark-title-section</span><span class="ds-sample__spec">16 / 600 / 1.4</span></div>
+      <p class="ark-title-section">Aktivitas terbaru</p>
+    </div>
+    <div class="ds-sample-row">
+      <div class="ds-sample__meta"><span class="ds-sample__code">.ark-title-card</span><span class="ds-sample__spec">15 / 600 / 1.4</span></div>
+      <p class="ark-title-card">Administrasi</p>
+    </div>
+    <div class="ds-sample-row">
+      <div class="ds-sample__meta"><span class="ds-sample__code">.ark-label</span><span class="ds-sample__spec">14 / 500 / 1.4</span></div>
+      <p class="ark-label">Nama berkas</p>
+    </div>
+    <div class="ds-sample-row">
+      <div class="ds-sample__meta"><span class="ds-sample__code">.ark-label-caps</span><span class="ds-sample__spec">11 / 500 / 1.4 · +0.06em</span></div>
+      <p class="ark-label-caps">Baru diunggah</p>
+    </div>
+    <div class="ds-sample-row">
+      <div class="ds-sample__meta"><span class="ds-sample__code">.ark-body</span><span class="ds-sample__spec">14 / 400 / 1.55</span></div>
+      <p class="ark-body">Dokumen yang dibagikan ke eksternal akan tetap dapat diakses lewat tautan hingga tanggal kedaluwarsa yang ditentukan.</p>
+    </div>
+    <div class="ds-sample-row">
+      <div class="ds-sample__meta"><span class="ds-sample__code">.ark-helper</span><span class="ds-sample__spec">12 / 400 / 1.55 · secondary</span></div>
+      <p class="ark-helper">Maksimum 25 MB per berkas. PDF, DOCX, XLSX, PNG, ZIP.</p>
+    </div>
+    <div class="ds-sample-row">
+      <div class="ds-sample__meta"><span class="ds-sample__code">.ark-meta</span><span class="ds-sample__spec">12 / 400 / 1.4 · secondary</span></div>
+      <p class="ark-meta">Administrasi · diperbarui 2 hari lalu oleh Ahmad Fauzi</p>
+    </div>
+    <div class="ds-sample-row">
+      <div class="ds-sample__meta"><span class="ds-sample__code">.ark-metric</span><span class="ds-sample__spec">24 / 600 · tabular-nums</span></div>
+      <p class="ark-metric">1.284</p>
+    </div>
+    <div class="ds-sample-row">
+      <div class="ds-sample__meta"><span class="ds-sample__code">.ark-kbd</span><span class="ds-sample__spec">11 / 500 + border</span></div>
+      <p class="ark-row" style="gap:8px"><kbd class="ark-kbd">Ctrl</kbd><kbd class="ark-kbd">K</kbd><span class="ark-helper">untuk mencari di seluruh workspace</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== RUANG -->
+<section class="ds-section" id="ruang">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Ruang, radius, elevasi, gerak</h2>
+    <p class="ds-section__desc">Semua jarak kelipatan 4px. Nilai 6px dan 10px tersedia untuk padding kontrol yang harus tetap genap terhadap tinggi kontrol.</p>
+  </div>
+
+  <div class="ds-grid ds-grid--2">
+    <div class="ds-block">
+      <p class="ark-label-caps ds-block__title">Skala ruang</p>
+      <div class="ds-stage">
+        <div class="ds-space-row"><span class="ds-space__label">--ark-space-1</span><span class="ds-space__bar" style="width:4px"></span><span class="ds-space__px">4</span></div>
+        <div class="ds-space-row"><span class="ds-space__label">--ark-space-1x5</span><span class="ds-space__bar" style="width:6px"></span><span class="ds-space__px">6</span></div>
+        <div class="ds-space-row"><span class="ds-space__label">--ark-space-2</span><span class="ds-space__bar" style="width:8px"></span><span class="ds-space__px">8</span></div>
+        <div class="ds-space-row"><span class="ds-space__label">--ark-space-2x5</span><span class="ds-space__bar" style="width:10px"></span><span class="ds-space__px">10</span></div>
+        <div class="ds-space-row"><span class="ds-space__label">--ark-space-3</span><span class="ds-space__bar" style="width:12px"></span><span class="ds-space__px">12</span></div>
+        <div class="ds-space-row"><span class="ds-space__label">--ark-space-4</span><span class="ds-space__bar" style="width:16px"></span><span class="ds-space__px">16</span></div>
+        <div class="ds-space-row"><span class="ds-space__label">--ark-space-5</span><span class="ds-space__bar" style="width:20px"></span><span class="ds-space__px">20</span></div>
+        <div class="ds-space-row"><span class="ds-space__label">--ark-space-6</span><span class="ds-space__bar" style="width:24px"></span><span class="ds-space__px">24</span></div>
+        <div class="ds-space-row"><span class="ds-space__label">--ark-space-8</span><span class="ds-space__bar" style="width:32px"></span><span class="ds-space__px">32</span></div>
+        <div class="ds-space-row"><span class="ds-space__label">--ark-space-12</span><span class="ds-space__bar" style="width:48px"></span><span class="ds-space__px">48</span></div>
+      </div>
+    </div>
+
+    <div class="ds-block">
+      <p class="ark-label-caps ds-block__title">Kontrol &amp; layout</p>
+      <div class="ds-stage ds-stage--bare" style="overflow:auto">
+        <table class="ds-spec">
+          <thead><tr><th>Token</th><th>Nilai</th><th>Dipakai untuk</th></tr></thead>
+          <tbody>
+            <tr><td><code>--ark-control-h-sm</code></td><td class="ds-ratio">28px</td><td>toolbar, filter dalam baris</td></tr>
+            <tr><td><code>--ark-control-h-md</code></td><td class="ds-ratio">32px</td><td>default tombol, input, select</td></tr>
+            <tr><td><code>--ark-control-h-lg</code></td><td class="ds-ratio">40px</td><td>aksi primer pada modal</td></tr>
+            <tr><td><code>--ark-target-min</code></td><td class="ds-ratio">44px</td><td>target sentuh (<code>pointer: coarse</code> menaikkan kontrol)</td></tr>
+            <tr><td><code>--ark-row-h</code></td><td class="ds-ratio">40px</td><td>baris tabel &amp; list arsip (52px pada <code>pointer: coarse</code>)</td></tr>
+            <tr><td><code>--ark-sidebar-w</code></td><td class="ds-ratio">248px</td><td>navigasi; 72px sebagai rail, drawer di bawah 1024px</td></tr>
+            <tr><td><code>--ark-header-h</code></td><td class="ds-ratio">56px</td><td>bar alat halaman (kontrol 32px + ruang 12px)</td></tr>
+            <tr><td><code>--ark-content-max</code></td><td class="ds-ratio">1240px</td><td>lebar isi halaman</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="ark-label-caps" style="margin:var(--ark-space-6) 0 var(--ark-space-2)">Skala non-ruang</p>
+      <div class="ds-stage ds-stage--bare" style="overflow:auto">
+        <table class="ds-spec">
+          <thead><tr><th>Aspek</th><th>Nilai</th></tr></thead>
+          <tbody>
+            <tr><td>Radius</td><td>3 · 4 · 6 (kontrol) · 8 (card/menu) · 12 (modal) · 9999</td></tr>
+            <tr><td>Elevasi</td><td>xs · sm (card) · md (menu) · lg (modal) · ring fokus 3px rgba(79,70,229,.20)</td></tr>
+            <tr><td>Durasi</td><td>80ms (state) · 120ms (hover) · 180ms (menu) · 240ms (modal)</td></tr>
+            <tr><td>Easing</td><td>standard <code>.2,0,0,1</code> · entrance <code>.16,1,.3,1</code> · exit <code>.4,0,1,1</code></td></tr>
+            <tr><td>Z-index</td><td>sticky 10 · dropdown 20 · drawer 30 · scrim 40 · modal 50 · toast 60 · tooltip 70</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== TOMBOL -->
+<section class="ds-section" id="tombol">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Tombol</h2>
+    <p class="ds-section__desc">
+      Satu tombol primer per tampilan. State dibaca dari pseudo-class dan atribut — arahkan kursor atau tekan Tab pada tiap tombol untuk
+      melihat hover, focus, dan active.
+    </p>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Varian</p>
+    <div class="ds-stage">
+      <div class="ark-cluster" style="gap:var(--ark-space-3)">
+        <button class="ark-btn ark-btn--primary" type="button"><span data-icon="upload"></span><span class="ark-btn__label">Unggah berkas</span></button>
+        <button class="ark-btn" type="button"><span data-icon="folder-plus"></span><span class="ark-btn__label">Folder baru</span></button>
+        <button class="ark-btn ark-btn--ghost" type="button"><span data-icon="filter"></span><span class="ark-btn__label">Filter</span></button>
+        <button class="ark-btn ark-btn--danger" type="button"><span data-icon="trash"></span><span class="ark-btn__label">Hapus permanen</span></button>
+        <button class="ark-btn ark-btn--danger-ghost" type="button">Batalkan langganan</button>
+        <button class="ark-btn ark-btn--link" type="button">Lihat detail paket</button>
+      </div>
+      <p class="ds-state-caption">primer · sekunder (default) · ghost · danger · danger-ghost · link</p>
+    </div>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Ukuran &amp; bentuk khusus</p>
+    <div class="ds-stage">
+      <div class="ark-cluster" style="gap:var(--ark-space-3)">
+        <button class="ark-btn ark-btn--primary ark-btn--lg" type="button">Simpan perubahan</button>
+        <button class="ark-btn ark-btn--primary" type="button">Simpan</button>
+        <button class="ark-btn ark-btn--primary ark-btn--sm" type="button">Simpan</button>
+        <span class="ds-vr" style="width:1px;height:24px;background:var(--ark-border-default)"></span>
+        <button class="ark-icon-btn" type="button" data-ark-tooltip="Ubah nama" aria-label="Ubah nama"><span data-icon="pencil"></span></button>
+        <button class="ark-icon-btn" type="button" data-ark-tooltip="Pindahkan" aria-label="Pindahkan"><span data-icon="move"></span></button>
+        <button class="ark-icon-btn ark-icon-btn--danger" type="button" data-ark-tooltip="Hapus" aria-label="Hapus"><span data-icon="trash"></span></button>
+        <button class="ark-icon-btn" type="button" aria-label="Aksi lainnya" aria-haspopup="menu" aria-expanded="false"><span data-icon="dots"></span></button>
+        <button class="ark-icon-btn" type="button" aria-pressed="true" aria-label="Favorit"><span data-icon="star-fill"></span></button>
+      </div>
+      <p class="ds-state-caption">lg 40 · md 32 · sm 28 — lalu tombol ikon 32/28 dan state <code>aria-pressed</code></p>
+    </div>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Loading &amp; disabled</p>
+    <div class="ds-stage">
+      <div class="ark-cluster" style="gap:var(--ark-space-3)">
+        <button class="ark-btn ark-btn--primary" type="button" aria-busy="true"><span class="ark-btn__label">Mengunggah…</span></button>
+        <button class="ark-btn" type="button" aria-busy="true"><span class="ark-btn__label">Menyimpan…</span></button>
+        <button class="ark-btn ark-btn--primary" type="button" disabled>Unggah berkas</button>
+        <button class="ark-btn" type="button" disabled>Folder baru</button>
+        <button class="ark-btn ark-btn--ghost" type="button" disabled>Filter</button>
+      </div>
+      <p class="ds-state-caption"><code>aria-busy="true"</code> menampilkan spinner tanpa mengubah lebar tombol; disabled memakai token <code>--ark-text-disabled</code> (4.0:1 pada subtle).</p>
+    </div>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Grup &amp; toolbar seleksi</p>
+    <div class="ds-stage">
+      <div class="ark-row" style="gap:var(--ark-space-6);flex-wrap:wrap">
+        <div class="ark-btn-group">
+          <button class="ark-btn ark-btn--sm" type="button" aria-pressed="true">Semua</button>
+          <button class="ark-btn ark-btn--sm" type="button" aria-pressed="false">Milik saya</button>
+          <button class="ark-btn ark-btn--sm" type="button" aria-pressed="false">Dibagikan</button>
+        </div>
+        <div class="ark-cluster" style="gap:var(--ark-space-2)">
+          <span class="ark-meta ark-num">3 dipilih</span>
+          <button class="ark-btn ark-btn--sm" type="button"><span data-icon="move"></span>Pindahkan</button>
+          <button class="ark-btn ark-btn--sm ark-btn--danger-ghost" type="button"><span data-icon="trash"></span>Ke Sampah</button>
+          <button class="ark-btn ark-btn--sm ark-btn--ghost" type="button">Batalkan</button>
+        </div>
+      </div>
+      <p class="ds-state-caption">Toolbar kontekstual: hitungan memakai <code>.ark-num</code> agar digit tidak melompat saat berubah.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ FORM & CARI -->
+<section class="ds-section" id="form">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Form, pilihan, pencarian</h2>
+    <p class="ds-section__desc">Label selalu terlihat (placeholder bukan pengganti label), pesan validasi terikat lewat <code>aria-describedby</code>, dan status dibaca dari <code>aria-invalid</code>.</p>
+  </div>
+
+  <div class="ds-grid ds-grid--2">
+    <div class="ds-block">
+      <p class="ark-label-caps ds-block__title">Field standar</p>
+      <div class="ds-stage ark-stack" style="gap:var(--ark-space-5)">
+        <div class="ark-field">
+          <div class="ark-field__label-row"><label class="ark-label" for="f-name">Nama berkas</label></div>
+          <input class="ark-input" id="f-name" type="text" value="Surat_Perjanjian_Kerjasama_2026.pdf">
+          <p class="ark-helper" id="f-name-help">Ekstensi dikunci agar berkas tetap dapat dipratinjau.</p>
+        </div>
+        <div class="ark-field">
+          <label class="ark-label" for="f-note">Catatan <span class="ark-field__optional">opsional</span></label>
+          <textarea class="ark-textarea" id="f-note" placeholder="Mis. dasar hukum, masa berlaku, penanggung jawab…"></textarea>
+        </div>
+        <div class="ark-field">
+          <label class="ark-label" for="f-folder">Folder tujuan</label>
+          <select class="ark-select" id="f-folder">
+            <option>Arsip Utama</option>
+            <option>Administrasi</option>
+            <option>Keuangan</option>
+            <option>Legal · Kontrak</option>
+            <option>SDM</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-block">
+      <p class="ark-label-caps ds-block__title">Status validasi</p>
+      <div class="ds-stage ark-stack" style="gap:var(--ark-space-5)">
+        <div class="ark-field">
+          <label class="ark-label" for="f-err">Nama workspace</label>
+          <input class="ark-input" id="f-err" type="text" value="pt abc solusindo" aria-invalid="true" aria-describedby="f-err-msg">
+          <p class="ark-field__message ark-field__message--error" id="f-err-msg"><span data-icon="x-circle"></span>Slug hanya boleh huruf kecil, angka, dan tanda hubung.</p>
+        </div>
+        <div class="ark-field">
+          <label class="ark-label" for="f-ok">Kapasitas baru</label>
+          <input class="ark-input" id="f-ok" type="text" value="120 GB" aria-describedby="f-ok-msg">
+          <p class="ark-field__message ark-field__message--success" id="f-ok-msg"><span data-icon="check-circle"></span>Mencakup 1.284 berkas yang sudah ada.</p>
+        </div>
+        <div class="ark-field">
+          <label class="ark-label" for="f-dis">Pemilik</label>
+          <input class="ark-input" id="f-dis" type="text" value="Ahmad Fauzi" disabled>
+          <p class="ark-field__message">Kepemilikan hanya bisa diubah pemilik workspace.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Pencarian &amp; pilihan berganda</p>
+    <div class="ds-stage">
+      <div class="ds-grid ds-grid--3" style="align-items:start">
+        <div class="ark-stack" style="gap:var(--ark-space-3)">
+          <div class="ark-search">
+            <span class="ark-search__icon" data-icon="search"></span>
+            <input class="ark-search__field" type="search" placeholder="Cari nama berkas, pemilik…" aria-label="Cari arsip" value="perjanjian">
+            <kbd class="ark-kbd ark-search__hint">Ctrl K</kbd>
+          </div>
+          <div class="ark-search ark-search--plain">
+            <span class="ark-search__icon" data-icon="search"></span>
+            <input class="ark-search__field" type="search" placeholder="Cangkir kosong" aria-label="Cari anggota">
+            <button class="ark-search__clear" type="button" aria-label="Bersihkan"><span data-icon="x"></span></button>
+          </div>
+          <select class="ark-select ark-select--sm ark-select--fit" aria-label="Rentang tanggal" style="min-width:168px;align-self:flex-start">
+            <option>30 hari terakhir</option>
+          </select>
+        </div>
+        <div class="ark-stack" style="gap:var(--ark-space-2x5)">
+          <label class="ark-check"><input class="ark-check__input" type="checkbox" checked><span class="ark-check__box"></span>PDF dapat dipratinjau</label>
+          <label class="ark-check"><input class="ark-check__input" type="checkbox"><span class="ark-check__box"></span>Termasuk di Sampah</label>
+          <label class="ark-check"><input class="ark-check__input" type="checkbox" disabled><span class="ark-check__box"></span>Hanya berkas saya (nonaktif)</label>
+          <span class="ark-check"><input class="ark-check__input" type="checkbox" tabindex="-1"><span class="ark-check__box" aria-checked="mixed"></span>Indeterminate (select-all)</span>
+        </div>
+        <div class="ark-dropzone" tabindex="0" role="button" aria-label="Seret berkas ke sini">
+          <span class="ark-dropzone__icon" data-icon="upload-cloud"></span>
+          <p class="ark-dropzone__title">Seret berkas ke sini</p>
+          <p class="ark-helper">atau <span style="color:var(--ark-text-accent);font-weight:500">pilih dari perangkat</span> · maks 25 MB per berkas</p>
+        </div>
+      </div>
+      <p class="ds-state-caption">Dropzone punya state <code>.is-dragover</code> (garis jadi solid, latar accent-subtle) dan dapat difokus lewat keyboard.</p>
+    </div>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Form halaman</p>
+    <div class="ds-stage">
+      <div class="ark-measure" style="max-width:560px">
+        <form class="ark-form" onsubmit="event.preventDefault()">
+          <div class="ark-field">
+            <label class="ark-label" for="demo-ws-name">Nama workspace</label>
+            <input class="ark-input" id="demo-ws-name" type="text" value="PT ABC Solusindo">
+            <p class="ark-helper">Nama ini tampil di sidebar, header, dan laporan.</p>
+          </div>
+          <div class="ark-field-grid">
+            <div class="ark-field">
+              <label class="ark-label" for="demo-ws-type">Kategori</label>
+              <select class="ark-select" id="demo-ws-type">
+                <option>Perusahaan / korporat</option>
+                <option>Personal / individu</option>
+              </select>
+            </div>
+            <div class="ark-field">
+              <label class="ark-label" for="demo-ws-slug">Slug URL</label>
+              <input class="ark-input ark-mono" id="demo-ws-slug" type="text" value="pt-abc-solusindo" disabled>
+            </div>
+          </div>
+          <div class="ark-form-actions">
+            <button type="button" class="ark-btn ark-btn--ghost">Batal</button>
+            <button type="submit" class="ark-btn ark-btn--primary">Simpan Perubahan</button>
+          </div>
+        </form>
+      </div>
+      <p class="ds-state-caption"><code>.ark-form</code> memegang jarak antar field (16px), <code>.ark-field-grid</code> menata pasangan field singkat jadi dua kolom lalu satu kolom di ≤640px, <code>.ark-form-actions</code> meratakan aksi ke kanan. <code>.ark-measure</code> hanya membatasi lebar baca — ritme vertikalnya tetap token yang sama.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================== MENU -->
+<section class="ds-section" id="menu">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Menu dropdown</h2>
+    <p class="ds-section__desc">Panel tersembunyi dengan <code>hidden</code>, pemicu membawa <code>aria-expanded</code>. Panah atas/bawah memindah fokus, Home/End melompat, Escape menutup dan mengembalikan fokus ke pemicu.</p>
+  </div>
+
+  <div class="ds-block">
+    <div class="ds-stage">
+      <div class="ark-row" style="gap:var(--ark-space-8);align-items:flex-start">
+        <div class="ark-menu-wrap">
+          <button class="ark-btn" type="button" data-menu="#menu-row" aria-haspopup="menu" aria-expanded="false" aria-controls="menu-row">
+            <span data-icon="dots-vertical"></span><span class="ark-btn__label">Aksi baris</span><span class="ark-menu__chevron" data-icon="chevron-down"></span>
+          </button>
+          <div class="ark-menu" id="menu-row" role="menu" hidden>
+            <p class="ark-menu__label">Berkas</p>
+            <button class="ark-menu__item" role="menuitem" type="button"><span data-icon="eye"></span><span class="ark-menu__text">Pratinjau</span><span class="ark-menu__shortcut">Enter</span></button>
+            <button class="ark-menu__item" role="menuitem" type="button"><span data-icon="download"></span><span class="ark-menu__text">Unduh</span></button>
+            <button class="ark-menu__item" role="menuitem" type="button"><span data-icon="pencil"></span><span class="ark-menu__text">Ubah nama</span><span class="ark-menu__shortcut">F2</span></button>
+            <button class="ark-menu__item" role="menuitem" type="button" aria-selected="true"><span data-icon="folder"></span><span class="ark-menu__text">Pindahkan…</span></button>
+            <div class="ark-menu__separator" role="separator"></div>
+            <p class="ark-menu__label">Berbagi</p>
+            <button class="ark-menu__item" role="menuitem" type="button"><span data-icon="link"></span><span class="ark-menu__text">Salin tautan</span></button>
+            <button class="ark-menu__item" role="menuitem" type="button"><span data-icon="versions"></span><span class="ark-menu__text">Riwayat versi</span><span class="ark-menu__meta">v4</span></button>
+            <div class="ark-menu__separator" role="separator"></div>
+            <button class="ark-menu__item ark-menu__item--danger" role="menuitem" type="button"><span data-icon="trash"></span><span class="ark-menu__text">Pindahkan ke Sampah</span></button>
+            <button class="ark-menu__item" role="menuitem" type="button" disabled><span data-icon="restore"></span><span class="ark-menu__text">Pulihkan</span></button>
+          </div>
+        </div>
+
+        <div class="ark-menu-wrap">
+          <button class="ark-btn ark-btn--ghost" type="button" data-menu="#menu-sort" aria-haspopup="menu" aria-expanded="false" aria-controls="menu-sort">
+            <span data-icon="sort"></span><span class="ark-btn__label">Urutkan: terbaru</span>
+          </button>
+          <div class="ark-menu ark-menu--right" id="menu-sort" role="menu" hidden>
+            <button class="ark-menu__item" role="menuitemradio" aria-selected="true" type="button"><span data-icon="check"></span><span class="ark-menu__text">Perbarui terbaru</span></button>
+            <button class="ark-menu__item" role="menuitemradio" aria-selected="false" type="button"><span class="ark-menu__text">Perbarui terlama</span></button>
+            <button class="ark-menu__item" role="menuitemradio" aria-selected="false" type="button"><span class="ark-menu__text">Nama A–Z</span></button>
+            <button class="ark-menu__item" role="menuitemradio" aria-selected="false" type="button"><span class="ark-menu__text">Ukuran terbesar</span></button>
+          </div>
+        </div>
+      </div>
+      <p class="ds-state-caption">Item berjadual (<code>menuitemradio</code>) memakai kolom centang tetap agar label tidak bergeser; <code>disabled</code> meredup tanpa menghilangkan item.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== TABEL -->
+<section class="ds-section" id="tabel">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Tabel arsip</h2>
+    <p class="ds-section__desc">Ini antarmuka utama produk. Baris 40px berisi 14px, header sticky 36px dengan micro-label, kolom sekunder hilang bertahap (1024px → 768px) alih-alih scroll horizontal. Kontainer datar: border + ruang, tanpa bayangan. Aksi baris selalu terlihat.</p>
+  </div>
+
+  <div class="ds-block">
+    <div class="ark-table-wrap" style="max-height:388px">
+      <table class="ark-table">
+        <caption class="ark-sr-only">Daftar dokumen di workspace PT ABC Solusindo</caption>
+        <thead class="ark-table__head">
+          <tr>
+            <th class="ark-th--check" scope="col"><span class="ark-check"><input class="ark-check__input" type="checkbox" id="select-all-demo" aria-label="Pilih semua"><span class="ark-check__box"></span></span></th>
+            <th scope="col"><button class="ark-sort" type="button" data-sort aria-sort="descending">Berkas<span class="ark-sort__caret" data-icon="chevron-down"></span></button></th>
+            <th scope="col" class="ark-table__col--hide-md">Tipe</th>
+            <th scope="col" class="ark-th--num">Ukuran</th>
+            <th scope="col" class="ark-table__col--hide-md">Pemilik</th>
+            <th scope="col"><button class="ark-sort" type="button" data-sort>Perbarui<span class="ark-sort__caret" data-icon="chevron-down"></span></button></th>
+            <th scope="col" class="ark-th--actions"><span class="ark-sr-only">Aksi</span></th>
+          </tr>
+        </thead>
+        <tbody class="ark-table__body">
+          <tr>
+            <td class="ark-td--check"><span class="ark-check"><input class="ark-check__input" type="checkbox" aria-label="Pilih Surat Perjanjian"><span class="ark-check__box"></span></span></td>
+            <td>
+              <div class="ark-file">
+                <span class="ark-file__glyph" data-icon="file-text"></span>
+                <span class="ark-file__main">
+                  <a class="ark-file__name ark-truncate" href="#tabel">Surat_Perjanjian_Kerjasama_2026.pdf</a>
+                  <span class="ark-file__meta">Legal · Kontrak · dibagikan eksternal</span>
+                </span>
+              </div>
+            </td>
+            <td class="ark-table__col--hide-md"><span class="ark-badge ark-badge--pdf">PDF</span></td>
+            <td class="ark-td--num">2,4 MB</td>
+            <td class="ark-table__col--hide-md">Ahmad Fauzi</td>
+            <td><span class="ark-meta">2 hari lalu</span></td>
+            <td class="ark-td--actions">
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Ubah nama"><span data-icon="pencil"></span></button>
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Unduh"><span data-icon="download"></span></button>
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Hapus"><span data-icon="trash"></span></button>
+            </td>
+          </tr>
+          <tr class="is-selected">
+            <td class="ark-td--check"><span class="ark-check"><input class="ark-check__input" type="checkbox" checked aria-label="Pilih Rekap Anggaran"><span class="ark-check__box"></span></span></td>
+            <td>
+              <div class="ark-file">
+                <span class="ark-file__glyph" data-icon="table"></span>
+                <span class="ark-file__main">
+                  <a class="ark-file__name ark-truncate" href="#tabel">Rekap_Anggaran_Q3_2026.xlsx</a>
+                  <span class="ark-file__meta">Keuangan · versi 4 · diperbarui oleh Sinta Dewi</span>
+                </span>
+              </div>
+            </td>
+            <td class="ark-table__col--hide-md"><span class="ark-badge ark-badge--sheet">XLSX</span></td>
+            <td class="ark-td--num">848 KB</td>
+            <td class="ark-table__col--hide-md">Sinta Dewi</td>
+            <td><span class="ark-meta">kemarin</span></td>
+            <td class="ark-td--actions">
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Ubah nama"><span data-icon="pencil"></span></button>
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Unduh"><span data-icon="download"></span></button>
+              <button class="ark-icon-btn ark-icon-btn--sm ark-icon-btn--danger" type="button" aria-label="Hapus"><span data-icon="trash"></span></button>
+            </td>
+          </tr>
+          <tr>
+            <td class="ark-td--check"><span class="ark-check"><input class="ark-check__input" type="checkbox" aria-label="Pilih Foto Kantor"><span class="ark-check__box"></span></span></td>
+            <td>
+              <div class="ark-file">
+                <span class="ark-file__glyph" data-icon="image"></span>
+                <span class="ark-file__main">
+                  <a class="ark-file__name ark-truncate" href="#tabel">Foto_Kantor_Pusat_Jakarta.png</a>
+                  <span class="ark-file__meta">Arsip Utama</span>
+                </span>
+              </div>
+            </td>
+            <td class="ark-table__col--hide-md"><span class="ark-badge ark-badge--image">PNG</span></td>
+            <td class="ark-td--num">5,1 MB</td>
+            <td class="ark-table__col--hide-md">Bagian Umum</td>
+            <td><span class="ark-meta">4 hari lalu</span></td>
+            <td class="ark-td--actions">
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Ubah nama"><span data-icon="pencil"></span></button>
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Unduh"><span data-icon="download"></span></button>
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Hapus"><span data-icon="trash"></span></button>
+            </td>
+          </tr>
+          <tr aria-busy="true">
+            <td class="ark-td--check"><span class="ark-spinner ark-spinner--sm"></span><span class="ark-sr-only">Menyinkronkan berkas</span></td>
+            <td>
+              <div class="ark-file">
+                <span class="ark-file__glyph" data-icon="archive"></span>
+                <span class="ark-file__main">
+                  <span class="ark-file__name ark-truncate">Arsip_2024_Backup.zip</span>
+                  <span class="ark-file__meta">Memverifikasi checksum…</span>
+                </span>
+              </div>
+            </td>
+            <td class="ark-table__col--hide-md"><span class="ark-badge ark-badge--zip">ZIP</span></td>
+            <td class="ark-td--num">1,2 GB</td>
+            <td class="ark-table__col--hide-md">Sistem</td>
+            <td><span class="ark-meta">baru saja</span></td>
+            <td class="ark-td--actions"><span class="ark-spinner ark-spinner--sm" style="margin-left:auto"></span></td>
+          </tr>
+          <tr>
+            <td class="ark-td--check"><span class="ark-check"><input class="ark-check__input" type="checkbox" aria-label="Pilih Notulen"><span class="ark-check__box"></span></span></td>
+            <td>
+              <div class="ark-file">
+                <span class="ark-file__glyph" data-icon="file-text"></span>
+                <span class="ark-file__main">
+                  <a class="ark-file__name ark-truncate" href="#tabel">Notulen_Rapat_Pengelola_2026-10.docx</a>
+                  <span class="ark-file__meta">SDM · pratinjau tidak tersedia untuk format ini</span>
+                </span>
+              </div>
+            </td>
+            <td class="ark-table__col--hide-md"><span class="ark-badge ark-badge--doc">DOCX</span></td>
+            <td class="ark-td--num">112 KB</td>
+            <td class="ark-table__col--hide-md">Rina Kusuma</td>
+            <td><span class="ark-meta">1 minggu lalu</span></td>
+            <td class="ark-td--actions">
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Ubah nama"><span data-icon="pencil"></span></button>
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Unduh"><span data-icon="download"></span></button>
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Hapus"><span data-icon="trash"></span></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="ds-state-caption">Baris kedua <code>.is-selected</code> (marker accent 2px di kiri), baris keempat <code>aria-busy="true"</code> sedang memuat tanpa mengubah tinggi baris.</p>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Keadaan kosong &amp; hasil nol</p>
+    <div class="ds-grid ds-grid--2">
+      <div class="ark-table-wrap"><div class="ark-empty ark-empty--inline">
+        <span class="ark-empty__icon" data-icon="folder"></span>
+        <div class="ark-stack" style="gap:2px">
+          <p class="ark-empty__title">Folder ini belum berisi berkas</p>
+          <p class="ark-helper">Unggah berkas atau pindahkan arsip dari folder lain.</p>
+          <div class="ark-empty__actions" style="justify-content:flex-start;margin-top:var(--ark-space-3)">
+            <button class="ark-btn ark-btn--primary ark-btn--sm" type="button"><span data-icon="upload"></span>Unggah</button>
+            <button class="ark-btn ark-btn--sm" type="button">Pindahkan berkas</button>
+          </div>
+        </div>
+      </div></div>
+      <div class="ark-table-wrap"><div class="ark-empty ark-empty--inline">
+        <span class="ark-empty__icon" data-icon="search"></span>
+        <div class="ark-stack" style="gap:2px">
+          <p class="ark-empty__title">Tidak ada hasil untuk “laporan audit”</p>
+          <p class="ark-helper">Coba kata kunci lain, atau perluas rentang tanggal.</p>
+          <p class="ark-empty__hint">Filter aktif: PDF · 30 hari terakhir · folder Legal</p>
+          <div class="ark-empty__actions" style="justify-content:flex-start;margin-top:var(--ark-space-3)">
+            <button class="ark-btn ark-btn--sm" type="button">Reset filter</button>
+          </div>
+        </div>
+      </div></div>
+    </div>
+    <p class="ds-state-caption">Hasil nol ≠ keadaan kosong: yang kedua selalu menyebut filter yang sedang aktif supaya pengguna tahu mengapa daftar kosong.</p>
+  </div>
+</section>
+
+<!-- ================================================================= BADGE -->
+<section class="ds-section" id="badge">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Badge &amp; status</h2>
+    <p class="ds-section__desc">Tinggi 20px, 11px sedang 500, latar lembut + border senada. Status selalu disertai teks — warna tidak pernah sendirian membawa makna.</p>
+  </div>
+  <div class="ds-block">
+    <div class="ds-stage ark-stack" style="gap:var(--ark-space-4)">
+      <div class="ark-cluster" style="gap:var(--ark-space-2)">
+        <span class="ark-badge ark-badge--neutral"><span class="ark-badge__dot"></span>Draf</span>
+        <span class="ark-badge ark-badge--success"><span class="ark-badge__dot"></span>Tersimpan</span>
+        <span class="ark-badge ark-badge--warning"><span class="ark-badge__dot"></span>Menunggu verifikasi</span>
+        <span class="ark-badge ark-badge--danger"><span class="ark-badge__dot"></span>Kuota penuh</span>
+        <span class="ark-badge ark-badge--accent"><span class="ark-badge__dot"></span>Dibagikan</span>
+      </div>
+      <div class="ark-cluster" style="gap:var(--ark-space-2)">
+        <span class="ark-badge ark-badge--pdf"><span data-icon="file-text"></span>PDF</span>
+        <span class="ark-badge ark-badge--doc"><span data-icon="file-text"></span>Word</span>
+        <span class="ark-badge ark-badge--sheet"><span data-icon="table"></span>Spreadsheet</span>
+        <span class="ark-badge ark-badge--image"><span data-icon="image"></span>Gambar</span>
+        <span class="ark-badge ark-badge--zip"><span data-icon="archive"></span>Arsip ZIP</span>
+        <span class="ark-badge ark-badge--plain"><span data-icon="file"></span>Teks</span>
+      </div>
+      <div class="ark-cluster" style="gap:var(--ark-space-2)">
+        <span class="ark-badge ark-badge--lg ark-badge--pill"><span class="ark-badge__dot"></span>Anggota aktif</span>
+        <span class="ark-badge ark-badge--lg"><span data-icon="shield"></span>Owner</span>
+        <span class="ark-badge"><span data-icon="users"></span>Editor</span>
+        <span class="ark-badge ark-badge--neutral">Viewer</span>
+        <span class="ark-badge ark-badge--count">128</span>
+        <span class="ark-badge ark-badge--count ark-badge--accent">4</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================== TAB -->
+<section class="ds-section" id="tab">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Tab &amp; segmented control</h2>
+    <p class="ds-section__desc">Tab memindahkan area konten (garis bawah 2px accent). Segmented dipakai untuk sakelar tunggal seperti Daftar/Kisi, dan meniru <code>#btn-view-list</code> / <code>#btn-view-grid</code> yang sudah ada.</p>
+  </div>
+  <div class="ds-block">
+    <div class="ds-stage ark-stack" style="gap:var(--ark-space-6)">
+      <div class="ark-tabs" role="tablist" aria-label="Area arsip">
+        <button class="ark-tab" role="tab" aria-selected="true" type="button" data-tab>Semua <span class="ark-tab__count">148</span></button>
+        <button class="ark-tab" role="tab" aria-selected="false" type="button" data-tab>Favorit <span class="ark-tab__count">12</span></button>
+        <button class="ark-tab" role="tab" aria-selected="false" type="button" data-tab>Baru diunggah</button>
+        <button class="ark-tab" role="tab" aria-selected="false" type="button" data-tab>Dibagikan</button>
+        <button class="ark-tab" role="tab" aria-selected="false" type="button" data-tab>Sampah</button>
+      </div>
+
+      <div class="ark-row" style="gap:var(--ark-space-4);flex-wrap:wrap">
+        <div class="ark-segmented" role="group" aria-label="Tampilan daftar">
+          <button class="ark-segmented__item" type="button" aria-pressed="true"><span data-icon="list"></span>Daftar</button>
+          <button class="ark-segmented__item" type="button" aria-pressed="false"><span data-icon="grid"></span>Kisi</button>
+        </div>
+        <div class="ark-segmented ark-segmented--sm" role="group" aria-label="Rentang waktu">
+          <button class="ark-segmented__item" type="button" aria-pressed="false">7 hari</button>
+          <button class="ark-segmented__item" type="button" aria-pressed="true">30 hari</button>
+          <button class="ark-segmented__item" type="button" aria-pressed="false">Setahun</button>
+        </div>
+      </div>
+    </div>
+    <p class="ds-state-caption">Bagian aktif segmented: latar putih + bayangan xs di atas rel abu — terbaca sebagai "terangkat" tanpa border tebal.</p>
+  </div>
+</section>
+
+<!-- ================================================================= MODAL -->
+<section class="ds-section" id="modal">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Modal</h2>
+    <p class="ds-section__desc">Header/body/footer dipisah border tipis; footer rata kanan, aksi destruktif di kiri. Fokus dipindah ke kontrol pertama, dikunci di dalam dialog, dan dikembalikan ke pemicu saat tertutup.</p>
+  </div>
+  <div class="ds-block">
+    <div class="ds-stage">
+      <div class="ark-cluster" style="gap:var(--ark-space-3)">
+        <button class="ark-btn ark-btn--primary" type="button" data-open-modal="#m-rename">Ubah nama berkas</button>
+        <button class="ark-btn" type="button" data-open-modal="#m-confirm">Hapus permanen</button>
+        <button class="ark-btn" type="button" data-open-modal="#m-detail">Detail &amp; metadata</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================= TOAST -->
+<section class="ds-section" id="toast">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Toast notifikasi</h2>
+    <p class="ds-section__desc">Kartu putih dengan garis 3px penanda jenis — bukan kartu berwarna penuh. Region memakai <code>aria-live="polite"</code>, kecuali kegagalan memakai <code>assertive</code>.</p>
+  </div>
+  <div class="ds-block">
+    <div class="ds-stage">
+      <div class="ark-cluster" style="gap:var(--ark-space-3)">
+        <button class="ark-btn ark-btn--sm" type="button" data-toast="success" data-toast-title="Dipindahkan ke Legal · Kontrak" data-toast-desc="3 berkas diperbarui.">Sukses</button>
+        <button class="ark-btn ark-btn--sm" type="button" data-toast="info" data-toast-title="Pratinjau disiapkan" data-toast-desc="Berkas 1,2 GB mungkin butuh beberapa saat.">Info</button>
+        <button class="ark-btn ark-btn--sm" type="button" data-toast="warning" data-toast-title="Kuota 86% terpakai" data-toast-desc="1,2 GB tersisa pada paket Enterprise.">Peringatan</button>
+        <button class="ark-btn ark-btn--sm ark-btn--danger-ghost" type="button" data-toast="danger" data-toast-title="Berkas melebihi 25 MB" data-toast-desc="Laporan_Audit_2026.pdf (41 MB) tidak diunggah.">Kegagalan</button>
+        <button class="ark-btn ark-btn--sm ark-btn--ghost" type="button" data-toast="danger" data-toast-title="Sesi berakhir" data-toast-desc="Masuk kembali untuk melanjutkan." data-toast-action="Masuk lagi">Dengan aksi</button>
+      </div>
+      <p class="ds-state-caption">Toast muncul 6 detik, bisa ditutup, dan hilang lebih cepat saat kursor berada di atasnya.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ TOOLTIP -->
+<section class="ds-section" id="tooltip">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Tooltip</h2>
+    <p class="ds-section__desc">Muncul saat hover dan <code>:focus-visible</code>, dengan tunda 120ms supaya tidak berkedip saat kursor melintas.</p>
+  </div>
+  <div class="ds-block">
+    <div class="ds-stage">
+      <div class="ark-cluster" style="gap:var(--ark-space-3)">
+        <button class="ark-btn" type="button" data-ark-tooltip="Ekspor pilihan sebagai ZIP">Arah atas (baku)</button>
+        <button class="ark-btn" type="button" data-ark-tooltip="Tersimpan di Legal · Kontrak" data-ark-tooltip-position="bottom">Arah bawah</button>
+        <button class="ark-icon-btn" type="button" data-ark-tooltip="Versi sebelumnya" data-ark-tooltip-position="left" aria-label="Versi"><span data-icon="versions"></span></button>
+        <button class="ark-icon-btn" type="button" data-ark-tooltip="Bagikan tautan aman" data-ark-tooltip-position="right" aria-label="Bagikan"><span data-icon="link"></span></button>
+      </div>
+      <p class="ds-state-caption">Isi <code>data-ark-tooltip</code> tidak boleh memuat instruksi wajib — gunakan untuk memperpendek label, bukan menggantikan.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================= KOSONG -->
+<section class="ds-section" id="kosong">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Empty state penuh</h2>
+    <p class="ds-section__desc">Dipakai saat halaman benar-benar belum berisi data (workspace baru, Sampah kosong). Sudah tercakup di bagian Tabel untuk varian inline.</p>
+  </div>
+  <div class="ds-block">
+    <div class="ark-empty">
+      <span class="ark-empty__icon" data-icon="upload-cloud"></span>
+      <p class="ark-empty__title">Belum ada berkas di workspace ini</p>
+      <p class="ark-empty__desc">Unggah berkas pertama, atau buat folder untuk memisahkan arsip berdasarkan bagian.</p>
+      <div class="ark-empty__actions">
+        <button class="ark-btn ark-btn--primary" type="button"><span data-icon="upload"></span>Unggah berkas pertama</button>
+        <button class="ark-btn" type="button"><span data-icon="folder-plus"></span>Buat folder</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ LOADING -->
+<section class="ds-section" id="loading">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Indikator muat</h2>
+    <p class="ds-section__desc">Spinner untuk aksi singkat, skeleton untuk muat awal (tata letak tidak melompat), progress bar saat durasi diketahui.</p>
+  </div>
+  <div class="ds-grid ds-grid--2">
+    <div class="ds-block">
+      <p class="ark-label-caps ds-block__title">Spinner &amp; skeleton</p>
+      <div class="ds-stage ark-stack" style="gap:var(--ark-space-5)">
+        <div class="ark-row" style="gap:var(--ark-space-5)">
+          <span class="ark-spinner ark-spinner--sm ark-spinner--accent" role="status" aria-label="Memuat"></span>
+          <span class="ark-spinner ark-spinner--accent" role="status" aria-label="Memuat"></span>
+          <span class="ark-spinner ark-spinner--lg ark-spinner--accent" role="status" aria-label="Memuat"></span>
+          <span class="ark-spinner" style="color:var(--ark-text-secondary)" role="status" aria-label="Memuat"></span>
+        </div>
+        <div class="ark-stack" style="gap:0;border:1px solid var(--ark-border-default);border-radius:var(--ark-radius-md);overflow:hidden">
+          <div class="ark-skeleton-line"><span class="ark-skeleton ark-skeleton--icon"></span><span class="ark-skeleton ark-skeleton--text" style="flex:2"></span><span class="ark-skeleton ark-skeleton--text" style="width:64px"></span></div>
+          <div class="ark-skeleton-line"><span class="ark-skeleton ark-skeleton--icon"></span><span class="ark-skeleton ark-skeleton--text" style="flex:3"></span><span class="ark-skeleton ark-skeleton--text" style="width:48px"></span></div>
+          <div class="ark-skeleton-line"><span class="ark-skeleton ark-skeleton--icon"></span><span class="ark-skeleton ark-skeleton--text" style="flex:1"></span><span class="ark-skeleton ark-skeleton--text" style="width:72px"></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ds-block">
+      <p class="ark-label-caps ds-block__title">Progress</p>
+      <div class="ds-stage ark-stack" style="gap:var(--ark-space-5)">
+        <div>
+          <div class="ark-progress-label"><span>Pengunggahan 3 berkas</span><span class="ark-progress-label__value">68%</span></div>
+          <div class="ark-progress" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100" style="--ark-progress-value:68%"><span class="ark-progress__bar"></span></div>
+        </div>
+        <div>
+          <div class="ark-progress-label"><span>Kapasitas workspace</span><span class="ark-progress-label__value">43,1 GB dari 50 GB</span></div>
+          <div class="ark-progress ark-progress--thin" role="progressbar" aria-valuenow="86" aria-valuemin="0" aria-valuemax="100" style="--ark-progress-value:86%"><span class="ark-progress__bar ark-progress__bar--warning"></span></div>
+        </div>
+        <div>
+          <div class="ark-progress-label"><span>Kuota terlampaui</span><span class="ark-progress-label__value" style="color:var(--ark-text-danger)">52 GB / 50 GB</span></div>
+          <div class="ark-progress ark-progress--thin" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="--ark-progress-value:100%"><span class="ark-progress__bar ark-progress__bar--danger"></span></div>
+        </div>
+        <div>
+          <div class="ark-progress-label"><span>Menyiarkan pratinjau</span><span>sedang diproses</span></div>
+          <div class="ark-progress" aria-busy="true" style="--ark-progress-value:40%"><span class="ark-progress__bar ark-progress__bar--indeterminate"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ BREADCRUMB -->
+<section class="ds-section" id="breadcrumb">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Breadcrumb</h2>
+    <p class="ds-section__desc">Akar selalu tampil; pada layar sempal item tengah ditutup, bukan dipotong di tengah. Item aktif memakai <code>aria-current="page"</code>.</p>
+  </div>
+  <div class="ds-block">
+    <div class="ds-stage ark-stack" style="gap:var(--ark-space-5)">
+      <nav class="ark-crumbs-nav" aria-label="Breadcrumb">
+        <ol class="ark-crumbs">
+          <li class="ark-crumbs__item"><a class="ark-crumbs__link" href="#breadcrumb"><span data-icon="home"></span>Arsip Utama</a></li>
+          <li class="ark-crumbs__sep ark-crumbs__sep--hide-sm" aria-hidden="true"><span data-icon="chevron-right"></span></li>
+          <li class="ark-crumbs__item ark-crumbs__item--hide-sm"><a class="ark-crumbs__link" href="#breadcrumb">Legal</a></li>
+          <li class="ark-crumbs__sep ark-crumbs__sep--hide-sm" aria-hidden="true"><span data-icon="chevron-right"></span></li>
+          <li class="ark-crumbs__item"><span class="ark-crumbs__current" aria-current="page">Kontrak</span></li>
+        </ol>
+      </nav>
+
+      <nav class="ark-crumbs-nav ark-crumbs--bar" aria-label="Breadcrumb dengan garis">
+        <ol class="ark-crumbs">
+          <li class="ark-crumbs__item"><a class="ark-crumbs__link" href="#breadcrumb"><span data-icon="home"></span>Arsip Utama</a></li>
+          <li class="ark-crumbs__sep" aria-hidden="true"><span data-icon="chevron-right"></span></li>
+          <li class="ark-crumbs__item"><a class="ark-crumbs__link" href="#breadcrumb">Arsip 2024 Backup.zip</a></li>
+          <li class="ark-crumbs__sep" aria-hidden="true"><span data-icon="chevron-right"></span></li>
+          <li class="ark-crumbs__item"><span class="ark-crumbs__current" aria-current="page">Legal · Kontrak · Perjanjian Kerjasama 2026</span></li>
+        </ol>
+      </nav>
+
+      <div class="ark-row" style="gap:var(--ark-space-2)">
+        <span class="ark-badge ark-badge--neutral">di dalam</span>
+        <ol class="ark-crumbs ark-crumbs--inline">
+          <li class="ark-crumbs__item"><a class="ark-crumbs__link" href="#breadcrumb">Keuangan</a></li>
+          <li class="ark-crumbs__sep" aria-hidden="true"><span data-icon="chevron-right"></span></li>
+          <li class="ark-crumbs__item"><span class="ark-crumbs__current">Q3</span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ HALAMAN -->
+<section class="ds-section" id="halaman">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Komposisi halaman datar</h2>
+    <p class="ds-section__desc">Primitif pembentuk halaman isi (<code>components/page.css</code>). Aturan main: halaman TIDAK dibangun dari tumpukan card. Yang boleh berpanel hanya lapisan melayang (menu, modal, toast) dan kontainer tabel — sisanya judul, ruang, dan separator hairline.</p>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Kepala halaman</p>
+    <div class="ds-stage">
+      <div class="ark-page-head">
+        <div class="ark-page-head__text">
+          <h3 class="ark-title-page">Beranda</h3>
+          <p class="ark-title-sub">148 arsip · 21,3 GB dari 50 GB · diperbarui 2 jam lalu</p>
+        </div>
+        <div class="ark-page-head__actions">
+          <button class="ark-btn" type="button"><span data-icon="folder-plus"></span><span class="ark-btn__label">Folder</span></button>
+          <button class="ark-btn ark-btn--primary ark-btn--lg" type="button"><span data-icon="upload"></span><span class="ark-btn__label">Unggah Dokumen</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Seksi + tile datar</p>
+    <div class="ds-stage ds-stage--tinted">
+      <div class="ark-section">
+        <div class="ark-section__head">
+          <h3 class="ark-section__title">Pintasan folder</h3>
+          <a class="ark-section__more" href="#halaman">Kelola folder</a>
+        </div>
+        <div class="ark-tile-grid">
+          <article class="ark-tile">
+            <div class="ark-tile__head">
+              <span class="ark-tile__icon" data-icon="folder"></span>
+              <div class="ark-tile__main">
+                <h4 class="ark-tile__name ark-truncate">Keuangan</h4>
+                <span class="ark-tile__meta">32 arsip · 6,4 GB</span>
+              </div>
+            </div>
+            <div class="ark-tile__actions">
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Bagikan Keuangan"><span data-icon="share"></span></button>
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Aksi Keuangan"><span data-icon="dots"></span></button>
+            </div>
+          </article>
+          <article class="ark-tile is-selected">
+            <div class="ark-tile__head">
+              <span class="ark-tile__icon" data-icon="folder"></span>
+              <div class="ark-tile__main">
+                <h4 class="ark-tile__name ark-truncate">Legal · Kontrak</h4>
+                <span class="ark-tile__meta">57 arsip · 2,1 GB</span>
+              </div>
+            </div>
+            <div class="ark-tile__actions">
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Bagikan Legal"><span data-icon="share"></span></button>
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Aksi Legal"><span data-icon="dots"></span></button>
+            </div>
+          </article>
+          <article class="ark-tile">
+            <div class="ark-tile__head">
+              <span class="ark-tile__icon" data-icon="hard-drive"></span>
+              <div class="ark-tile__main">
+                <h4 class="ark-tile__name ark-truncate">Arsip 2024</h4>
+                <span class="ark-tile__meta">812 arsip · 12,8 GB</span>
+              </div>
+            </div>
+            <div class="ark-tile__actions">
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Bagikan Arsip 2024"><span data-icon="share"></span></button>
+              <button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Aksi Arsip 2024"><span data-icon="dots"></span></button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Seksi berkuota + list aktivitas</p>
+    <div class="ds-stage">
+      <div class="ark-section ark-section--ruled">
+        <div class="ark-section__head">
+          <h3 class="ark-section__title">Aktivitas terbaru</h3>
+          <a class="ark-section__more" href="#halaman">Lihat semua</a>
+        </div>
+        <div class="ark-list ark-list--inset">
+          <a class="ark-list__row ark-list__row--link" href="#halaman">
+            <span class="ark-list__icon" data-icon="upload"></span>
+            <span class="ark-list__main">
+              <span class="ark-list__title">Faktur_Pelanggan_3391.pdf diunggah</span>
+              <span class="ark-list__meta">Ahmad Fauzi · Legal · Kontrak</span>
+            </span>
+            <span class="ark-list__end">09:14</span>
+          </a>
+          <a class="ark-list__row ark-list__row--link" href="#halaman">
+            <span class="ark-list__icon" data-icon="share"></span>
+            <span class="ark-list__main">
+              <span class="ark-list__title">Rekap_Anggaran_Q3_2026.xlsx dibagikan ke 2 orang</span>
+              <span class="ark-list__meta">Sinta Dewi · Keuangan</span>
+            </span>
+            <span class="ark-list__end">kemarin</span>
+          </a>
+          <a class="ark-list__row ark-list__row--link" href="#halaman">
+            <span class="ark-list__icon" data-icon="versions"></span>
+            <span class="ark-list__main">
+              <span class="ark-list__title">Kontrak_Vendor_UTAMA.pdf dipulihkan ke revisi 3</span>
+              <span class="ark-list__meta">Rangga Prasetya</span>
+            </span>
+            <span class="ark-list__end">2 hari lalu</span>
+          </a>
+          <div class="ark-list__row">
+            <span class="ark-list__icon" data-icon="trash"></span>
+            <span class="ark-list__main">
+              <span class="ark-list__title">Nota_Lima_Ribu.pdf dipindahkan ke tempat sampah</span>
+              <span class="ark-list__meta">Automatis · retensi 180 hari</span>
+            </span>
+            <span class="ark-list__end"><button class="ark-btn ark-btn--ghost ark-btn--sm" type="button">Batalkan</button></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ark-section">
+        <div class="ark-section__head">
+          <h3 class="ark-section__title">Penyimpanan</h3>
+          <span class="ark-section__hint">Kuota workspace 50 GB</span>
+        </div>
+        <div class="ark-list">
+          <div class="ark-list__row">
+            <span class="ark-meter ark-grow" style="--ark-meter-value:43%" role="progressbar" aria-valuenow="43" aria-valuemin="0" aria-valuemax="100" aria-valuetext="43,1 GB dari 50 GB terpakai">
+              <span class="ark-meter__label">Workspace</span>
+              <span class="ark-meter__track"><span class="ark-meter__fill"></span></span>
+              <span class="ark-meter__value">43,1 / 50 GB</span>
+            </span>
+          </div>
+          <div class="ark-list__row">
+            <span class="ark-meter is-warning ark-grow" style="--ark-meter-value:88%" role="progressbar" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100" aria-valuetext="12,8 GB dari 15 GB terpakai">
+              <span class="ark-meter__label">Arsip 2024</span>
+              <span class="ark-meter__track"><span class="ark-meter__fill"></span></span>
+              <span class="ark-meter__value">12,8 / 15 GB</span>
+            </span>
+          </div>
+          <div class="ark-list__row">
+            <span class="ark-meter is-critical ark-grow" style="--ark-meter-value:100%" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-valuetext="5,2 GB dari 5 GB — kuota terlampaui">
+              <span class="ark-meter__label">Lampiran email</span>
+              <span class="ark-meter__track"><span class="ark-meter__fill"></span></span>
+              <span class="ark-meter__value">5,2 / 5 GB</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Toolbar, chip, notice, split</p>
+    <div class="ds-stage ds-stage--tinted">
+      <div class="ark-toolbar">
+        <div class="ark-toolbar__group">
+          <div class="ark-search ark-toolbar__search">
+            <span class="ark-search__icon" data-icon="search"></span>
+            <input class="ark-search__field" type="search" placeholder="Cari dokumen..." aria-label="Cari dokumen">
+          </div>
+          <select class="ark-select ark-select--sm" style="width:auto" aria-label="Tipe berkas"><option>Semua tipe berkas</option><option>PDF</option></select>
+          <select class="ark-select ark-select--sm" style="width:auto" aria-label="Rentang waktu"><option>30 hari terakhir</option></select>
+        </div>
+        <div class="ark-toolbar__group">
+          <div class="ark-segmented ark-segmented--sm" role="group" aria-label="Tampilan daftar">
+            <button class="ark-segmented__item" type="button" aria-pressed="true"><span data-icon="list"></span>Daftar</button>
+            <button class="ark-segmented__item" type="button" aria-pressed="false"><span data-icon="layout-grid"></span>Kisi</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ark-cluster" style="gap:var(--ark-space-2)">
+        <span class="ark-badge ark-badge--neutral ark-chip">"laporan" <a href="#halaman" aria-label="Hapus kata kunci"><span data-icon="x"></span></a></span>
+        <span class="ark-badge ark-badge--neutral ark-chip">Tipe: PDF <a href="#halaman" aria-label="Hapus penyaring tipe"><span data-icon="x"></span></a></span>
+        <a class="ark-section__more" href="#halaman">Bersihkan semua</a>
+      </div>
+
+      <div class="ark-notice ark-notice--warning">
+        <span class="ark-notice__icon" data-icon="info"></span>
+        <span class="ark-notice__text"><strong>Retensi arsip:</strong> dokumen di sini tidak muncul di folder utama, tetapi masih tersimpan. Tekan <strong>Pulihkan dokumen</strong> untuk mengembalikannya.</span>
+      </div>
+
+      <div class="ark-split">
+        <section class="ark-section ark-section--ruled">
+          <div class="ark-section__head"><h3 class="ark-section__title">Aktivitas terkini</h3><a class="ark-section__more" href="#halaman">Lihat aktivitas</a></div>
+          <div class="ark-list ark-list--inset">
+            <div class="ark-list__row">
+              <span class="ark-avatar" aria-hidden="true">AF</span>
+              <span class="ark-list__main"><span class="ark-list__title"><strong>Ahmad Fauzi</strong> mengunggah Faktur_3391.pdf</span></span>
+              <span class="ark-list__end">2 jam lalu</span>
+            </div>
+            <div class="ark-list__row">
+              <span class="ark-avatar" aria-hidden="true">SD</span>
+              <span class="ark-list__main"><span class="ark-list__title"><strong>Sinta Dewi</strong> membagikan Rekap_Q3.xlsx</span></span>
+              <span class="ark-list__end">kemarin</span>
+            </div>
+          </div>
+        </section>
+        <section class="ark-section ark-section--ruled">
+          <div class="ark-section__head"><h3 class="ark-section__title">Penyimpanan</h3><a class="ark-section__more" href="#halaman">Kelola kuota</a></div>
+          <div class="ark-list ark-list--inset">
+            <div class="ark-list__row">
+              <span class="ark-meter is-warning ark-grow" style="--ark-meter-value:88%" role="progressbar" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100" aria-valuetext="12,8 GB dari 15 GB terpakai">
+                <span class="ark-meter__label">Terpakai</span>
+                <span class="ark-meter__track"><span class="ark-meter__fill"></span></span>
+                <span class="ark-meter__value ark-num">12,8 / 15 GB</span>
+              </span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-block">
+    <p class="ark-label-caps ds-block__title">Kontrak</p>
+    <table class="ds-spec">
+      <thead><tr><th>Kelas</th><th>Komposisi</th><th>Aturan</th></tr></thead>
+      <tbody>
+        <tr><td><code>.ark-page-head</code></td><td><code>__text</code> (judul 24/600 + <code>.ark-title-sub</code>) · <code>__actions</code></td><td>Tanpa border, tanpa card, tanpa breadcrumb ganda. Aksi primer maksimal satu, di kanan, tinggi 40 (<code>--lg</code>) — kecuali head yang juga memuat pencarian: di situ semua kontrol setinggi 32 agar baris tidak berlapis.</td></tr>
+        <tr><td><code>.ark-section</code></td><td><code>__head</code> (judul 16/600 + <code>__more</code> / <code>__hint</code>) lalu isi</td><td>Pemisah default = ruang; <code>--ruled</code> menambah hairline hanya bila seksi langsung berisi list/tabel. Seksi tidak memberi margin sendiri — jarak antar blok dimiliki <code>.ark-content__body</code> (24px). Tombol yang berdiri langsung di dalamnya di-<code>align-self:flex-start</code> agar tidak melebar.</td></tr>
+        <tr><td><code>.ark-list__row</code></td><td>ikon 16 netral · <code>__main</code> (14/500 + meta 12) · <code>__end</code></td><td>min-height <code>--ark-row-h</code> (40px; 52px pada sentuh). Pemisah baris = <code>border-top --ark-border-subtle</code>, bukan latar selang-seling.</td></tr>
+        <tr><td><code>.ark-list__row--link</code></td><td><code>&lt;a&gt;</code> atau <code>&lt;button&gt;</code> sebaris penuh</td><td>Hover = <code>--ark-surface-hover</code> saja. Dilarang translate/scale/bayangan. <code>--inset</code> melebarkan area sentuh ke tepi kolom.</td></tr>
+        <tr><td><code>.ark-meter</code></td><td><code>__label</code> · <code>__track</code> (4px) · <code>__value</code></td><td>Nilai lewat <code>--ark-meter-value</code>; state <code>.is-warning</code> &gt; 80%, <code>.is-critical</code> penuh. Wajib <code>role="progressbar"</code> + <code>aria-valuetext</code>. Bukan kartu, bukan donat.</td></tr>
+        <tr><td><code>.ark-tile</code></td><td><code>__head</code> · <code>__main</code> · <code>__actions</code></td><td>Satu border <code>--ark-border-default</code>, radius <code>lg</code>, padding <code>--ark-pad-card</code>, tanpa bayangan; hover &amp; <code>.is-selected</code> hanya mengubah border/latar. Lebar kolom <code>minmax(--ark-tile-min, 1fr)</code>.</td></tr>
+        <tr><td><code>.ark-toolbar</code></td><td><code>__group</code> · <code>__search</code> (260px)</td><td>Datar: tanpa pembungkus card, tanpa border. Isi kontrolnya <code>ark-select--sm</code> (28) dan <code>ark-segmented--sm</code> supaya tinggi baris tetap 32.</td></tr>
+        <tr><td><code>.ark-chip</code></td><td><code>.ark-badge--neutral</code> + <code>&lt;a&gt;</code>/<code>&lt;button&gt;</code> pembuang</td><td>Hanya mengatur warna kontrol pembuang (tertiary → primary saat hover). Bentuk dan tinggi tetap milik badge; ikon <code>x</code> 12px.</td></tr>
+        <tr><td><code>.ark-notice</code></td><td><code>__icon</code> (16, garis) · <code>__text</code></td><td>Hairline + <code>--ark-surface-subtle</code>, radius <code>md</code>. <code>--warning</code> / <code>--danger</code> / <code>--success</code> memakai token <code>*-subtle</code> + <code>*-border</code>; warna hanya menandai tingkat risiko, bukan dekorasi.</td></tr>
+        <tr><td><code>.ark-split</code></td><td>dua <code>.ark-section</code></td><td>Grid <code>1.6fr / 1fr</code>, gap 16; satu kolom di bawah 1024px. Ritme, bukan permukaan.</td></tr>
+        <tr><td><code>.ark-measure</code></td><td>pembungkus blok halaman (form, tabel, notice)</td><td>Batas lebar baca 56rem untuk halaman yang dibaca, bukan dipindai. Flex column dengan gap <code>--ark-gap-stack-lg</code> yang sama, jadi ritme vertikal tidak berubah. Hanya boleh satu di halaman, dan tidak membungkus card.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================= KOMPOSISI -->
+<section class="ds-section" id="komposisi">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Komposisi: halaman dokumen</h2>
+    <p class="ds-section__desc">Semua bagian di bawah dirakit hanya dari komponen di atas — bukti bahwa sistem ini konsisten ketika bertemu nyata, bukan saat berdiri sendiri.</p>
+  </div>
+
+  <div class="ds-stage ds-stage--tinted">
+    <!-- Header halaman -->
+    <nav class="ark-crumbs-nav" aria-label="Breadcrumb">
+      <ol class="ark-crumbs" style="margin-bottom:var(--ark-space-3)">
+        <li class="ark-crumbs__item"><a class="ark-crumbs__link" href="#komposisi"><span data-icon="home"></span>Arsip Utama</a></li>
+        <li class="ark-crumbs__sep" aria-hidden="true"><span data-icon="chevron-right"></span></li>
+        <li class="ark-crumbs__item"><span class="ark-crumbs__current" aria-current="page">Keuangan</span></li>
+      </ol>
+    </nav>
+    <div class="ark-between" style="align-items:flex-start;gap:var(--ark-space-4);flex-wrap:wrap;margin-bottom:var(--ark-space-5)">
+      <div class="ark-stack" style="gap:2px">
+        <h3 class="ark-title-page">Keuangan</h3>
+        <p class="ark-title-sub">32 arsip · 6,4 GB · diperbarui 2 jam lalu</p>
+      </div>
+      <div class="ark-row" style="gap:var(--ark-space-2)">
+        <div class="ark-search" style="width:220px">
+          <span class="ark-search__icon" data-icon="search"></span>
+          <input class="ark-search__field" type="search" placeholder="Cari di folder ini" aria-label="Cari di folder ini">
+        </div>
+        <button class="ark-btn" type="button"><span data-icon="folder-plus"></span><span class="ark-btn__label">Folder</span></button>
+        <button class="ark-btn ark-btn--primary" type="button"><span data-icon="upload"></span><span class="ark-btn__label">Unggah</span></button>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="ark-between" style="gap:var(--ark-space-3);margin-bottom:var(--ark-space-3);flex-wrap:wrap">
+      <div class="ark-cluster" style="gap:var(--ark-space-2)">
+        <select class="ark-select ark-select--sm" style="width:auto" aria-label="Tipe berkas"><option>Semua tipe</option></select>
+        <select class="ark-select ark-select--sm" style="width:auto" aria-label="Rentang tanggal"><option>30 hari terakhir</option></select>
+        <select class="ark-select ark-select--sm" style="width:auto" aria-label="Pemilik"><option>Semua pemilik</option></select>
+      </div>
+      <div class="ark-row" style="gap:var(--ark-space-3)">
+        <span class="ark-meta ark-num">32 arsip</span>
+        <div class="ark-segmented ark-segmented--sm" role="group" aria-label="Tampilan">
+          <button class="ark-segmented__item" type="button" aria-pressed="true"><span data-icon="list"></span>Daftar</button>
+          <button class="ark-segmented__item" type="button" aria-pressed="false"><span data-icon="grid"></span>Kisi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel -->
+    <div class="ark-table-wrap">
+      <table class="ark-table">
+        <thead class="ark-table__head">
+          <tr>
+            <th class="ark-th--check" scope="col"><span class="ark-sr-only">Pilih semua</span></th>
+            <th scope="col">Berkas</th>
+            <th scope="col" class="ark-th--num">Ukuran</th>
+            <th scope="col" class="ark-table__col--hide-md">Pemilik</th>
+            <th scope="col">Perbarui</th>
+            <th scope="col" class="ark-th--actions"><span class="ark-sr-only">Aksi</span></th>
+          </tr>
+        </thead>
+        <tbody class="ark-table__body">
+          <tr>
+            <td></td>
+            <td><div class="ark-file"><span class="ark-file__glyph" data-icon="table"></span><span class="ark-file__main"><a class="ark-file__name ark-truncate" href="#komposisi">Rekap_Anggaran_Q3_2026.xlsx</a><span class="ark-file__meta">Revisi 4 · dibagikan ke 2 orang</span></span></div></td>
+            <td class="ark-td--num">848 KB</td>
+            <td class="ark-table__col--hide-md">Sinta Dewi</td>
+            <td><span class="ark-meta">kemarin</span></td>
+            <td class="ark-td--actions"><button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Unduh"><span data-icon="download"></span></button><button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Aksi"><span data-icon="dots"></span></button></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td><div class="ark-file"><span class="ark-file__glyph" data-icon="file-text"></span><span class="ark-file__main"><a class="ark-file__name ark-truncate" href="#komposisi">Faktur_Pelanggan_3391.pdf</a><span class="ark-file__meta">Legal · Kontrak</span></span></div></td>
+            <td class="ark-td--num">124 KB</td>
+            <td class="ark-table__col--hide-md">Ahmad Fauzi</td>
+            <td><span class="ark-meta">3 hari lalu</span></td>
+            <td class="ark-td--actions"><button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Unduh"><span data-icon="download"></span></button><button class="ark-icon-btn ark-icon-btn--sm" type="button" aria-label="Aksi"><span data-icon="dots"></span></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Kapasitas -->
+    <div class="ds-stage" style="margin-top:var(--ark-space-4)">
+      <div class="ark-progress-label"><span>Kapasitas Keuangan · 6,4 GB</span><span class="ark-progress-label__value">13% dari kuota workspace</span></div>
+      <div class="ark-progress" role="progressbar" aria-valuenow="13" aria-valuemin="0" aria-valuemax="100" style="--ark-progress-value:13%"><span class="ark-progress__bar"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================= ATURAN -->
+<section class="ds-section" id="aturan">
+  <div class="ds-section__head">
+    <h2 class="ark-title-section">Aturan pakai</h2>
+    <p class="ds-section__desc">Enam aturan yang menjaga konsistensi saat halaman aplikasi ikut dipindahkan.</p>
+  </div>
+  <div class="ds-grid ds-grid--2">
+    <ul class="ds-list">
+      <li>Nilai visual selalu lewat token. Tidak ada hex, px, atau ms literal di berkas komponen.</li>
+      <li>Satu <code>.ark-btn--primary</code> per tampilan; sisanya sekunder atau ghost.</li>
+      <li>State dari atribut/ARIA, bukan kelas baru. Kelas state hanya untuk hal yang tidak bisa diwakili ARIA (<code>.is-selected</code>, <code>.is-dragover</code>).</li>
+      <li>Semua kontrol form punya label terlihat; pesan validasi terikat <code>aria-describedby</code> dan tidak hanya berubah warna.</li>
+      <li>Kolom sekunder hilang bertahap lewat <code>--hide-md</code> / <code>--hide-sm</code>, bukan scroll horizontal pada mobile.</li>
+      <li>Teks minimum 11px, dan hanya untuk label UPPERCASE atau counter — isi terkecil 12px.</li>
+    </ul>
+    <ul class="ds-list">
+      <li>Ikon selalu berpasangan dengan teks atau <code>aria-label</code>; satu registry <code>assets/js/icons.js</code>, garis 1.75, currentColor — 18px nav, 16px toolbar/tabel, 28px empty state.</li>
+      <li>Aksi baris selalu terlihat (bukan hover-only) agar keyboard dan sentuh tidak buta.</li>
+      <li>Prioritas z-index hanya lewat token; tidak ada <code>z-[9999]</code> baru.</li>
+      <li>Gerak singkat dan fungsional: 80–240ms, tidak ada parallax atau gradien berjalan.</li>
+      <li>Komponen baru = berkas baru di <code>assets/css/components/</code> + contoh di halaman ini + kontrak di <code>docs/design-system.md</code>.</li>
+      <li><code>--ark-text-tertiary</code> dan border tipis tidak boleh membawa informasi wajib.</li>
+    </ul>
+  </div>
+</section>
+
+</div>
+</main>
+
+<!-- Toast region: id sama dengan aplikasi agar #toast-container bisa dipakai langsung -->
+<div class="ark-toast-region" id="toast-container" role="status" aria-live="polite"></div>
+
+<!-- =============================================================== MODALS -->
+<div class="ark-scrim" id="m-rename" hidden>
+  <div class="ark-modal ark-modal--sm" role="dialog" aria-modal="true" aria-labelledby="m-rename-t">
+    <div class="ark-modal__header">
+      <div class="ark-modal__titles">
+        <h4 class="ark-modal__title" id="m-rename-t">Ubah nama berkas</h4>
+        <p class="ark-modal__subtitle">Ekstensi dikunci agar berkas tetap dapat dipratinjau.</p>
+      </div>
+      <button class="ark-icon-btn ark-modal__close" type="button" data-close-modal aria-label="Tutup"><span data-icon="x"></span></button>
+    </div>
+    <div class="ark-modal__body">
+      <div class="ark-field">
+        <label class="ark-label" for="rn-1">Nama berkas</label>
+        <input class="ark-input" id="rn-1" type="text" value="Surat_Perjanjian_Kerjasama_2026" data-autofocus>
+        <p class="ark-helper">Ekstensi .pdf tidak dapat diubah dari sini.</p>
+      </div>
+    </div>
+    <div class="ark-modal__footer">
+      <button class="ark-btn" type="button" data-close-modal>Batal</button>
+      <button class="ark-btn ark-btn--primary" type="button" data-close-modal data-toast="success" data-toast-title="Nama berkas diperbarui">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="ark-scrim" id="m-confirm" hidden>
+  <div class="ark-modal ark-modal--sm" role="alertdialog" aria-modal="true" aria-labelledby="m-confirm-t" aria-describedby="m-confirm-d">
+    <div class="ark-modal__header">
+      <span class="ark-modal__alert-icon" data-icon="alert"></span>
+      <div class="ark-modal__titles">
+        <h4 class="ark-modal__title" id="m-confirm-t">Hapus permanen?</h4>
+      </div>
+      <button class="ark-icon-btn ark-modal__close" type="button" data-close-modal aria-label="Tutup"><span data-icon="x"></span></button>
+    </div>
+    <div class="ark-modal__body">
+      <p id="m-confirm-d" class="ark-body">Berkas <strong>Rekap_Anggaran_Q3_2026.xlsx</strong> dan 4 versinya akan dihapus dari penyimpanan. Riwayat aktivitas tetap mencatat penghapusan ini.</p>
+    </div>
+    <div class="ark-modal__footer ark-modal__footer--split">
+      <p class="ark-modal__note">Tidak dapat dibatalkan</p>
+      <div class="ark-modal__footer-actions">
+        <button class="ark-btn" type="button" data-close-modal>Batalkan</button>
+        <button class="ark-btn ark-btn--danger" type="button" data-close-modal data-toast="danger" data-toast-title="Berkas dihapus permanen">Hapus permanen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ark-scrim" id="m-detail" hidden>
+  <div class="ark-modal ark-modal--lg" role="dialog" aria-modal="true" aria-labelledby="m-detail-t">
+    <div class="ark-modal__header">
+      <div class="ark-modal__titles">
+        <h4 class="ark-modal__title" id="m-detail-t">Faktur_Pelanggan_3391.pdf</h4>
+        <p class="ark-modal__subtitle">Legal · Kontrak · versi 4</p>
+      </div>
+      <button class="ark-icon-btn ark-modal__close" type="button" data-close-modal aria-label="Tutup"><span data-icon="x"></span></button>
+    </div>
+    <div class="ark-modal__body ark-modal__body--flush">
+      <div class="ark-table-wrap" style="border:0;border-radius:0;box-shadow:none">
+        <table class="ark-table ark-table--compact">
+          <tbody class="ark-table__body">
+            <tr><td style="width:180px" class="ark-meta">Ukuran</td><td class="ark-num">124 KB</td></tr>
+            <tr><td class="ark-meta">Pemilik</td><td>Ahmad Fauzi · <span class="ark-badge">Editor</span></td></tr>
+            <tr><td class="ark-meta">Diunggah</td><td>12 Oktober 2026 · 09:14</td></tr>
+            <tr><td class="ark-meta">Tipe MIME</td><td><code>application/pdf</code></td></tr>
+            <tr><td class="ark-meta">Berbagi</td><td><span class="ark-badge ark-badge--accent"><span class="ark-badge__dot"></span>Tautan aktif · kedaluwarsa 30 hari</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="ark-modal__footer">
+      <button class="ark-btn" type="button" data-close-modal>Tutup</button>
+      <button class="ark-btn ark-btn--primary" type="button"><span data-icon="download"></span><span class="ark-btn__label">Unduh</span></button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/icons.js"></script>
+<script src="../assets/js/design-system.js"></script>
+</body>
+</html>

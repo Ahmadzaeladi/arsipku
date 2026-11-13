@@ -1,0 +1,90 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: BADGE
+   --------------------------------------------------------------------------
+   Dua keluarga:
+   1. Status  .ark-badge--neutral|accent|success|warning|danger
+   2. Tipe berkas .ark-badge--pdf|doc|sheet|image|zip|plain
+      (hue-nya identik dengan kelas yang dikirim src/Helpers.php:getFileMeta,
+       jadi adopsi tidak mengubah arti warna di aplikasi yang berjalan)
+   ========================================================================== */
+
+.ark-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ark-space-1);
+  height: 20px;
+  padding: 0 var(--ark-space-1x5);
+  font-size: var(--ark-text-2xs);
+  font-weight: var(--ark-weight-medium);
+  line-height: 1;
+  letter-spacing: var(--ark-tracking-normal);
+  white-space: nowrap;
+  color: var(--ark-hue-plain-fg);
+  background-color: var(--ark-hue-plain-bg);
+  border: 1px solid var(--ark-hue-plain-border);
+  border-radius: var(--ark-radius-sm);
+}
+
+.ark-badge svg { width: 12px; height: 12px; opacity: 0.9; }
+
+/* --- Status ------------------------------------------------------------- */
+.ark-badge--neutral {
+  color: var(--ark-text-secondary);
+  background-color: var(--ark-surface-subtle);
+  border-color: var(--ark-border-default);
+}
+.ark-badge--accent {
+  color: var(--ark-text-accent);
+  background-color: var(--ark-accent-subtle);
+  border-color: var(--ark-border-accent);
+}
+.ark-badge--success {
+  color: var(--ark-text-success);
+  background-color: var(--ark-success-subtle);
+  border-color: var(--ark-success-border);
+}
+.ark-badge--warning {
+  color: var(--ark-text-warning);
+  background-color: var(--ark-warning-subtle);
+  border-color: var(--ark-warning-border);
+}
+.ark-badge--danger {
+  color: var(--ark-text-danger);
+  background-color: var(--ark-danger-subtle);
+  border-color: var(--ark-danger-border);
+}
+
+/* --- Tipe berkas -------------------------------------------------------- */
+.ark-badge--pdf   { color: var(--ark-hue-pdf-fg);   background-color: var(--ark-hue-pdf-bg);   border-color: var(--ark-hue-pdf-border); }
+.ark-badge--doc   { color: var(--ark-hue-doc-fg);   background-color: var(--ark-hue-doc-bg);   border-color: var(--ark-hue-doc-border); }
+.ark-badge--sheet { color: var(--ark-hue-sheet-fg); background-color: var(--ark-hue-sheet-bg); border-color: var(--ark-hue-sheet-border); }
+.ark-badge--image { color: var(--ark-hue-image-fg); background-color: var(--ark-hue-image-bg); border-color: var(--ark-hue-image-border); }
+.ark-badge--zip   { color: var(--ark-hue-zip-fg);   background-color: var(--ark-hue-zip-bg);   border-color: var(--ark-hue-zip-border); }
+.ark-badge--plain { color: var(--ark-hue-plain-fg); background-color: var(--ark-hue-plain-bg); border-color: var(--ark-hue-plain-border); }
+
+/* --- Bentuk alternatif -------------------------------------------------- */
+.ark-badge--pill { border-radius: var(--ark-radius-full); padding: 0 var(--ark-space-2); }
+
+.ark-badge--lg {
+  height: 24px;
+  padding: 0 var(--ark-space-2);
+  font-size: var(--ark-text-xs);
+  border-radius: var(--ark-radius-md);
+}
+
+/* Titik status: untuk "Aktif / Diundang / Tersimpan" — warna + teks, bukan warna saja. */
+.ark-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--ark-radius-full);
+  background-color: currentColor;
+}
+
+.ark-badge--count {
+  height: 18px;
+  min-width: 18px;
+  justify-content: center;
+  padding: 0 var(--ark-space-1);
+  font-variant-numeric: tabular-nums;
+  border-radius: var(--ark-radius-full);
+}

@@ -1,0 +1,274 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: SIDEBAR (isi navigasi)
+   --------------------------------------------------------------------------
+   Posisi, lebar dan drawer dimiliki shell.css. Berkas ini hanya mengurus isi:
+   kepala (pemilih workspace + tombol rail), grup navigasi, dan kaki
+   (pemakaian penyimpanan).
+
+   Aturan desain yang dipegang di sini:
+     - Latar navigasi netral. Warna hanya muncul pada penanda (badge, bar),
+       bukan pada blok menu.
+     - Sudut kontrol = --ark-radius-md (6px), tidak lebih bulat.
+     - Semua ikon navigasi 16px; yang berubah hanya opacity/warna.
+   ========================================================================== */
+
+.ark-sidebar__head {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-1);
+  padding: var(--ark-space-3) var(--ark-space-3) var(--ark-space-2);
+}
+
+/* --- Pemilih workspace --------------------------------------------------
+   Pemicu = tombol tanpa border: di dalam sidebar, garis border setiap kontrol
+   membuat kolom terasa seperti formulir, bukan navigasi. */
+.ark-ws { flex: 1 1 auto; min-width: 0; }
+
+.ark-ws__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-2x5);
+  width: 100%;
+  min-height: var(--ark-control-h-sm);
+  padding: var(--ark-space-1) var(--ark-space-1x5);
+  text-align: left;
+  border-radius: var(--ark-radius-md);
+  transition: background-color var(--ark-dur-instant) var(--ark-ease-standard);
+}
+
+.ark-ws__trigger:hover { background-color: var(--ark-surface-hover); }
+.ark-ws__trigger:focus-visible { outline: 2px solid var(--ark-border-focus); outline-offset: 2px; }
+
+.ark-ws__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  width: var(--ark-control-h-sm);
+  height: var(--ark-control-h-sm);
+  font-size: var(--ark-text-2xs);
+  font-weight: var(--ark-weight-semibold);
+  letter-spacing: var(--ark-tracking-wide);
+  color: var(--ark-text-secondary);
+  background-color: var(--ark-surface-subtle);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-md);
+}
+
+.ark-ws__mark img,
+.ark-ws__item-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ark-ws__mark--preview {
+  width: 64px;
+  height: 64px;
+  font-size: var(--ark-text-md);
+}
+
+.ark-ws__meta { min-width: 0; }
+.ark-ws__name {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-medium);
+  color: var(--ark-text-primary);
+}
+.ark-ws__plan {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--ark-text-xs);
+  color: var(--ark-text-secondary);
+}
+
+.ark-ws__trigger .ark-menu__chevron { margin-left: auto; color: var(--ark-text-tertiary); }
+
+/* Item workspace di dalam menu: inisial + nama + status terpilih. */
+.ark-ws__item-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: var(--ark-weight-semibold);
+  color: var(--ark-text-secondary);
+  background-color: var(--ark-surface-subtle);
+  border-radius: var(--ark-radius-sm);
+}
+
+.ark-menu__item .ark-ws__tick { margin-left: auto; color: var(--ark-text-accent); --ark-icon-size: 15px; }
+.ark-menu__item .ark-ws__tick + .ark-menu__shortcut { display: none; }
+
+/* --- Navigasi ----------------------------------------------------------- */
+.ark-sidebar__nav {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--ark-space-1) var(--ark-space-2) var(--ark-space-4);
+}
+
+.ark-nav__group + .ark-nav__group { margin-top: var(--ark-space-5); }
+
+.ark-nav__group-label {
+  padding: 0 var(--ark-space-2x5) var(--ark-space-1x5);
+}
+
+.ark-nav__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ark-space-0x5);
+}
+
+.ark-nav__item {
+  display: flex;
+  align-items: center;
+  gap: var(--ark-space-2x5);
+  min-height: var(--ark-control-h-md);
+  padding: 0 var(--ark-space-2x5);
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-regular);
+  color: var(--ark-text-secondary);
+  border-radius: var(--ark-radius-md);
+  transition:
+    background-color var(--ark-dur-instant) var(--ark-ease-standard),
+    color var(--ark-dur-instant) var(--ark-ease-standard);
+}
+
+/* Ukuran ikon nav = kontrak lapisan ikon (docs/design-system.md §4):
+   sidebar 18, toolbar/aksi 16, empty state 24-32. */
+.ark-nav__icon { --ark-icon-size: 18px; color: inherit; opacity: 0.9; }
+.ark-nav__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ark-nav__item:hover {
+  background-color: var(--ark-surface-hover);
+  color: var(--ark-text-primary);
+  text-decoration: none;
+}
+
+.ark-nav__item:active { background-color: var(--ark-surface-press); }
+
+/* Status aktif: permukaan terpilih + bobot teks. Tidak ada garis aksen —
+   navigasi tetap terbaca jelas tanpa blok berwarna. */
+.ark-nav__item[aria-current="page"] {
+  background-color: var(--ark-surface-selected);
+  color: var(--ark-text-primary);
+  font-weight: var(--ark-weight-medium);
+}
+
+.ark-nav__item[aria-current="page"] .ark-nav__icon { opacity: 1; }
+
+.ark-nav__item .ark-badge--count {
+  margin-left: auto;
+  color: var(--ark-text-secondary);
+  background-color: var(--ark-surface-subtle);
+}
+.ark-nav__item[aria-current="page"] .ark-badge--count { background-color: var(--ark-surface-canvas); }
+
+/* Item "buat baru" di bawah grup: pemicu halus, bukan tombol penuh. */
+.ark-nav__item--muted { color: var(--ark-text-tertiary); }
+.ark-nav__item--muted:hover { color: var(--ark-text-secondary); }
+
+/* Label dipakai sebagai tooltip hanya saat rail; pada sidebar penuh teksnya
+   sudah terlihat, jadi gelembung tooltip hanya mengulang diri sendiri. */
+.ark-shell:not(.is-collapsed) .ark-nav__item[data-ark-tooltip]::before,
+.ark-shell:not(.is-collapsed) .ark-nav__item[data-ark-tooltip]::after { display: none; }
+
+@media (max-width: 1023px) {
+  /* Di bawah 1024px rail tidak pernah aktif (lihat shell.css). */
+  .ark-nav__item[data-ark-tooltip]::before,
+  .ark-nav__item[data-ark-tooltip]::after { display: none; }
+}
+
+/* --- Kaki: penyimpanan --------------------------------------------------- */
+.ark-sidebar__foot {
+  flex-shrink: 0;
+  padding: var(--ark-space-3);
+  border-top: 1px solid var(--ark-border-subtle);
+}
+
+/* Pemakaian penyimpanan: satu blok yang menyatukan angka, bar, dan tautan. */
+.ark-usage {
+  display: flex;
+  flex-direction: column;
+}
+
+.ark-usage__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ark-space-2);
+  margin-bottom: var(--ark-space-1x5);
+  font-size: var(--ark-text-xs);
+  color: var(--ark-text-secondary);
+}
+
+.ark-usage__value { font-variant-numeric: tabular-nums; }
+
+.ark-usage__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ark-space-1);
+  margin-top: var(--ark-space-2);
+  font-size: var(--ark-text-xs);
+  font-weight: var(--ark-weight-medium);
+  color: var(--ark-text-accent);
+  border-radius: var(--ark-radius-sm);
+}
+.ark-usage__link:hover { text-decoration: underline; }
+
+/* --- Rail (sidebar menyusut jadi ikon) ----------------------------------
+   Hanya berlaku >= 1024px: di bawahnya sidebar sudah off-canvas dan lebar
+   penuh yang ditampilkan. */
+@media (min-width: 1024px) {
+  .ark-shell.is-collapsed .ark-sidebar__head {
+    flex-direction: column;
+    gap: var(--ark-space-2);
+    padding: var(--ark-space-3) var(--ark-space-1x5) var(--ark-space-2);
+  }
+
+  .ark-shell.is-collapsed .ark-ws { width: 100%; }
+  .ark-shell.is-collapsed .ark-ws__trigger { justify-content: center; padding: var(--ark-space-1) 0; }
+  .ark-shell.is-collapsed .ark-ws__meta,
+  .ark-shell.is-collapsed .ark-ws__trigger .ark-menu__chevron,
+  .ark-shell.is-collapsed .ark-nav__text,
+  .ark-shell.is-collapsed .ark-nav__group-label,
+  .ark-shell.is-collapsed .ark-nav__item .ark-badge--count { display: none; }
+
+  .ark-shell.is-collapsed .ark-nav__item { justify-content: center; padding: 0; }
+
+  /* Tooltip rail butuh keluar dari kotak nav; list rail sengaja pendek
+     (muat 12 item pada 720px) sehingga tanpa scroll pun masih aman. */
+  .ark-shell.is-collapsed .ark-sidebar__nav { overflow: visible; }
+
+  /* Penyimpanan tidak punya bentuk yang jujur dalam 72px: hilangkan saja,
+     angkanya tetap ada di menu workspace dan di halaman Pengaturan. */
+  .ark-shell.is-collapsed .ark-sidebar__foot { display: none; }
+}
+
+/* Tombol rail memakai satu ikon yang sama; cermin menyatakan arahnya. */
+[data-drawer="collapse"] svg {
+  transition: transform var(--ark-dur-base) var(--ark-ease-standard);
+}
+.ark-shell.is-collapsed [data-drawer="collapse"] svg { transform: scaleX(-1); }
+
+/* Satu tombol per mode: rail di desktop, tutup di layar sempit. */
+@media (min-width: 1024px) { .ark-sidebar__close { display: none; } }
+@media (max-width: 1023px) { .ark-sidebar__collapse { display: none; } }

@@ -1,0 +1,106 @@
+/* ==========================================================================
+   ArsipKu Design System — Component: TABS & SEGMENTED CONTROL
+   --------------------------------------------------------------------------
+   .ark-tabs        navigasi area konten (role="tablist" + role="tab")
+   .ark-segmented   sakelar tampilan tunggal, mis. Daftar | Kisi
+                    (peta dari #btn-view-list / #btn-view-grid legacy)
+   ========================================================================== */
+
+.ark-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--ark-space-1);
+  border-bottom: 1px solid var(--ark-border-default);
+}
+
+.ark-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ark-space-1x5);
+  height: 36px;
+  padding: 0 var(--ark-space-3);
+  font-size: var(--ark-text-md);
+  font-weight: var(--ark-weight-medium);
+  color: var(--ark-text-secondary);
+  border-radius: var(--ark-radius-md) var(--ark-radius-md) 0 0;
+  transition:
+    color var(--ark-dur-fast) var(--ark-ease-standard),
+    background-color var(--ark-dur-fast) var(--ark-ease-standard);
+}
+
+.ark-tab::after {
+  content: "";
+  position: absolute;
+  left: var(--ark-space-2);
+  right: var(--ark-space-2);
+  bottom: -1px;
+  height: 2px;
+  background-color: transparent;
+  border-radius: var(--ark-radius-full) var(--ark-radius-full) 0 0;
+  transition: background-color var(--ark-dur-fast) var(--ark-ease-standard);
+}
+
+.ark-tab:hover { color: var(--ark-text-primary); background-color: var(--ark-surface-hover); }
+
+.ark-tab[aria-selected="true"] { color: var(--ark-text-primary); }
+.ark-tab[aria-selected="true"]::after { background-color: var(--ark-accent); }
+
+.ark-tab[aria-disabled="true"] { color: var(--ark-text-disabled); pointer-events: none; }
+
+.ark-tab__count {
+  font-size: var(--ark-text-2xs);
+  font-weight: var(--ark-weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--ark-text-secondary);
+  background-color: var(--ark-surface-subtle);
+  border-radius: var(--ark-radius-full);
+  padding: 1px var(--ark-space-1x5);
+}
+.ark-tab[aria-selected="true"] .ark-tab__count {
+  color: var(--ark-text-accent);
+  background-color: var(--ark-accent-subtle);
+}
+
+.ark-tab svg { width: 15px; height: 15px; }
+
+/* --- Segmentasi (Daftar | Kisi, Urutkan) -------------------------------- */
+.ark-segmented {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  background-color: var(--ark-surface-subtle);
+  border: 1px solid var(--ark-border-default);
+  border-radius: var(--ark-radius-md);
+}
+
+.ark-segmented__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ark-space-1);
+  height: calc(var(--ark-control-h-md) - 6px);
+  padding: 0 var(--ark-space-2x5);
+  font-size: var(--ark-text-sm);
+  font-weight: var(--ark-weight-medium);
+  color: var(--ark-text-secondary);
+  border-radius: var(--ark-radius-sm);
+  transition:
+    background-color var(--ark-dur-fast) var(--ark-ease-standard),
+    color var(--ark-dur-fast) var(--ark-ease-standard),
+    box-shadow var(--ark-dur-fast) var(--ark-ease-standard);
+}
+
+.ark-segmented__item svg { width: 15px; height: 15px; }
+.ark-segmented__item:hover { color: var(--ark-text-primary); }
+
+.ark-segmented__item[aria-pressed="true"],
+.ark-segmented__item[aria-selected="true"],
+.ark-segmented__item.is-active {
+  color: var(--ark-text-primary);
+  background-color: var(--ark-surface-canvas);
+  box-shadow: var(--ark-shadow-xs);
+}
+
+.ark-segmented--sm .ark-segmented__item { height: calc(var(--ark-control-h-sm) - 6px); }
