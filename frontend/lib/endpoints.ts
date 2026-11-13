@@ -30,7 +30,7 @@ export const endpoints = {
   documents: { file: 'documents.php', status: 'live' },
   folders: { file: 'folders.php', status: 'live' },
   upload: { file: 'upload.php', status: 'live' },
-  download: { file: 'download.php', status: 'planned', note: 'Files are served from a public uploads/ path with no scoping or expiry.' },
+  download: { file: 'download.php', status: 'live', note: 'Authenticated downloads use the active workspace and document grants.' },
   versions: { file: 'versions.php', status: 'planned', note: 'document_versions table does not exist yet.' },
   permissions: { file: 'permissions.php', status: 'planned', note: 'Capabilities are inferred from is_shared/shared_permission only.' },
   favorites: { file: 'favorites.php', status: 'planned', note: 'Stars live on documents.is_favorite, shared across all members.' },
@@ -46,10 +46,10 @@ export type EndpointName = keyof typeof endpoints;
 export const legacyActions = {
   workspaces: ['list', 'current', 'switch', 'update', 'create', 'change_plan', 'delete'],
   members: ['list', 'invite', 'update_role', 'remove'],
-  documents_get: ['list', 'detail'],
+  documents_get: ['list', 'detail', 'share_info'],
   documents_post: [
     'rename', 'move', 'toggle_favorite', 'delete', 'restore',
-    'permanent_delete', 'empty_trash', 'multi_action',
+    'permanent_delete', 'empty_trash', 'multi_action', 'share',
   ],
   folders_get: ['list', 'breadcrumbs', 'all_flat'],
   folders_post: ['create', 'rename', 'delete'],

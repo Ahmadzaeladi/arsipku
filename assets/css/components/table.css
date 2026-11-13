@@ -1,7 +1,7 @@
 /* ==========================================================================
    ArsipKu Design System — Component: TABLE
    --------------------------------------------------------------------------
-   Daftar arsip = antarmuka utama. Density default: baris 40px, isi 14px,
+   Daftar arsip = antarmuka utama. Density default: baris 48px, isi 14px,
    kolom sekunder (meta) 12-13px. Pemisah baris = border subtle, bukan card.
    Header menempel (sticky) dan memakai .ark-label-caps supaya tidak bersaing
    dengan isi. Tindakan baris SELALU terlihat (bukan hover-only) demi
@@ -40,7 +40,7 @@
   position: sticky;
   top: 0;
   z-index: var(--ark-z-sticky);
-  height: 36px;
+  height: 44px;
   padding: 0 var(--ark-space-3);
   text-align: left;
   font-size: var(--ark-text-2xs);
@@ -61,7 +61,7 @@
    ≈ 50px. Selain itu tidak ada tinggi eksplisit di komponen. */
 .ark-table__body td {
   height: var(--ark-row-h);
-  padding: var(--ark-space-1x5) var(--ark-space-3);
+  padding: var(--ark-space-2) var(--ark-space-3);
   vertical-align: middle;
   border-bottom: 1px solid var(--ark-border-subtle);
   color: var(--ark-text-primary);

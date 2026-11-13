@@ -169,6 +169,9 @@ switch ($page) {
             'folder_id' => $_GET['folder_id'] ?? null,
         ];
         $documents = $documentService->getDocuments($currentWs['id'], $filters);
+        $matchingSearchFolders = !empty($filters['q'])
+            ? $folderService->searchByName($currentWs['id'], (string) $filters['q'])
+            : [];
         $viewFile = __DIR__ . '/views/pages/documents.php';
         break;
 
@@ -209,10 +212,7 @@ switch ($page) {
 
     case 'shared':
         $pageTitle = 'Dibagikan kepada Saya';
-        $documents = $documentService->getDocuments($currentWs['id'], [
-            'is_shared' => 1,
-            'sort' => 'updated_desc'
-        ]);
+        $documents = $documentService->getSharedWithMe($currentWs['id']);
         $viewFile = __DIR__ . '/views/pages/shared.php';
         break;
 

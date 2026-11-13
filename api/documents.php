@@ -28,6 +28,10 @@ try {
             }
             jsonResponse(['success' => true, 'data' => $doc]);
         }
+        if ($action === 'share_info') {
+            $id = (string) ($_GET['id'] ?? '');
+            jsonResponse(['success' => true, 'data' => $documentService->getShareInfo($id, $workspaceId)]);
+        }
 
         // List with filters
         $filters = [
@@ -56,6 +60,29 @@ try {
         $data = $jsonData ?: $_POST;
 
         $action = $data['action'] ?? $action;
+        if ($action === 'share') {
+            if (!$authService->verifiesCsrf($_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($data['_csrf'] ?? null))) {
+                jsonResponse(['success' => false, 'message' => 'Token keamanan tidak valid. Muat ulang halaman.'], 419);
+            }
+            $recipients = $data['recipients'] ?? [];
+            if (!is_array($recipients)) {
+                jsonResponse(['success' => false, 'message' => 'Daftar penerima tidak valid.'], 422);
+            }
+            $result = $documentService->saveSharing(
+                (string) ($data['id'] ?? ''),
+                $workspaceId,
+                (string) ($data['scope'] ?? ''),
+                $recipients,
+                (string) ($data['permission'] ?? 'view')
+            );
+            jsonResponse([
+                'success' => true,
+                'message' => $result['scope'] === 'selected'
+                    ? 'Akses dokumen diperbarui untuk anggota terpilih.'
+                    : 'Akses dokumen dikembalikan ke seluruh workspace.',
+                'data' => $result,
+            ]);
+        }
 
         switch ($action) {
             case 'rename':
@@ -146,6 +173,12 @@ try {
                 jsonResponse(['success' => false, 'message' => 'Aksi tidak dikenali'], 400);
         }
     }
+} catch (DocumentAuthorizationException $e) {
+    jsonResponse(['success' => false, 'message' => $e->getMessage()], 403);
+} catch (DocumentNotFoundException $e) {
+    jsonResponse(['success' => false, 'message' => $e->getMessage()], 404);
+} catch (InvalidArgumentException $e) {
+    jsonResponse(['success' => false, 'message' => $e->getMessage()], 422);
 } catch (Exception $e) {
     jsonResponse([
         'success' => false,

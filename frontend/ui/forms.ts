@@ -165,16 +165,14 @@ export function openPermanentDeleteModal(id: string, name: string): void {
   openModal('modal-confirm-permanent-delete');
 }
 
-/**
- * Share stays a locator, not a permission: the URL is the page deep-link the legacy UI
- * already uses, and api/permissions.php (real share records) is a planned endpoint.
- */
 export function openShareModal(id: string, name: string): void {
-  setText('share-doc-name', name);
-  const url = new URL(window.location.href);
-  url.search = '';
-  url.searchParams.set('page', 'preview');
-  url.searchParams.set('id', id);
-  setInputValue('share-link-input', url.toString());
-  openModal('modal-share');
+  const appWindow = window as Window & {
+    openShareDialog?: (documentId: string, documentName: string) => Promise<void>;
+    showToast?: (message: string, type: string) => void;
+  };
+  if (!appWindow.openShareDialog) {
+    appWindow.showToast?.('Dialog berbagi belum siap. Muat ulang halaman lalu coba kembali.', 'error');
+    return;
+  }
+  void appWindow.openShareDialog(id, name);
 }

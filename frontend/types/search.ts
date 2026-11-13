@@ -1,7 +1,8 @@
 /**
  * ArsipKu - Search models.
- * Today search is a LIKE over name/original_name/owner_name inside
- * api/documents.php. The contract adds scoped results, facets and snippets;
+ * Today document search is a LIKE over document name/original name/owner and
+ * containing folder name inside api/documents.php. The contract adds scoped
+ * results, facets and snippets;
  * a PostgreSQL backend can satisfy it with ILIKE + pg_trgm (or tsvector) without
  * changing these types.
  */

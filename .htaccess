@@ -1,0 +1,4 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^uploads/(?!(?:avatar|workspace)_[a-f0-9]{32}\.(?:jpg|jpeg|png|webp)$) - [F,NC,L]
+</IfModule>

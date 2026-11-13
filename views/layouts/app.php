@@ -304,13 +304,19 @@ if (!isset($csrfToken) || !is_string($csrfToken) || $csrfToken === '') {
                     <span class="ark-header__title"><?= htmlspecialchars($pageTitle) ?></span>
                 </div>
 
-                <!-- #global-search = kontrak lama: Enter melompat ke ?page=documents&q=... (app.js) -->
-                <div class="ark-search ark-header__search">
-                    <span class="ark-search__icon" data-icon="search"></span>
-                    <input type="search" id="global-search" class="ark-search__field"
+                <form class="ark-search ark-header__search" action="index.php" method="get" role="search"
+                    aria-label="Pencarian workspace">
+                    <input type="hidden" name="page" value="documents">
+                    <input type="hidden" name="ws"
+                        value="<?= htmlspecialchars((string) $currentWs['slug'], ENT_QUOTES, 'UTF-8') ?>">
+                    <button class="ark-header__search-submit" type="submit" aria-label="Cari">
+                        <span class="ark-search__icon" data-icon="search"></span>
+                    </button>
+                    <input type="search" id="global-search" name="q" class="ark-search__field"
+                        value="<?= $page === 'documents' ? htmlspecialchars((string) ($_GET['q'] ?? ''), ENT_QUOTES, 'UTF-8') : '' ?>"
                         placeholder="Cari dokumen, folder, atau pemilik..." aria-label="Cari di workspace ini">
                     <kbd class="ark-kbd ark-search__hint">Ctrl K</kbd>
-                </div>
+                </form>
 
                 <div class="ark-header__divider" aria-hidden="true"></div>
 

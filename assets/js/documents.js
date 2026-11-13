@@ -18,6 +18,7 @@ function initDocumentsPage() {
     setupCreateFolderForm();
     setupMoveForm();
     setupDeleteConfirm();
+    setupShareForm();
 }
 
 /**
@@ -417,16 +418,174 @@ function setupDocumentActions() {
     document.querySelectorAll('.btn-action-share').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
-            const docName = btn.getAttribute('data-doc-name');
-            const shareUrl = window.location.origin + window.location.pathname + '?page=preview&id=' + btn.getAttribute('data-doc-id');
-
-            const titleTarget = document.getElementById('share-doc-name');
-            const urlInput = document.getElementById('share-link-input');
-            if (titleTarget) titleTarget.textContent = docName;
-            if (urlInput) urlInput.value = shareUrl;
-
-            openModal('modal-share');
+            openShareDialog(btn.getAttribute('data-doc-id'), btn.getAttribute('data-doc-name'));
         });
+    });
+}
+
+window.openShareDialog = async function(docId, docName = '') {
+    const modal = document.getElementById('modal-share');
+    const idInput = document.getElementById('share-doc-id');
+    const title = document.getElementById('share-doc-name');
+    const memberList = document.getElementById('share-member-list');
+    const saveButton = document.getElementById('share-save-btn');
+    if (!modal || !idInput || !memberList) return;
+
+    idInput.value = docId;
+    if (title) title.textContent = docName || 'Memuat dokumen...';
+    memberList.replaceChildren();
+    const loading = document.createElement('p');
+    loading.className = 'p-4 text-sm text-slate-500';
+    loading.textContent = 'Memuat daftar anggota...';
+    memberList.appendChild(loading);
+    if (saveButton) saveButton.disabled = true;
+    openModal('modal-share');
+
+    let loaded = false;
+    try {
+        const response = await fetch(`api/documents.php?action=share_info&id=${encodeURIComponent(docId)}`);
+        const result = await response.json();
+        if (!response.ok || !result.success || !result.data) {
+            throw new Error(result.message || 'Informasi berbagi tidak dapat dimuat.');
+        }
+
+        const data = result.data;
+        if (title) title.textContent = data.document_name;
+        renderShareMembers(data.members || []);
+        const scopeInput = document.querySelector(`input[name="share_scope"][value="${data.scope}"]`);
+        if (scopeInput) scopeInput.checked = true;
+        const permission = document.getElementById('share-permission');
+        if (permission) permission.value = data.permission || 'view';
+        updateShareScopeVisibility();
+        loaded = true;
+    } catch (error) {
+        memberList.replaceChildren();
+        const message = document.createElement('p');
+        message.className = 'p-4 text-sm text-rose-600';
+        message.textContent = error.message || 'Informasi berbagi tidak dapat dimuat.';
+        memberList.appendChild(message);
+        window.showToast(message.textContent, 'error');
+    } finally {
+        if (saveButton) saveButton.disabled = !loaded;
+    }
+};
+
+function renderShareMembers(members) {
+    const memberList = document.getElementById('share-member-list');
+    if (!memberList) return;
+    memberList.replaceChildren();
+
+    if (!members.length) {
+        const empty = document.createElement('p');
+        empty.className = 'p-4 text-sm text-slate-500';
+        empty.textContent = 'Tidak ada anggota lain yang aktif di workspace ini.';
+        memberList.appendChild(empty);
+        return;
+    }
+
+    members.forEach(member => {
+        const label = document.createElement('label');
+        label.className = 'flex items-center gap-3 p-3 cursor-pointer hover:bg-slate-50';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = 'share_recipients[]';
+        checkbox.value = member.id;
+        checkbox.checked = Boolean(member.shared);
+        checkbox.className = 'rounded border-slate-300 text-indigo-600 focus:ring-indigo-500';
+        checkbox.addEventListener('change', updateShareRecipientCount);
+
+        const details = document.createElement('span');
+        details.className = 'min-w-0 flex-1';
+        const name = document.createElement('span');
+        name.className = 'block truncate text-sm font-medium text-slate-800';
+        name.textContent = member.name;
+        const email = document.createElement('span');
+        email.className = 'block truncate text-xs text-slate-500';
+        email.textContent = `${member.email} · ${member.role}`;
+        details.append(name, email);
+
+        const permission = document.createElement('span');
+        permission.className = 'text-xs text-slate-500';
+        permission.textContent = member.permission === 'edit' ? 'Dapat mengubah' : 'Dapat melihat';
+        label.append(checkbox, details, permission);
+        memberList.appendChild(label);
+    });
+    updateShareRecipientCount();
+}
+
+function updateShareRecipientCount() {
+    const count = document.querySelectorAll('#share-member-list input[name="share_recipients[]"]:checked').length;
+    const target = document.getElementById('share-recipient-count');
+    if (target) target.textContent = `${count} dipilih`;
+}
+
+function updateShareScopeVisibility() {
+    const scope = document.querySelector('input[name="share_scope"]:checked')?.value;
+    const selected = scope === 'selected';
+    const recipients = document.getElementById('share-recipients-section');
+    const permission = document.getElementById('share-permission-section');
+    if (recipients) recipients.hidden = !selected;
+    if (permission) permission.hidden = !selected;
+}
+
+function setupShareForm() {
+    const form = document.getElementById('form-share-document');
+    if (!form) return;
+
+    form.querySelectorAll('input[name="share_scope"]').forEach(input => {
+        input.addEventListener('change', updateShareScopeVisibility);
+    });
+
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const scope = form.querySelector('input[name="share_scope"]:checked')?.value;
+        if (!scope) {
+            window.showToast('Pilih cakupan akses dokumen.', 'warning');
+            return;
+        }
+        const recipients = Array.from(form.querySelectorAll('input[name="share_recipients[]"]:checked'))
+            .map(input => input.value);
+        if (scope === 'selected' && recipients.length === 0) {
+            window.showToast('Pilih setidaknya satu anggota.', 'warning');
+            return;
+        }
+
+        const saveButton = document.getElementById('share-save-btn');
+        if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.textContent = 'Menyimpan...';
+        }
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+            const response = await fetch('api/documents.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify({
+                    action: 'share',
+                    id: document.getElementById('share-doc-id')?.value || '',
+                    scope,
+                    recipients,
+                    permission: document.getElementById('share-permission')?.value || 'view'
+                })
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Akses dokumen tidak dapat disimpan.');
+            }
+            window.showToast(result.message, 'success');
+            window.closeModal('modal-share');
+            window.setTimeout(() => window.location.reload(), 350);
+        } catch (error) {
+            window.showToast(error.message || 'Akses dokumen tidak dapat disimpan.', 'error');
+        } finally {
+            if (saveButton) {
+                saveButton.disabled = false;
+                saveButton.textContent = 'Simpan akses';
+            }
+        }
     });
 }
 

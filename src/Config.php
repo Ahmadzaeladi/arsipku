@@ -46,6 +46,14 @@ if (file_exists($envFile)) {
     }
 }
 
+$privateUploadPath = getenv('DOCUMENT_UPLOAD_PATH');
+define(
+    'DOCUMENT_UPLOAD_PATH',
+    $privateUploadPath !== false && $privateUploadPath !== ''
+        ? $privateUploadPath
+        : dirname(dirname(ROOT_PATH)) . DIRECTORY_SEPARATOR . basename(ROOT_PATH) . '-private-documents'
+);
+
 // ============================================================================
 // KONFIGURASI DATABASE (MySQL)
 // ============================================================================
@@ -76,6 +84,20 @@ define('ALLOWED_EXTENSIONS', [
 // Pastikan direktori uploads tersedia
 if (!is_dir(UPLOAD_PATH)) {
     mkdir(UPLOAD_PATH, 0755, true);
+}
+if (!is_dir(DOCUMENT_UPLOAD_PATH) && !mkdir(DOCUMENT_UPLOAD_PATH, 0755, true) && !is_dir(DOCUMENT_UPLOAD_PATH)) {
+    throw new RuntimeException('Direktori penyimpanan dokumen privat tidak dapat dibuat.');
+}
+$documentRoot = realpath(ROOT_PATH);
+$privateDocumentRoot = realpath(DOCUMENT_UPLOAD_PATH);
+if ($documentRoot === false
+    || $privateDocumentRoot === false
+    || strncasecmp(
+        $privateDocumentRoot . DIRECTORY_SEPARATOR,
+        rtrim($documentRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR,
+        strlen(rtrim($documentRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR)
+    ) === 0) {
+    throw new RuntimeException('DOCUMENT_UPLOAD_PATH harus berada di luar document root aplikasi.');
 }
 
 function currentUser(): array

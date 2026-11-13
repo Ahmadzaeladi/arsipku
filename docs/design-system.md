@@ -246,7 +246,7 @@ Pesan validasi **wajib** terikat `aria-describedby` dan tidak hanya berubah warn
 
 ### 5.4 Tabel arsip — `components/table.css`
 
-`.ark-table-wrap` > `table.ark-table` + `.ark-table__head`/`.ark-table__body`; kolom khusus: `.ark-th--check`/`.ark-td--check`, `--num`, `--actions`, `--center`, `.ark-td--nowrap`. Kolom sekunder disembunyikan bertahap lewat `.ark-table__col--hide-md` (≤1024px) lalu `--hide-sm` (≤768px) — **bukan** scroll horizontal. Pembungkusnya datar: border 1px, **tanpa bayangan**. Baris: tinggi `--ark-row-h` (40px; sel nama dua baris ≈50px), padding vertikal `--ark-space-1x5`, `tr:hover` subtle, `tr.is-selected` = `--ark-surface-selected` + marker `inset 2px 0 0 --ark-accent`, `tr[aria-busy="true"]` meredupkan aksi tanpa mengubah tinggi baris. Isi sel `--ark-text-md` (14), meta `--ark-text-xs` (12).
+`.ark-table-wrap` > `table.ark-table` + `.ark-table__head`/`.ark-table__body`; kolom khusus: `.ark-th--check`/`.ark-td--check`, `--num`, `--actions`, `--center`, `.ark-td--nowrap`. Kolom sekunder disembunyikan bertahap lewat `.ark-table__col--hide-md` (≤1024px) lalu `--hide-sm` (≤768px) — **bukan** scroll horizontal. Pembungkusnya datar: border 1px, **tanpa bayangan**. Baris: tinggi `--ark-row-h` (48px; sel nama dua baris ≈55px), padding vertikal `--ark-space-2`, `tr:hover` subtle, `tr.is-selected` = `--ark-surface-selected` + marker `inset 2px 0 0 --ark-accent`, `tr[aria-busy="true"]` meredupkan aksi tanpa mengubah tinggi baris. Isi sel `--ark-text-md` (14), meta `--ark-text-xs` (12).
 
 `.ark-table-wrap` wajib `min-width:0`: ia flex item di dalam `.ark-section`, dan min-content tabel lebih lebar daripada layar ponsel. Tanpa aturan itu halaman yang melebar (luber horizontal); dengan itu hanya tabelnya yang menggulir di dalam wadahnya (terasa di ≤390px, sisanya sudah dipotong lewat `--hide-md/-sm`).
 
@@ -327,7 +327,7 @@ Lebar sidebar dikendalikan satu properti lokal `--ark-side-w` pada `.ark-shell`;
 | `< 1024px` | drawer 248 (maks 86vw) | off-canvas + scrim, `body.ark-drawer-lock`, rail tidak berlaku |
 | `< 768px` | drawer | padding konten 16, judul header pendek, aksi jadi ikon |
 
-`.ark-content` membatasi isi pada `--ark-content-max` dan memberi ritme ruang yang sama untuk semua halaman; `.ark-panel` (permukaan + border + `--ark-pad-card`) adalah permukaan isi, `--flush` untuk tabel yang menempel tepi, dan `.ark-content__body` satu-satunya sumber jarak vertikal antar blok (gap `--ark-gap-stack-lg` = 24px, tanpa margin per blok). Kepala halaman tidak lagi dimiliki `shell.css`: pakai `.ark-page-head` (§5.16).
+`.ark-content` membatasi isi pada `--ark-content-max` dan memberi ritme ruang yang sama untuk semua halaman; `.ark-panel` (permukaan + border + `--ark-pad-card`) adalah permukaan isi, `--flush` untuk tabel yang menempel tepi, dan `.ark-content__body` satu-satunya sumber jarak vertikal antar blok (gap `--ark-gap-stack-lg` = 32px, tanpa margin per blok). Kepala halaman tidak lagi dimiliki `shell.css`: pakai `.ark-page-head` (§5.16).
 
 **Aturan tumpukan (`shell.css`)**: `.ark-content { position: relative; z-index: 0 }`. Satu baris ini membuat seluruh halaman jadi stacking context sendiri, sehingga `z-index` apa pun yang dipakai view — termasuk kelas Tailwind lama seperti `.dropdown-menu` (`z-40`) — tidak bisa lagi menyalip chrome kerangka (header 11, sidebar 31). Konsekuensinya yang harus diingat saat memindahkan view: **overlay tingkat halaman tidak boleh dirender di dalam view**. `#toast-container`, `#multi-select-bar`, dan seluruh `modals.php` memang berada di luar `.ark-content`, jadi tetap di atas chrome; `#modal-invite-member` tadinya satu-satunya pengecualian (dipasang di `views/pages/members.php`) dan sudah dipindah ke `views/layouts/modals.php` sebagai modal #13.
 
@@ -415,11 +415,15 @@ Karena itu item nav membawa `data-ark-tooltip` dengan `data-ark-tooltip-position
     <span class="ark-header__title">Beranda</span>
   </div>
 
-  <div class="ark-search ark-header__search">
-    <span class="ark-search__icon" data-icon="search"></span>
-    <input class="ark-search__field" type="search" id="global-search" placeholder="Cari berkas atau folder" aria-label="Cari di workspace ini">
+  <form class="ark-search ark-header__search" action="index.php" method="get" role="search">
+    <input type="hidden" name="page" value="documents">
+    <input type="hidden" name="ws" value="workspace-slug">
+    <button class="ark-header__search-submit" type="submit" aria-label="Cari">
+      <span class="ark-search__icon" data-icon="search"></span>
+    </button>
+    <input class="ark-search__field" type="search" id="global-search" name="q" placeholder="Cari dokumen, folder, atau pemilik..." aria-label="Cari di workspace ini">
     <kbd class="ark-kbd ark-search__hint">Ctrl K</kbd>
-  </div>
+  </form>
 
   <div class="ark-header__divider" aria-hidden="true"></div>
 
@@ -454,7 +458,7 @@ Inisial (`AD`, `RN`) adalah teks, bukan gambar: tanpa permintaan jaringan dan ti
 
 | Kontrak | Kenapa tetap ada |
 |---|---|
-| `#global-search` pada `.ark-search__field` | `app.js` memetakan Enter ke `?page=documents&q=…` dan `Ctrl+K`/`/` ke fokus field. |
+| `#global-search` di dalam form GET | Enter mengirim `q` ke `?page=documents`; dokumen dicocokkan menurut nama, pemilik, dan nama folder, sementara folder cocok ditampilkan sebagai tautan langsung. `app.js`/`app-shell.js` menyediakan pintasan fokus `Ctrl+K`/`/`. |
 | `.ws-switch-item` + `data-ws-slug` pada item menu workspace | `app.js` yang memanggil `api/workspaces.php` lalu redirect; `app-shell.js` tidak memuat data bisnis. |
 | `onclick="openModal('modal-upload' \| 'modal-create-workspace')"` | modal masih punya runtime dan styling lama (`.modal-backdrop`). |
 | `#toast-container` + `showToast(...)` | toast masih dirender `app.js` dengan kelas Tailwind. |
@@ -516,8 +520,8 @@ Primitif pembentuk isi halaman. Alasannya: halaman arsip sebelumnya dibangun dar
 | Kelas | Kontrak |
 |---|---|
 | `.ark-page-head` | `<h1>` + `.ark-title-sub` di kiri, `__actions` di kanan. Tanpa border, tanpa card. Aksi primer satu dan `--lg` (40) — kecuali head yang juga memuat kolom cari: semua kontrol 32 agar baris tidak berlapis. |
-| `.ark-section` | `__head` = `.ark-section__title` (16/600) + `__more`/`__hint`. Seksi TIDAK memberi margin sendiri: jarak antar blok dimiliki `.ark-content__body` (gap 24px), jarak kepala-ke-isi dimiliki `gap` internal seksi (12px). `--ruled` memberi hairline **hanya** bila seksi langsung berisi list/tabel. |
-| `.ark-list` | `__row` min-height `--ark-row-h` dengan padding `6px 8px` — blok 6px sama dengan padding sel tabel, jadi list di samping tabel punya irama yang identik (satu baris teks = 40px, dua baris = ~51px). `__icon` 16px `currentColor` netral (tanpa kotak), `__title` 14/500, `__meta` 12 sekunder, `__end` rata kanan `tabular-nums`. Pemisah = `border-top --ark-border-subtle` pada `+ .ark-list__row`, bukan zebra. `--dense` → min-height 32 & padding 4px; `--inset` menarik baris 8px ke tepi kolom supaya area hover/sentuh melebar tanpa menggeser teks. |
+| `.ark-section` | `__head` = `.ark-section__title` (16/600) + `__more`/`__hint`. Seksi TIDAK memberi margin sendiri: jarak antar blok dimiliki `.ark-content__body` (gap 32px), jarak kepala-ke-isi dimiliki `gap` internal seksi (16px). `--ruled` memberi hairline **hanya** bila seksi langsung berisi list/tabel. |
+| `.ark-list` | `__row` min-height `--ark-row-h` dengan padding `8px 8px` — blok 8px sama dengan padding sel tabel, jadi list di samping tabel punya irama yang identik (satu baris teks = 48px, dua baris = ~55px). `__icon` 16px `currentColor` netral (tanpa kotak), `__title` 14/500, `__meta` 12 sekunder, `__end` rata kanan `tabular-nums`. Pemisah = `border-top --ark-border-subtle` pada `+ .ark-list__row`, bukan zebra. `--dense` → min-height 32 & padding 4px; `--inset` menarik baris 8px ke tepi kolom supaya area hover/sentuh melebar tanpa menggeser teks. |
 | `.ark-list__row--link` | Dipakai sebagai `<a>` atau `<button>`; hover = `--ark-surface-hover` saja. Dilarang translate/scale/bayangan. Baris non-interaktif (mis. membawa tombol) tetap `.ark-list__row` tanpa modifier. |
 | `.ark-meter` | Track 4px (`--ark-space-1`), lebar terisi dari `--ark-meter-value`, state `.is-warning` (>80%) dan `.is-critical` (penuh) mengganti warna isian. Wajib `role="progressbar"` + `aria-valuenow/min/max` + `aria-valuetext`; angka manusia ada di `__value`, bukan hanya di warna. Bukan kartu, bukan donat, bukan angka 24px yang berdiri sendiri. |
 | `.ark-tile-grid` / `.ark-tile` | `repeat(auto-fill, minmax(--ark-tile-min, 1fr))` gap `--ark-space-3`. Tile = satu border `--ark-border-default`, radius `lg`, padding `--ark-pad-card`, **tanpa bayangan**; `:hover` dan `.is-selected` hanya mengubah border/latar. `__actions` menempel di bawah (`margin-top:auto`) agar tile setinggi apa pun tetap sejajar. |

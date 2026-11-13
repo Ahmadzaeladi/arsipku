@@ -62,6 +62,8 @@ class Database
 
                 self::ensureUsersTable($pdo);
                 self::ensureProfileColumns($pdo);
+                self::ensureDocumentSharesTable($pdo);
+                self::migrateLegacyDocumentFiles($pdo);
                 self::$instance = $pdo;
 
             } catch (PDOException $e) {
@@ -97,6 +99,93 @@ class Database
             $stmt = $db->query("SHOW COLUMNS FROM `{$table}` LIKE '{$column}'");
             if (!$stmt->fetch()) {
                 $db->exec("ALTER TABLE `{$table}` ADD COLUMN `{$column}` {$definition}");
+            }
+        }
+    }
+
+    private static function ensureDocumentSharesTable(PDO $db): void
+    {
+        $tableExisted = (bool) $db->query("SHOW TABLES LIKE 'document_shares'")->fetchColumn();
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS document_shares (
+                document_id VARCHAR(64) NOT NULL,
+                workspace_id VARCHAR(64) NOT NULL,
+                shared_with_user_id VARCHAR(64) NOT NULL,
+                shared_by_user_id VARCHAR(64) NULL,
+                permission VARCHAR(20) NOT NULL DEFAULT 'view',
+                created_at DATETIME NOT NULL,
+                PRIMARY KEY (document_id, shared_with_user_id),
+                INDEX idx_document_shares_recipient (workspace_id, shared_with_user_id),
+                CONSTRAINT fk_document_shares_document FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE,
+                CONSTRAINT fk_document_shares_workspace FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE,
+                CONSTRAINT fk_document_shares_recipient FOREIGN KEY (shared_with_user_id) REFERENCES users(id) ON DELETE CASCADE,
+                CONSTRAINT fk_document_shares_creator FOREIGN KEY (shared_by_user_id) REFERENCES users(id) ON DELETE SET NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        ");
+
+        if ($tableExisted) {
+            return;
+        }
+
+        $db->exec("
+            INSERT IGNORE INTO document_shares
+                (document_id, workspace_id, shared_with_user_id, shared_by_user_id, permission, created_at)
+            SELECT d.id, d.workspace_id, u.id, NULL,
+                   CASE WHEN d.shared_permission = 'edit' THEN 'edit' ELSE 'view' END,
+                   d.updated_at
+            FROM documents d
+            INNER JOIN members m ON m.workspace_id = d.workspace_id AND m.status = 'active'
+            INNER JOIN users u ON LOWER(u.email) = LOWER(m.email)
+            WHERE d.is_shared = 1 AND u.id <> d.uploaded_by;
+        ");
+    }
+
+    private static function migrateLegacyDocumentFiles(PDO $db): void
+    {
+        $uploadRoot = realpath(UPLOAD_PATH);
+        $privateRoot = realpath(DOCUMENT_UPLOAD_PATH);
+        if ($uploadRoot === false || $privateRoot === false || $uploadRoot === $privateRoot) {
+            return;
+        }
+
+        $stmt = $db->query("
+            SELECT DISTINCT storage_path
+            FROM documents
+            WHERE storage_path IS NOT NULL AND storage_path <> ''
+        ");
+        foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $storagePath) {
+            if (!is_string($storagePath) || basename($storagePath) !== $storagePath) {
+                throw new RuntimeException('Lokasi dokumen lama tidak valid; migrasi penyimpanan dihentikan.');
+            }
+            $legacyPath = $uploadRoot . DIRECTORY_SEPARATOR . $storagePath;
+            if (is_link($legacyPath)) {
+                throw new RuntimeException('Lokasi dokumen lama menunjuk ke symbolic link; migrasi penyimpanan dihentikan.');
+            }
+            if (!is_file($legacyPath)) {
+                continue;
+            }
+
+            $privatePath = $privateRoot . DIRECTORY_SEPARATOR . $storagePath;
+            if (is_link($privatePath)) {
+                throw new RuntimeException('Lokasi dokumen privat menunjuk ke symbolic link; migrasi penyimpanan dihentikan.');
+            }
+            if (!copy($legacyPath, $privatePath)) {
+                throw new RuntimeException('Berkas dokumen lama tidak dapat dipindahkan ke penyimpanan privat.');
+            }
+            $legacySize = filesize($legacyPath);
+            $privateSize = filesize($privatePath);
+            $legacyHash = hash_file('sha256', $legacyPath);
+            $privateHash = hash_file('sha256', $privatePath);
+            if ($legacySize === false
+                || $privateSize === false
+                || $legacyHash === false
+                || $privateHash === false
+                || $legacySize !== $privateSize
+                || !hash_equals($legacyHash, $privateHash)) {
+                throw new RuntimeException('Berkas dokumen lama tidak dapat dipindahkan ke penyimpanan privat.');
+            }
+            if (!unlink($legacyPath)) {
+                throw new RuntimeException('Berkas dokumen lama gagal dihapus setelah migrasi privat.');
             }
         }
     }
@@ -227,7 +316,7 @@ class Database
             $stmtFolder->execute($f);
         }
 
-        // 4. Buat contoh berkas fisik demo di uploads/ jika belum ada
+        // 4. Buat contoh berkas fisik demo di penyimpanan privat
         self::createSampleFiles();
 
         // 5. Seeding Dokumen
@@ -419,11 +508,14 @@ class Database
 
         $deletedFileCount = 0;
         $uploadFiles = [];
-        if (is_dir(UPLOAD_PATH)) {
-            $files = new FilesystemIterator(UPLOAD_PATH, FilesystemIterator::SKIP_DOTS);
+        foreach ([UPLOAD_PATH, DOCUMENT_UPLOAD_PATH] as $uploadDirectory) {
+            if (!is_dir($uploadDirectory)) {
+                continue;
+            }
+            $files = new FilesystemIterator($uploadDirectory, FilesystemIterator::SKIP_DOTS);
             foreach ($files as $file) {
                 if ($file->isLink() || $file->isDir() || !$file->isFile()) {
-                    throw new RuntimeException('Isi uploads/ bukan berkas biasa: ' . $file->getFilename());
+                    throw new RuntimeException('Isi direktori upload bukan berkas biasa: ' . $file->getFilename());
                 }
                 $uploadFiles[] = $file->getPathname();
             }
@@ -692,7 +784,7 @@ class Database
     private static function createSampleFiles(): void
     {
         // 1. Buat PDF contoh
-        $samplePdfPath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'sample_kontrak.pdf';
+        $samplePdfPath = DOCUMENT_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'sample_kontrak.pdf';
         if (!file_exists($samplePdfPath)) {
             $pdfContent = "%PDF-1.4\n" .
                 "1 0 obj <</Type /Catalog /Pages 2 0 R>> endobj\n" .
@@ -729,7 +821,7 @@ class Database
         }
 
         // 2. Buat berkas teks contoh
-        $sampleTxtPath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'sample_catatan.txt';
+        $sampleTxtPath = DOCUMENT_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'sample_catatan.txt';
         if (!file_exists($sampleTxtPath)) {
             $txt = "ARSIPKU - NOTULENSI RAPAT STRATEGIS Q2 2026\n" .
                    "============================================\n" .
@@ -743,14 +835,14 @@ class Database
         }
 
         // 3. Buat gambar logo contoh
-        $sampleLogoPath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'sample_logo.png';
+        $sampleLogoPath = DOCUMENT_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'sample_logo.png';
         if (!file_exists($sampleLogoPath)) {
             $tinyPng = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
             file_put_contents($sampleLogoPath, $tinyPng);
         }
 
         // 4. Buat gambar KTP contoh
-        $sampleKtpPath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'sample_ktp.jpg';
+        $sampleKtpPath = DOCUMENT_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'sample_ktp.jpg';
         if (!file_exists($sampleKtpPath)) {
             $tinyJpg = base64_decode('/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=');
             file_put_contents($sampleKtpPath, $tinyJpg);

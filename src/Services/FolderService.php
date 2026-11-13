@@ -56,6 +56,18 @@ class FolderService
         return $stmt->fetchAll();
     }
 
+    public function searchByName(string $workspaceId, string $query): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT id, name, parent_id
+            FROM folders
+            WHERE workspace_id = ? AND deleted_at IS NULL AND name LIKE ?
+            ORDER BY name ASC
+        ");
+        $stmt->execute([$workspaceId, '%' . trim($query) . '%']);
+        return $stmt->fetchAll();
+    }
+
     public function getById(string $id, string $workspaceId): ?array
     {
         $stmt = $this->db->prepare("

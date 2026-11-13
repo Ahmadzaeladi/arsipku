@@ -236,7 +236,7 @@
       <p class="ds-aside__title">Konten adalah hierarki</p>
       <p class="ark-body" style="color:var(--ark-text-secondary)">
         Nama berkas, ukuran, dan tanggal yang memimpin — bukan judul bagian. Judul halaman 24px adalah ukuran
-        terbesar di halaman isi. Densitas baris 40px.
+        terbesar di halaman isi. Densitas baris 48px.
       </p>
     </div>
     <div class="ds-aside">
@@ -442,7 +442,7 @@
             <tr><td><code>--ark-control-h-md</code></td><td class="ds-ratio">32px</td><td>default tombol, input, select</td></tr>
             <tr><td><code>--ark-control-h-lg</code></td><td class="ds-ratio">40px</td><td>aksi primer pada modal</td></tr>
             <tr><td><code>--ark-target-min</code></td><td class="ds-ratio">44px</td><td>target sentuh (<code>pointer: coarse</code> menaikkan kontrol)</td></tr>
-            <tr><td><code>--ark-row-h</code></td><td class="ds-ratio">40px</td><td>baris tabel &amp; list arsip (52px pada <code>pointer: coarse</code>)</td></tr>
+            <tr><td><code>--ark-row-h</code></td><td class="ds-ratio">48px</td><td>baris tabel &amp; list arsip (56px pada <code>pointer: coarse</code>)</td></tr>
             <tr><td><code>--ark-sidebar-w</code></td><td class="ds-ratio">248px</td><td>navigasi; 72px sebagai rail, drawer di bawah 1024px</td></tr>
             <tr><td><code>--ark-header-h</code></td><td class="ds-ratio">56px</td><td>bar alat halaman (kontrol 32px + ruang 12px)</td></tr>
             <tr><td><code>--ark-content-max</code></td><td class="ds-ratio">1240px</td><td>lebar isi halaman</td></tr>
@@ -720,7 +720,7 @@
 <section class="ds-section" id="tabel">
   <div class="ds-section__head">
     <h2 class="ark-title-section">Tabel arsip</h2>
-    <p class="ds-section__desc">Ini antarmuka utama produk. Baris 40px berisi 14px, header sticky 36px dengan micro-label, kolom sekunder hilang bertahap (1024px → 768px) alih-alih scroll horizontal. Kontainer datar: border + ruang, tanpa bayangan. Aksi baris selalu terlihat.</p>
+    <p class="ds-section__desc">Ini antarmuka utama produk. Baris 48px berisi 14px, header sticky 44px dengan micro-label, kolom sekunder hilang bertahap (1024px → 768px) alih-alih scroll horizontal. Kontainer datar: border + ruang, tanpa bayangan. Aksi baris selalu terlihat.</p>
   </div>
 
   <div class="ds-block">
@@ -1326,8 +1326,8 @@
       <thead><tr><th>Kelas</th><th>Komposisi</th><th>Aturan</th></tr></thead>
       <tbody>
         <tr><td><code>.ark-page-head</code></td><td><code>__text</code> (judul 24/600 + <code>.ark-title-sub</code>) · <code>__actions</code></td><td>Tanpa border, tanpa card, tanpa breadcrumb ganda. Aksi primer maksimal satu, di kanan, tinggi 40 (<code>--lg</code>) — kecuali head yang juga memuat pencarian: di situ semua kontrol setinggi 32 agar baris tidak berlapis.</td></tr>
-        <tr><td><code>.ark-section</code></td><td><code>__head</code> (judul 16/600 + <code>__more</code> / <code>__hint</code>) lalu isi</td><td>Pemisah default = ruang; <code>--ruled</code> menambah hairline hanya bila seksi langsung berisi list/tabel. Seksi tidak memberi margin sendiri — jarak antar blok dimiliki <code>.ark-content__body</code> (24px). Tombol yang berdiri langsung di dalamnya di-<code>align-self:flex-start</code> agar tidak melebar.</td></tr>
-        <tr><td><code>.ark-list__row</code></td><td>ikon 16 netral · <code>__main</code> (14/500 + meta 12) · <code>__end</code></td><td>min-height <code>--ark-row-h</code> (40px; 52px pada sentuh). Pemisah baris = <code>border-top --ark-border-subtle</code>, bukan latar selang-seling.</td></tr>
+        <tr><td><code>.ark-section</code></td><td><code>__head</code> (judul 16/600 + <code>__more</code> / <code>__hint</code>) lalu isi</td><td>Pemisah default = ruang; <code>--ruled</code> menambah hairline hanya bila seksi langsung berisi list/tabel. Seksi tidak memberi margin sendiri — jarak antar blok dimiliki <code>.ark-content__body</code> (32px). Tombol yang berdiri langsung di dalamnya di-<code>align-self:flex-start</code> agar tidak melebar.</td></tr>
+        <tr><td><code>.ark-list__row</code></td><td>ikon 16 netral · <code>__main</code> (14/500 + meta 12) · <code>__end</code></td><td>min-height <code>--ark-row-h</code> (48px; 56px pada sentuh). Pemisah baris = <code>border-top --ark-border-subtle</code>, bukan latar selang-seling.</td></tr>
         <tr><td><code>.ark-list__row--link</code></td><td><code>&lt;a&gt;</code> atau <code>&lt;button&gt;</code> sebaris penuh</td><td>Hover = <code>--ark-surface-hover</code> saja. Dilarang translate/scale/bayangan. <code>--inset</code> melebarkan area sentuh ke tepi kolom.</td></tr>
         <tr><td><code>.ark-meter</code></td><td><code>__label</code> · <code>__track</code> (4px) · <code>__value</code></td><td>Nilai lewat <code>--ark-meter-value</code>; state <code>.is-warning</code> &gt; 80%, <code>.is-critical</code> penuh. Wajib <code>role="progressbar"</code> + <code>aria-valuetext</code>. Bukan kartu, bukan donat.</td></tr>
         <tr><td><code>.ark-tile</code></td><td><code>__head</code> · <code>__main</code> · <code>__actions</code></td><td>Satu border <code>--ark-border-default</code>, radius <code>lg</code>, padding <code>--ark-pad-card</code>, tanpa bayangan; hover &amp; <code>.is-selected</code> hanya mengubah border/latar. Lebar kolom <code>minmax(--ark-tile-min, 1fr)</code>.</td></tr>

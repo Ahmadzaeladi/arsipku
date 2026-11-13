@@ -424,12 +424,33 @@ class MemberService
         if (strtolower($member['email']) === strtolower(currentUser()['email'])) {
             throw new MemberConflictException('Anda tidak dapat mengeluarkan diri sendiri dari workspace.');
         }
-        $stmt = $this->db->prepare("
-            DELETE FROM members
-            WHERE id = ? AND workspace_id = ? AND role != 'Owner'
-        ");
-        $stmt->execute([$id, $workspaceId]);
-        return $stmt->rowCount() > 0;
+        $this->db->beginTransaction();
+        try {
+            $userStmt = $this->db->prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?) LIMIT 1');
+            $userStmt->execute([$member['email']]);
+            $userId = $userStmt->fetchColumn();
+            if ($userId) {
+                $shareStmt = $this->db->prepare("
+                    DELETE FROM document_shares
+                    WHERE workspace_id = ? AND shared_with_user_id = ?
+                ");
+                $shareStmt->execute([$workspaceId, $userId]);
+            }
+
+            $deleteStmt = $this->db->prepare("
+                DELETE FROM members
+                WHERE id = ? AND workspace_id = ? AND role != 'Owner'
+            ");
+            $deleteStmt->execute([$id, $workspaceId]);
+            $removed = $deleteStmt->rowCount() > 0;
+            $this->db->commit();
+            return $removed;
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw $e;
+        }
     }
 
     private function findUsableLink(string $token): array

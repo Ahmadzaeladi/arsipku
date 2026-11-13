@@ -77,6 +77,29 @@ $hasFilter = !empty($currentQ) || !empty($currentType) || !empty($currentDate);
     </div>
 </div>
 
+<?php if (!empty($matchingSearchFolders)): ?>
+    <section class="ark-section" aria-labelledby="search-folders-title">
+        <div class="ark-section__head">
+            <h2 class="ark-section__title" id="search-folders-title">Folder yang cocok</h2>
+            <span class="ark-meta ark-num"><?= count($matchingSearchFolders) ?> folder</span>
+        </div>
+        <div class="ark-list">
+            <?php foreach ($matchingSearchFolders as $folder): ?>
+                <?php $folderName = (string) $folder['name']; ?>
+                <a class="ark-list__row ark-list__row--link"
+                    href="<?= url('folders', ['folder_id' => $folder['id']]) ?>">
+                    <span class="ark-list__icon" data-icon="folder"></span>
+                    <span class="ark-list__main">
+                        <span class="ark-list__title"><?= htmlspecialchars($folderName, ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="ark-list__meta">Folder · Buka untuk melihat isinya</span>
+                    </span>
+                    <span class="ark-list__end">Buka folder</span>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </section>
+<?php endif; ?>
+
 <!-- Penyaring aktif -->
 <?php if ($hasFilter): ?>
     <div class="ark-cluster" style="gap:var(--ark-space-2)">

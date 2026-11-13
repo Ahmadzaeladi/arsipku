@@ -43,11 +43,13 @@ export interface Document {
   updated_at: string;
   /** Set when the row lives in Trash. */
   deleted_at: string | null;
-  /**
-   * Server-issued download locator. The legacy endpoint returns an unauthenticated
-   * `uploads/<file>` path; the contract expects a scoped or signed URL instead.
-   */
+  /** Session- and workspace-scoped URL served by api/download.php. */
   download_url?: string | null;
+  preview_url?: string | null;
+  recipient_permission?: SharedPermission | null;
+  can_edit?: boolean;
+  can_delete?: boolean;
+  can_share?: boolean;
   folder_name?: string | null;
   folder_color?: FolderColor | null;
 }
@@ -72,6 +74,12 @@ export interface DocumentRow {
   updated_at?: unknown;
   deleted_at?: unknown;
   download_url?: unknown;
+  preview_url?: unknown;
+  recipient_permission?: unknown;
+  shared_by_name?: unknown;
+  can_edit?: unknown;
+  can_delete?: unknown;
+  can_share?: unknown;
   folder_name?: unknown;
   folder_color?: unknown;
   /** Legacy server-computed presentation fields. Ignored by the UI layer. */
@@ -139,7 +147,6 @@ export interface SetDocumentPermissionRequest extends WorkspaceScopedParams {
 export interface DocumentDetail extends Document {
   /** Effective capabilities for the caller, computed by the server. */
   capabilities?: DocumentCapabilities;
-  preview_url?: string | null;
   versions_count?: number;
   latest_version_number?: number;
   breadcrumbs?: { id: string; name: string }[];

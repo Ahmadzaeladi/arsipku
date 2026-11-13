@@ -14,40 +14,7 @@ function initApp() {
     setupModals();
     setupKeyboardShortcuts();
     setupWorkspaceSwitcher();
-    setupGlobalSearch();
     setupMemberInvitationActions();
-}
-
-/**
- * Global Search Header
- */
-function setupGlobalSearch() {
-    const globalSearch = document.getElementById('global-search');
-    if (!globalSearch) return;
-
-    globalSearch.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const query = globalSearch.value.trim();
-            const currentUrl = new URL(window.location.href);
-            const isDocPage = currentUrl.searchParams.get('page') === 'documents';
-
-            if (isDocPage) {
-                const docSearch = document.getElementById('doc-search');
-                if (docSearch) {
-                    docSearch.value = query;
-                    docSearch.dispatchEvent(new Event('input'));
-                }
-            } else {
-                currentUrl.searchParams.set('page', 'documents');
-                if (query) {
-                    currentUrl.searchParams.set('q', query);
-                } else {
-                    currentUrl.searchParams.delete('q');
-                }
-                window.location.href = currentUrl.toString();
-            }
-        }
-    });
 }
 
 /**

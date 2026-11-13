@@ -1,8 +1,9 @@
 /**
  * ArsipKu - search service.
  *
- * Live behaviour: search is a `LIKE` over name/original_name/owner_name inside
- * api/documents.php, so there are no facets, no snippets, and no relevance score.
+ * Live behaviour: search is a `LIKE` over document name/original name/owner,
+ * including the containing folder name, inside api/documents.php. There are no
+ * facets, no snippets, and no relevance score.
  * Those fields stay undefined and `degraded: true` tells the UI to hide the parts of
  * the panel the backend cannot feed yet (docs/api-contract.md #10).
  *

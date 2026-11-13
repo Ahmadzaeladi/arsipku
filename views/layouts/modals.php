@@ -360,7 +360,7 @@
 <!-- 6. MODAL: BAGIKAN DOKUMEN                  -->
 <!-- ========================================== -->
 <div id="modal-share" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-    <div class="modal-content w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+    <div class="modal-content w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
@@ -376,30 +376,58 @@
             </button>
         </div>
 
-        <div class="p-6 space-y-4">
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Tautan Akses Cepat
-                </label>
-                <div class="flex items-center rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
-                    <input type="text" id="share-link-input" readonly class="flex-1 px-3 py-2 text-xs font-mono text-slate-600 bg-transparent border-none focus:ring-0 select-all">
-                    <button type="button" class="btn-interactive px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium shrink-0" onclick="navigator.clipboard.writeText(document.getElementById('share-link-input').value); showToast('Tautan berhasil disalin ke papan klip!', 'success');">
-                        Salin
-                    </button>
+        <form id="form-share-document">
+            <input type="hidden" id="share-doc-id" name="id">
+            <div class="p-6 space-y-5">
+                <fieldset class="space-y-2.5">
+                    <legend class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                        Siapa yang dapat mengakses?
+                    </legend>
+                    <label class="flex items-start gap-3 rounded-xl border border-slate-200 p-3 cursor-pointer hover:bg-slate-50">
+                        <input type="radio" name="share_scope" value="workspace" class="mt-0.5 text-indigo-600 focus:ring-indigo-500">
+                        <span>
+                            <span class="block text-sm font-medium text-slate-800">Seluruh workspace</span>
+                            <span class="block text-xs text-slate-500 mt-0.5">Semua anggota aktif dapat melihat dokumen ini.</span>
+                        </span>
+                    </label>
+                    <label class="flex items-start gap-3 rounded-xl border border-slate-200 p-3 cursor-pointer hover:bg-slate-50">
+                        <input type="radio" name="share_scope" value="selected" class="mt-0.5 text-indigo-600 focus:ring-indigo-500">
+                        <span>
+                            <span class="block text-sm font-medium text-slate-800">Anggota tertentu</span>
+                            <span class="block text-xs text-slate-500 mt-0.5">Hanya pemilik, Owner/Admin, dan anggota terpilih yang dapat melihat.</span>
+                        </span>
+                    </label>
+                </fieldset>
+
+                <div id="share-recipients-section" class="space-y-2" hidden>
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-semibold text-slate-700 uppercase tracking-wider">Pilih anggota</label>
+                        <span id="share-recipient-count" class="text-xs text-slate-500"></span>
+                    </div>
+                    <div id="share-member-list" class="max-h-48 overflow-y-auto rounded-xl border border-slate-200 divide-y divide-slate-100">
+                        <p class="p-4 text-sm text-slate-500">Memuat daftar anggota...</p>
+                    </div>
+                </div>
+
+                <div id="share-permission-section" class="space-y-1.5" hidden>
+                    <label for="share-permission" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Izin anggota terpilih</label>
+                    <select id="share-permission" name="permission" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="view">Hanya melihat</option>
+                        <option value="edit">Melihat, mengubah nama, dan memindahkan</option>
+                    </select>
+                </div>
+
+                <div class="rounded-xl bg-indigo-50/50 p-3.5 border border-indigo-100 text-xs text-indigo-950 flex items-start gap-2.5">
+                    <span class="text-indigo-600 shrink-0 mt-0.5"><?= renderSvgIcon('shield-check', 'w-4 h-4') ?></span>
+                    <p>Anggota harus masuk ke akun ArsipKu dan menjadi anggota aktif workspace. Tautan berkas saja tidak memberikan akses.</p>
                 </div>
             </div>
 
-            <div class="rounded-xl bg-indigo-50/50 p-3.5 border border-indigo-100 text-xs text-indigo-950 flex items-start gap-2.5">
-                <span class="text-indigo-600 shrink-0 mt-0.5"><?= renderSvgIcon('shield-check', 'w-4 h-4') ?></span>
-                <p>Dokumen yang dibagikan dilindungi oleh kebijakan otorisasi workspace. Hanya pengguna yang terverifikasi yang dapat membuka tautan ini.</p>
+            <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button type="button" class="px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-800" data-close-modal="modal-share">Batal</button>
+                <button type="submit" id="share-save-btn" class="btn-interactive px-5 py-2 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs">Simpan akses</button>
             </div>
-        </div>
-
-        <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end">
-            <button type="button" class="btn-interactive px-5 py-2 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs" data-close-modal="modal-share">
-                Selesai
-            </button>
-        </div>
+        </form>
     </div>
 </div>
 

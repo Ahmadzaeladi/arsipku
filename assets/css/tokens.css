@@ -135,7 +135,7 @@
   --ark-gap-row: var(--ark-space-2);
   --ark-gap-stack-sm: var(--ark-space-2);
   --ark-gap-stack-md: var(--ark-space-4);
-  --ark-gap-stack-lg: var(--ark-space-6);    /* antar seksi pada halaman datar */
+  --ark-gap-stack-lg: var(--ark-space-8);    /* antar seksi pada halaman datar */
 
   /* --- 8. RADII ---------------------------------------------------------
      Disiplin: kontrol & panel = md(6)/lg(8). xl(12) HANYA modal besar,
@@ -188,7 +188,7 @@
   --ark-control-h-md: 32px;
   --ark-control-h-lg: 40px;
   --ark-target-min: 44px;          /* target sentuh (pointer kasar) */
-  --ark-row-h: 40px;               /* baris tabel: padat, 14px + ruang 13px */
+  --ark-row-h: 48px;               /* baris tabel/list: lega, 14px + ruang */
   --ark-sidebar-w: 248px;         /* navigasi utama; drawer di bawah 1024px */
   --ark-sidebar-w-collapsed: 72px;/* rail ikon (desktop saja) */
   --ark-header-h: 56px;           /* bar alat: kontrol 32px + 2x ruang 12px */
@@ -204,6 +204,6 @@
     --ark-control-h-sm: 36px;
     --ark-control-h-md: 44px;
     --ark-control-h-lg: 48px;
-    --ark-row-h: 52px;
+    --ark-row-h: 56px;
   }
 }

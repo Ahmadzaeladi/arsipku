@@ -407,7 +407,7 @@ Aturan:
 
 | Param | Tipe | Keterangan |
 |---|---|---|
-| `q` | string | free-text; hari ini `LIKE %…%` atas `name`, `original_name`, `owner_name` |
+| `q` | string | free-text; `LIKE %…%` atas `name`, `original_name`, `owner_name`, dan nama folder |
 | `type` | `all,pdf,word,spreadsheet,excel,image,archive,zip,txt` | bucket ekstensi, bukan MIME |
 | `date_range` | `all,today,7days,30days,this_year` | filter `updated_at` |
 | `folder_id` | id atau `root` | `root` = dokumen tanpa folder; absen = semua folder |
@@ -430,7 +430,7 @@ Respons: `data: Document[]` + `meta`. `Document` row:
   "is_favorite": false, "is_shared": true, "shared_permission": "view",
   "created_at": "2026-03-24T14:30:00+07:00", "updated_at": "2026-03-24T14:30:00+07:00",
   "deleted_at": null,
-  "download_url": "api/download.php?ticket=eyJ1IjoiZG9jX2FiY18wMSJ9",
+  "download_url": "api/download.php?id=doc_abc_01&disposition=attachment",
   "folder_name": "Legalitas & Perjanjian", "folder_color": "indigo"
 }
 ```
@@ -440,11 +440,34 @@ Catatan:
 - `folder_name`/`folder_color` adalah hasil JOIN dan **wajib** ikut diperbarui saat dokumen
   dipindahkan atau folder diganti nama. Frontend menurunkan label dari `folder_id` setiap baca,
   dan backend harus melakukan hal yang sama.
-- `download_url` sebaiknya berupa ticket bertanda tangan + kedaluwarsa (§6.3), bukan path publik
-  `uploads/...`. Bila belum ada, kirim `null` — UI menampilkan "Tautan unduh belum dikirim server"
-  alih-alih tautan yang bocor ke tenant lain.
+- Implementasi PHP mengembalikan URL ke endpoint unduh terautentikasi. Jangan pernah
+  mengembalikan path publik `uploads/...`; bila URL unduh tidak tersedia, kirim `null`.
 - Jangan mengandalkan filter di client: hasil `list` harus sudah terscope `workspace_id` dan
   (bila diminta) `folder_id`.
+
+### 4.1.1 Menu “Dibagikan”
+
+Menu sidebar `Dibagikan` membuka `index.php?page=shared` dan hanya menampilkan dokumen yang memiliki
+grant aktif untuk pengguna yang sedang masuk (`document_shares.shared_with_user_id`). Dokumen Sampah
+tidak ditampilkan. Dokumen yang berlaku untuk seluruh workspace tidak dianggap sebagai grant personal.
+
+Dialog **Atur berbagi** memungkinkan pengunggah atau Owner/Admin memilih seluruh workspace atau
+anggota aktif tertentu. Pilihan anggota tertentu membatasi akses kepada pengunggah, Owner/Admin, dan
+penerima terpilih. Semua penerima mendapat izin yang sama: `view` atau `edit`; `edit` hanya mengizinkan
+ubah nama dan pindah folder, bukan hapus atau berbagi ulang. Mengembalikan cakupan ke seluruh workspace
+mencabut grant eksplisit dan menonaktifkan pembatasan penerima.
+
+`GET api/documents.php?action=share_info&id=<id>` mengembalikan daftar anggota aktif dan grant saat ini.
+`POST api/documents.php` dengan JSON `action=share`, `id`, `scope` (`workspace|selected`),
+`recipients` (array ID akun), dan `permission` (`view|edit`) menyimpan pilihan. Request POST harus
+menyertakan token CSRF melalui `X-CSRF-Token`. Hanya anggota aktif workspace yang boleh dipilih;
+penerima kosong, ID di luar workspace, dan izin yang tidak dikenal ditolak.
+
+Berbagi bukan tautan publik. Penerima harus masuk dan tetap menjadi anggota aktif workspace; berkas
+dikirim melalui `api/download.php` setelah pemeriksaan akses. Menghapus anggota workspace juga
+mencabut grant yang ditujukan kepadanya. `documents.is_shared` menandai dokumen yang aksesnya dibatasi;
+`document_shares` adalah daftar grant penerima. Saat migrasi awal, dokumen lama yang telah ditandai
+dibagikan mendapat grant ke seluruh anggota aktif agar akses sebelumnya tidak hilang.
 
 ### 4.2 `action=detail` (GET, `id`)
 
@@ -452,18 +475,17 @@ Mengembalikan `Document` ditambah:
 
 ```json
 {
-  "capabilities": {
-    "can_view": true, "can_download": true, "can_rename": true, "can_move": true,
-    "can_delete": true, "can_share": true, "can_restore": false,
-    "can_permanent_delete": false, "can_upload_version": true
-  },
-  "preview_url": "api/download.php?ticket=…&disposition=inline",
+  "preview_url": "api/download.php?id=doc_abc_01&disposition=inline",
+  "can_edit": true, "can_delete": true, "can_share": true,
+  "recipient_permission": "edit",
   "versions_count": 3, "latest_version_number": 3,
   "breadcrumbs": [ { "id": "fld_abc_leg", "name": "Legalitas & Perjanjian" } ]
 }
 ```
 
-`capabilities` dihitung server (lihat §8) dan hanya untuk kenyamanan tampilan.
+PHP menghitung `can_edit`, `can_delete`, dan `can_share` untuk mengatur tampilan tindakan; server
+tetap memeriksa izin kembali untuk setiap operasi. Field versi dan `capabilities` generik adalah
+bagian dari kontrak target, belum dikirim oleh PHP saat ini.
 
 ### 4.3 Aksi write
 
@@ -531,7 +553,7 @@ Aturan:
 ## 6. Upload dan download
 
 **File upload:** `api/upload.php` — status **live** (single-shot).
-**File download:** `api/download.php` — status **planned**.
+**File download:** `api/download.php` — status **live** untuk unduhan dan pratinjau terautentikasi.
 
 ### 6.1 `action=limits` (POST, body `{}`)
 
@@ -600,7 +622,7 @@ Ketentuan:
 
 ### 6.3 Download dan pratinjau
 
-Kontrak target (`api/download.php`, **planned**):
+Kontrak target dengan tiket sementara masih **planned**:
 
 | Action | Method | Body/params | Respons |
 |---|---|---|---|
@@ -629,9 +651,13 @@ Kontrak target (`api/download.php`, **planned**):
 - `preview_url` pada §4.2 memakai ticket yang sama dengan `disposition=inline`.
 - Dukung `Range` untuk pemutakan pratinjau PDF berukuran besar, dan `Cache-Control: private, no-store`
   agar dokumen tidak tersimpan di cache bersama.
-- Migrasi bertahap: selama `uploads/` masih publik, `list`/`detail` boleh mengirim
-  `download_url` lama, tetapi **`is_shared=false` tidak boleh menjadi satu-satunya gerbang** —
-  pemeriksaan anggota tetap wajib di `download.php`.
+
+Implementasi PHP saat ini menerima `GET api/download.php?id=<document_id>&disposition=attachment|inline`.
+Endpoint menggunakan workspace aktif, memeriksa keanggotaan dan grant dokumen, membatasi `inline`
+ke tipe aman (PDF, gambar raster, dan teks), serta mengirim berkas tanpa cache. Upload baru berada
+di luar document root. Saat koneksi database dibuat, file dokumen lama yang masih ada di `uploads/`
+dipindahkan ke penyimpanan privat. Link statis ke `/uploads/` ditolak oleh `.htaccess`, kecuali berkas
+avatar dan logo workspace dengan nama terverifikasi.
 
 ### 6.4 Chunked upload (opsional, kontrak sudah didefinisikan tipe-typenya)
 
@@ -694,10 +720,9 @@ Ketentuan:
 
 ## 8. Permissions
 
-**File:** `api/permissions.php` — status **planned**.
-Fakta permission hari ini hanya `documents.is_shared` + `documents.shared_permission`;
-`services/permissions.ts` memetakannya secara konservatif (`edit` tidak pernah tersirat) dan
-sisa kapabilitas seperti grant dan tautan berbagi belum tersedia melalui JSON API.
+**File:** `api/permissions.php` — status **planned** untuk API izin generik.
+Grant berbagi dokumen sudah tersedia melalui `documents.php` seperti dijelaskan pada §4.1.1;
+izin efektif folder/workspace, matriks role, dan tautan publik tetap belum tersedia.
 
 | Action | Method | Params/body | Respons |
 |---|---|---|---|
@@ -768,8 +793,8 @@ Ketentuan:
 - `grantee_type` = `user | member | role | public_link`; `grantee_id` wajib kecuali
   `public_link`. Grant ke folder bersifat cascade ke descendant **kecuali** server menolak.
 - Frontend tetap memeriksa ulang per-request: menyembunyikan tombol bukan pengganti `403`.
-- Selama `permissions.php` belum ada, UI memakai dialog "Bagikan tautan" sebagai *deep link*
-  halaman preview, bukan sebagai record sharing nyata (lihat `ui/forms.ts:openShareModal`).
+- Grant penerima dokumen saat ini diatur melalui `documents.php?action=share`, bukan melalui
+  endpoint izin generik. Tidak tersedia tautan publik, password berbagi, atau grant folder.
 - `password` pada share link tidak pernah dikembalikan; hanya `password_protected: boolean`.
 
 ---

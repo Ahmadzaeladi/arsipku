@@ -21,7 +21,6 @@ import type { Member, MemberRoleName, MemberStatus } from '../types/member';
 import type { UploadFailure, UploadResult } from '../types/upload';
 import type { DocumentVersion } from '../types/version';
 import type { Workspace, WorkspaceStats } from '../types/workspace';
-import { getConfig } from './config';
 
 /* ------------------------------------------------------------------ primitives */
 
@@ -169,21 +168,27 @@ export function normalizeDocument(row: DocumentRow | Record<string, unknown>): D
     updated_at: asDate(r.updated_at),
     deleted_at: r.deleted_at === undefined ? null : asNullStr(r.deleted_at),
     download_url: normalizeDownloadUrl(r.download_url),
+    preview_url: asNullStr(r.preview_url),
+    recipient_permission: r.recipient_permission === 'edit' || r.recipient_permission === 'view'
+      ? r.recipient_permission
+      : null,
+    can_edit: typeof r.can_edit === 'boolean' ? r.can_edit : undefined,
+    can_delete: typeof r.can_delete === 'boolean' ? r.can_delete : undefined,
+    can_share: typeof r.can_share === 'boolean' ? r.can_share : undefined,
     folder_name: asNullStr(r.folder_name),
     folder_color: normalizeFolderColor(r.folder_color),
   };
 }
 
 /**
- * Legacy rows expose `uploads/<file>`, which is an unauthenticated path. When the
- * download ticket endpoint exists the server value is used verbatim instead.
+ * The server returns a session-scoped api/download.php URL; never construct a
+ * public uploads/ URL from a storage filename.
  */
 export function normalizeDownloadUrl(value: unknown): string | null {
   const raw = asNullStr(value);
   if (!raw) return null;
   if (/^https?:\/\//i.test(raw) || raw.startsWith('/') || raw.includes('?')) return raw;
-  const uploads = getConfig().uploadsBase.replace(/\/+$/, '');
-  return `${uploads}/${raw.replace(/^uploads\//, '')}`;
+  return null;
 }
 
 export function normalizeFolderColor(value: unknown): Folder['color'] | null {

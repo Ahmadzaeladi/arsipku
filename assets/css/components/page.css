@@ -41,7 +41,7 @@
 .ark-section {
   display: flex;
   flex-direction: column;
-  gap: var(--ark-space-3);
+  gap: var(--ark-space-4);
 }
 
 .ark-section__head {
@@ -72,7 +72,7 @@
 }
 
 .ark-section--ruled > .ark-section__head {
-  padding-bottom: var(--ark-space-2);
+  padding-bottom: var(--ark-space-3);
   border-bottom: 1px solid var(--ark-border-default);
 }
 
@@ -82,7 +82,7 @@
 /* --- 3. List datar ------------------------------------------------------
    Aktivitas, pintasan folder, anggota, hasil pencarian. Baris = ikon netral
    + judul + meta + ekor (waktu/aksi). Tanpa latar, tanpa bayangan.
-   Padding blok 6px sama dengan sel tabel, jadi list dan tabel yang berdiri
+   Padding blok 8px sama dengan sel tabel, jadi list dan tabel yang berdiri
    berdekatan punya irama baris yang identik.
    --link: baris dapat diklik (hover = surface-hover, bukan translate/scale). */
 .ark-list {
@@ -99,7 +99,7 @@
   align-items: center;
   gap: var(--ark-space-3);
   min-height: var(--ark-row-h);
-  padding: var(--ark-space-1x5) var(--ark-space-2);
+  padding: var(--ark-space-2) var(--ark-space-2);
   text-align: left;
   color: inherit;
 }

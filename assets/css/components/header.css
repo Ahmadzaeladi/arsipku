@@ -54,6 +54,28 @@
   min-width: 0;
 }
 
+.ark-header__search-submit {
+  position: absolute;
+  left: var(--ark-space-1);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ark-control-h-md);
+  height: var(--ark-control-h-md);
+  color: var(--ark-text-tertiary);
+  border-radius: var(--ark-radius-md);
+}
+.ark-header__search-submit:hover {
+  color: var(--ark-text-primary);
+  background-color: var(--ark-surface-hover);
+}
+.ark-header__search-submit:focus-visible {
+  outline: 2px solid var(--ark-accent);
+  outline-offset: -2px;
+}
+.ark-header__search-submit .ark-search__icon { position: static; }
+
 /* Petunjuk pintasan menempel di kanan field, jadi ruang teksnya menyempit. */
 .ark-header__search .ark-search__field { padding-right: var(--ark-space-10); }
 

@@ -75,7 +75,7 @@ try {
 
         // Generate safe unique storage filename while retaining readability
         $safeStorageName = 'up_' . date('Ymd_His') . '_' . substr(md5(uniqid()), 0, 8) . '.' . $ext;
-        $targetPath = UPLOAD_PATH . DIRECTORY_SEPARATOR . $safeStorageName;
+        $targetPath = DOCUMENT_UPLOAD_PATH . DIRECTORY_SEPARATOR . $safeStorageName;
 
         if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
             $errors[] = "Gagal memindahkan file {$origName} ke direktori penyimpanan";

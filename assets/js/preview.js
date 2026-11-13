@@ -79,17 +79,15 @@ window.openDocumentPreview = async function(docId) {
         }
 
         if (shareBtn) {
+            shareBtn.hidden = !doc.can_share;
             shareBtn.onclick = () => {
                 closeModal('modal-preview');
-                const titleTarget = document.getElementById('share-doc-name');
-                const urlInput = document.getElementById('share-link-input');
-                if (titleTarget) titleTarget.textContent = doc.name;
-                if (urlInput) urlInput.value = window.location.origin + window.location.pathname + '?page=documents&id=' + doc.id;
-                openModal('modal-share');
+                window.openShareDialog(doc.id, doc.name);
             };
         }
 
         if (renameBtn) {
+            renameBtn.hidden = !doc.can_edit;
             renameBtn.onclick = () => {
                 closeModal('modal-preview');
                 const idInput = document.getElementById('rename-doc-id');
@@ -139,23 +137,24 @@ async function renderFilePreview(container, doc) {
     if (!container) return;
 
     const ext = doc.extension.toLowerCase();
-    const fileUrl = doc.download_url;
+    const fileUrl = doc.preview_url;
+    const safeName = escapeHtml(doc.name);
 
     // 1. PDF
     if (ext === 'pdf') {
         container.innerHTML = `
             <div class="w-full h-[70vh] bg-slate-100 rounded-xl overflow-hidden shadow-inner flex flex-col">
-                <iframe src="${fileUrl}#view=FitH" class="w-full h-full border-0" title="${doc.name}"></iframe>
+                <iframe src="${fileUrl}#view=FitH" class="w-full h-full border-0" title="${safeName}"></iframe>
             </div>
         `;
         return;
     }
 
-    // 2. Images (PNG, JPG, JPEG, WEBP, SVG)
-    if (['png', 'jpg', 'jpeg', 'webp', 'svg'].includes(ext)) {
+    // 2. Raster images (SVG is intentionally download-only)
+    if (['png', 'jpg', 'jpeg', 'webp'].includes(ext)) {
         container.innerHTML = `
             <div class="w-full min-h-[50vh] max-h-[70vh] flex items-center justify-center bg-slate-950/5 rounded-xl p-4 overflow-auto">
-                <img src="${fileUrl}" alt="${doc.name}" class="max-h-[65vh] max-w-full object-contain rounded-lg shadow-md border border-slate-200/80">
+                <img src="${fileUrl}" alt="${safeName}" class="max-h-[65vh] max-w-full object-contain rounded-lg shadow-md border border-slate-200/80">
             </div>
         `;
         return;
@@ -183,12 +182,12 @@ async function renderFilePreview(container, doc) {
             <div class="w-16 h-16 rounded-2xl ${doc.meta.bg} flex items-center justify-center mb-4 shadow-xs">
                 <span class="text-xl font-bold uppercase">${ext}</span>
             </div>
-            <h4 class="text-base font-semibold text-slate-800">${doc.name}</h4>
+            <h4 class="text-base font-semibold text-slate-800">${safeName}</h4>
             <p class="text-sm text-slate-500 mt-1 max-w-md">
                 Pratinjau inline untuk tipe dokumen <strong>${doc.meta.type}</strong> belum didukung oleh peramban web secara langsung. Anda dapat mengunduh dokumen untuk membukanya secara utuh.
             </p>
             <div class="mt-6 flex items-center gap-3">
-                <a href="${fileUrl}" download="${doc.name}" class="btn-interactive inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-sm">
+                <a href="${doc.download_url}" class="btn-interactive inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     Unduh Dokumen (${doc.formatted_size})
                 </a>

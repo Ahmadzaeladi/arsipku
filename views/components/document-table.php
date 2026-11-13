@@ -99,12 +99,14 @@ $colCount = $isTrash ? 6 : 7;
 
                                 <div class="ark-menu ark-menu--right" id="doc-menu-<?= $doc['id'] ?>" role="menu" hidden>
                                     <?php if ($isTrash): ?>
-                                        <button type="button" class="ark-menu__item btn-action-restore" role="menuitem" data-doc-id="<?= $doc['id'] ?>">
-                                            <span data-icon="restore"></span><span class="ark-menu__text">Pulihkan dokumen</span>
-                                        </button>
-                                        <button type="button" class="ark-menu__item ark-menu__item--danger btn-action-permanent-delete" role="menuitem" data-doc-id="<?= $doc['id'] ?>" data-doc-name="<?= htmlspecialchars($doc['name']) ?>">
-                                            <span data-icon="trash"></span><span class="ark-menu__text">Hapus permanen</span>
-                                        </button>
+                                        <?php if (!empty($doc['can_delete'])): ?>
+                                            <button type="button" class="ark-menu__item btn-action-restore" role="menuitem" data-doc-id="<?= $doc['id'] ?>">
+                                                <span data-icon="restore"></span><span class="ark-menu__text">Pulihkan dokumen</span>
+                                            </button>
+                                            <button type="button" class="ark-menu__item ark-menu__item--danger btn-action-permanent-delete" role="menuitem" data-doc-id="<?= $doc['id'] ?>" data-doc-name="<?= htmlspecialchars($doc['name']) ?>">
+                                                <span data-icon="trash"></span><span class="ark-menu__text">Hapus permanen</span>
+                                            </button>
+                                        <?php endif; ?>
                                     <?php else: ?>
                                         <button type="button" class="ark-menu__item btn-action-preview" role="menuitem" data-doc-id="<?= $doc['id'] ?>">
                                             <span data-icon="eye"></span><span class="ark-menu__text">Pratinjau</span>
@@ -112,19 +114,25 @@ $colCount = $isTrash ? 6 : 7;
                                         <a href="<?= $doc['download_url'] ?>" download="<?= htmlspecialchars($doc['name']) ?>" class="ark-menu__item" role="menuitem">
                                             <span data-icon="download"></span><span class="ark-menu__text">Unduh dokumen</span>
                                         </a>
-                                        <button type="button" class="ark-menu__item btn-action-rename" role="menuitem" data-doc-id="<?= $doc['id'] ?>" data-doc-name="<?= htmlspecialchars($doc['name']) ?>" data-doc-ext="<?= htmlspecialchars($doc['extension']) ?>">
-                                            <span data-icon="pencil"></span><span class="ark-menu__text">Ubah nama</span>
-                                        </button>
-                                        <button type="button" class="ark-menu__item btn-action-move" role="menuitem" data-doc-id="<?= $doc['id'] ?>" data-doc-folder-id="<?= $doc['folder_id'] ?? '' ?>">
-                                            <span data-icon="move"></span><span class="ark-menu__text">Pindahkan</span>
-                                        </button>
-                                        <button type="button" class="ark-menu__item btn-action-share" role="menuitem" data-doc-id="<?= $doc['id'] ?>" data-doc-name="<?= htmlspecialchars($doc['name']) ?>">
-                                            <span data-icon="share"></span><span class="ark-menu__text">Bagikan tautan</span>
-                                        </button>
-                                        <div class="ark-menu__separator" role="separator"></div>
-                                        <button type="button" class="ark-menu__item ark-menu__item--danger btn-action-delete" role="menuitem" data-doc-id="<?= $doc['id'] ?>" data-doc-name="<?= htmlspecialchars($doc['name']) ?>">
-                                            <span data-icon="trash"></span><span class="ark-menu__text">Pindahkan ke sampah</span>
-                                        </button>
+                                        <?php if (!empty($doc['can_edit'])): ?>
+                                            <button type="button" class="ark-menu__item btn-action-rename" role="menuitem" data-doc-id="<?= $doc['id'] ?>" data-doc-name="<?= htmlspecialchars($doc['name']) ?>" data-doc-ext="<?= htmlspecialchars($doc['extension']) ?>">
+                                                <span data-icon="pencil"></span><span class="ark-menu__text">Ubah nama</span>
+                                            </button>
+                                            <button type="button" class="ark-menu__item btn-action-move" role="menuitem" data-doc-id="<?= $doc['id'] ?>" data-doc-folder-id="<?= $doc['folder_id'] ?? '' ?>">
+                                                <span data-icon="move"></span><span class="ark-menu__text">Pindahkan</span>
+                                            </button>
+                                        <?php endif; ?>
+                                        <?php if (!empty($doc['can_share'])): ?>
+                                            <button type="button" class="ark-menu__item btn-action-share" role="menuitem" data-doc-id="<?= $doc['id'] ?>" data-doc-name="<?= htmlspecialchars($doc['name']) ?>">
+                                                <span data-icon="share"></span><span class="ark-menu__text">Atur berbagi</span>
+                                            </button>
+                                        <?php endif; ?>
+                                        <?php if (!empty($doc['can_delete'])): ?>
+                                            <div class="ark-menu__separator" role="separator"></div>
+                                            <button type="button" class="ark-menu__item ark-menu__item--danger btn-action-delete" role="menuitem" data-doc-id="<?= $doc['id'] ?>" data-doc-name="<?= htmlspecialchars($doc['name']) ?>">
+                                                <span data-icon="trash"></span><span class="ark-menu__text">Pindahkan ke sampah</span>
+                                            </button>
+                                        <?php endif; ?>
                                     <?php endif; ?>
                                 </div>
                             </div>

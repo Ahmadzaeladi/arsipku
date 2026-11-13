@@ -286,7 +286,7 @@ Get-ChildItem -Recurse -Filter *.php | ForEach-Object { php -l $_.FullName }
 2. **Hierarki Visual:**
    - Kartu metrik di Dashboard kini clickable menuju halaman targetnya (`url('documents')`, `url('folders')`, `url('billing')`).
 3. **Navigasi & Pencarian:**
-   - Input `#global-search` di header kini langsung me-redirect pengguna ke `page=documents&q=...` saat tombol `Enter` ditekan, serta melakukan auto-sync saat pengguna sudah berada di halaman dokumen.
+   - Form GET `#global-search` di header mengirim query ke `page=documents`; hasil mencakup nama dokumen, folder, dan pemilik. Folder cocok ditampilkan sebagai tautan langsung.
 4. **Responsivitas:**
    - Tabel responsif menyembunyikan kolom sekunder di layar kecil tanpa memotong kolom utama atau menu aksi.
    - Floating action toolbar menyesuaikan padding dan lebar pada layar mobile.
@@ -358,8 +358,8 @@ Build TypeScript menghasilkan satu `<script>` klasik. **Status saat ini: `views/
 
 `lib/endpoints.ts` membagi 14 domain menjadi:
 
-- **`live`** (sudah ada di PHP native hari ini): `auth.php` (CSRF, session, login, registrasi email, logout), `workspaces.php`, `members.php` (undangan email, notifikasi, share link, persetujuan), `documents.php`, `folders.php`, `upload.php`.
-- **`planned`** (belum tersedia; request ke domain ini akan gagal dan tidak memakai data pengganti): `download.php`, `versions.php`, `permissions.php`, `favorites.php`, `search.php`, `trash.php`, `billing.php`, `activities.php`.
+- **`live`** (sudah ada di PHP native hari ini): `auth.php` (CSRF, session, login, registrasi email, logout), `workspaces.php`, `members.php` (undangan email, notifikasi, share link, persetujuan), `documents.php` (termasuk grant berbagi dokumen), `folders.php`, `upload.php`, `download.php` (akses dokumen terautentikasi).
+- **`planned`** (belum tersedia; request ke domain ini akan gagal dan tidak memakai data pengganti): `versions.php`, `permissions.php` (izin generik; grant dokumen sudah ada di `documents.php`), `favorites.php`, `search.php`, `trash.php`, `billing.php`, `activities.php`.
 
 Bentuk request/response/pagination/error untuk seluruh domain - termasuk yang `planned` - didokumentasikan di **[`docs/api-contract.md`](docs/api-contract.md)**. Kontrak itu yang menjadi acuan saat backend Laravel/PostgreSQL atau PHP native tahap berikutnya dibangun; client sudah menangani envelope `{success, message, data, meta, links, code, errors}` dan beberapa kunci payload warisan (`documents`, `folders`, `members`, `workspaces`, `stats`, `uploaded`, `is_favorite`, `count`).
 

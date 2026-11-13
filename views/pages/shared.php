@@ -7,7 +7,7 @@
     <div class="ark-page-head__text">
         <h1 class="ark-title-page">Dibagikan kepada Saya</h1>
         <p class="ark-title-sub">
-            <?= count($documents) ?> arsip yang dibagikan anggota workspace lain dengan hak akses khusus
+            <?= count($documents) ?> arsip yang dibagikan secara khusus kepada akun Anda
         </p>
     </div>
 </div>
@@ -16,7 +16,7 @@
     <?php
     $emptyIcon = 'share';
     $emptyTitle = 'Belum ada dokumen yang dibagikan';
-    $emptyDesc = 'Arsip yang dibagikan kolega Anda akan tampil di sini, terpisah dari dokumen milik sendiri.';
+    $emptyDesc = 'Dokumen yang dibagikan kepada akun Anda oleh anggota workspace akan tampil di sini.';
     include __DIR__ . '/../components/empty-state.php';
     ?>
 <?php else: ?>
