@@ -25,8 +25,11 @@ eksternal. Undangan yang masih menunggu dapat dibatalkan oleh Owner/Admin.
 1. Di halaman Anggota, pilih role, masa berlaku (1–30 hari), dan batas penggunaan opsional.
 2. Centang **Owner/Admin harus menyetujui** untuk menahan akses sampai permintaan disetujui.
    Jika tidak dicentang, pengguna dapat langsung bergabung setelah mengonfirmasi di halaman link.
-3. Pilih **Buat share link**, lalu salin link yang baru dibuat dan bagikan kepada pengguna.
-4. Penerima harus masuk atau membuat akun, membuka link, dan mengonfirmasi untuk bergabung.
+3. Pilih **Buat share link**, lalu salin atau buka link yang baru dibuat. Link membuka dialog
+   undangan ArsipKu dengan nama workspace, role, dan aturan persetujuan.
+4. Penerima harus masuk atau membuat akun, lalu kembali ke dialog undangan untuk mengonfirmasi.
+   Hasil bergabung atau permintaan persetujuan tampil di dialog; akses langsung baru membuka
+   workspace setelah penerima memilih tombol **Buka workspace**.
 5. Owner/Admin dapat meninjau permintaan link, menyetujui atau menolak, dan menonaktifkan link.
 
 Link menyimpan role dan aturan yang dipilih saat dibuat. Token dibuat acak dan disimpan sebagai hash;

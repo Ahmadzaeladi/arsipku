@@ -8,6 +8,7 @@
 <!-- ========================================== -->
 <!-- 1. MODAL: UPLOAD DOKUMEN                    -->
 <!-- ========================================== -->
+<?php if ($canWriteWorkspaceContent): ?>
 <div id="modal-upload" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
     <div class="modal-content w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         <!-- Header -->
@@ -85,6 +86,7 @@
         </div>
     </div>
 </div>
+<?php endif; ?>
 
 <!-- ========================================== -->
 <!-- 2. MODAL: UBAH NAMA DOKUMEN (RENAME)        -->
@@ -139,6 +141,7 @@
 <!-- ========================================== -->
 <!-- 3. MODAL: BUAT FOLDER BARU                 -->
 <!-- ========================================== -->
+<?php if ($canWriteWorkspaceContent): ?>
 <div id="modal-create-folder" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
     <div class="modal-content w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
         <form id="form-create-folder">
@@ -149,6 +152,7 @@
                     <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
                         <?= renderSvgIcon('folder-plus', 'w-4 h-4') ?>
                     </div>
+                    <?php endif; ?>
                     <div>
                         <h3 class="text-base font-semibold text-slate-800">Buat Folder Baru</h3>
                         <p class="text-xs text-slate-500">Kelompokkan dokumen arsip secara terstruktur</p>
@@ -537,6 +541,7 @@
 <!-- ========================================== -->
 <!-- 10. MODAL: UBAH NAMA FOLDER (RENAME)      -->
 <!-- ========================================== -->
+<?php if ($canWriteWorkspaceContent): ?>
 <div id="modal-rename-folder" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
     <div class="modal-content w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
         <form id="form-rename-folder" onsubmit="event.preventDefault(); const id = document.getElementById('rename-folder-id').value; const name = document.getElementById('rename-folder-name').value.trim(); if(!name){showToast('Nama folder tidak boleh kosong', 'warning'); return;} fetch('api/folders.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'rename', id, name})}).then(r=>r.json()).then(d=>{if(d.success){showToast(d.message); closeModal('modal-rename-folder'); location.reload();}else{showToast(d.message, 'error');}});">
@@ -546,6 +551,7 @@
                     <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
                         <?= renderSvgIcon('pencil', 'w-4 h-4') ?>
                     </div>
+                    <?php endif; ?>
                     <div>
                         <h3 class="text-base font-semibold text-slate-800">Ubah Nama Folder</h3>
                         <p class="text-xs text-slate-500">Sesuaikan nama direktori pengelompokan berkas</p>
@@ -695,13 +701,17 @@
                             <input class="ark-input" id="invite-link-url" type="text" readonly>
                             <button type="button" class="ark-btn ark-btn--secondary" data-copy-invite-link>Salin</button>
                         </div>
+                        <div class="ark-cluster" style="gap:8px;margin-top:8px">
+                            <a class="ark-btn ark-btn--secondary" id="invite-link-open" href="#" target="_blank"
+                                rel="noopener noreferrer">Buka undangan</a>
+                        </div>
                         <p class="ark-helper">Token link hanya ditampilkan sekali dan tidak bisa dipulihkan.</p>
                     </div>
                 </div>
             </div>
 
             <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2.5">
-                <button type="button" class="ark-btn" data-close-modal="modal-create-invite-link">Tutup</button>
+                <button type="button" class="ark-btn ark-btn--secondary" data-close-modal="modal-create-invite-link">Tutup</button>
                 <button type="submit" class="ark-btn ark-btn--primary">Buat share link</button>
             </div>
         </form>

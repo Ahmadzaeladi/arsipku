@@ -17,6 +17,37 @@ Dokumen ini disusun untuk mempermudah AI Agent atau pengembang berikutnya dalam 
   2. `personal-ahmad` (Personal, 10 GB)
   3. `sekolah-harapan-bangsa` (Institusi Pendidikan, 25 GB)
 
+### Hak dan Akses Role Workspace
+
+Role berlaku per workspace dan hanya anggota berstatus `active` yang dapat mengakses data workspace.
+Pemeriksaan server adalah sumber otorisasi; menyembunyikan tombol di UI saja tidak memberikan
+perlindungan akses.
+
+| Role | Hak akses |
+|---|---|
+| **Owner** | Akses seluruh dokumen; mengelola anggota, undangan, dan share link; mengubah nama, kategori, dan logo workspace; menghapus workspace jika bukan workspace terakhir di akun. Owner tidak dapat dikeluarkan atau keluar sendiri. Pengalihan kepemilikan belum tersedia. |
+| **Admin** | Akses seluruh dokumen; mengundang anggota, mengatur role `Admin`/`Editor`/`Viewer`, menyetujui atau menolak permintaan bergabung, mengelola share link, dan mengatur berbagi dokumen. Admin tidak dapat mengubah profil atau menghapus workspace, serta tidak dapat mengelola Owner. |
+| **Editor** | Tidak dapat mengelola anggota atau pengaturan workspace. Dapat mengunggah dan mengelola dokumen yang tidak dibatasi, serta melihat dokumen miliknya dan dokumen yang dibagikan kepadanya. Pada dokumen terbatas, izin `edit` memperbolehkan perubahan seperti ubah nama atau pindah; izin `view` hanya untuk melihat. |
+| **Viewer** | Tidak dapat mengunggah atau mengubah folder. Dapat melihat dokumen yang tidak dibatasi, dokumen miliknya, dan dokumen yang dibagikan kepadanya. Dokumen miliknya tetap dapat dikelola; pada dokumen terbatas milik anggota lain, izin `view` hanya untuk melihat dan izin `edit` dapat memberi akses perubahan seperti ubah nama atau pindah, bukan menghapus atau mengatur penerima lain. |
+
+Aturan tambahan:
+
+- Hanya Owner/Admin yang dapat mengundang anggota, mengubah role anggota, atau mengeluarkan anggota.
+  Role `Owner` tidak dapat diberikan lewat alur undangan biasa; Owner juga tidak dapat dikeluarkan.
+- Anggota non-Owner dapat keluar sendiri lewat aksi **Keluar dari workspace**, selama masih memiliki
+  workspace aktif lain. Aksi ini terpisah dari pengeluaran anggota oleh Owner/Admin.
+- Untuk dokumen terbatas, Owner/Admin dapat mengelola semua dokumen. Pemilik dokumen dapat mengubah
+  pengaturan berbagi dan menghapus dokumennya. Penerima dengan izin `edit` dapat mengubah nama atau
+  lokasi dokumen, tetapi tidak otomatis dapat menghapus atau mengatur penerima lain.
+- Editor dapat membuat, mengubah nama, dan menghapus folder serta dokumen yang tidak dibatasi.
+  Owner/Admin juga dapat mengelola semua folder dan dokumen. Viewer tetap dapat mengelola dokumen
+  yang diunggahnya sendiri, tetapi tidak dapat mengubah folder atau mengosongkan Sampah.
+- Perubahan paket/kuota dan profil workspace hanya dapat dilakukan Owner.
+
+**Batasan berbagi dokumen:** grant `edit` pada dokumen terbatas hanya memberi penerima kemampuan
+mengubah nama dan lokasi. Hak tersebut tidak memberi kewenangan menghapus dokumen, mengatur
+penerima lain, mengubah folder workspace, atau mengunggah berkas jika penerimanya ber-role Viewer.
+
 ---
 
 ## 2. ATURAN ARSITEKTUR & TECH STACK
@@ -125,7 +156,8 @@ c:\Arsip digital\
 │       ├── settings.php         # Pengaturan: .ark-measure + .ark-form + .ark-notice--danger
 │       └── billing.php          # Paket & penyimpanan: langganan, .ark-meter, tabel perbandingan paket
 ├── tests/
-│   └── run_tests.php            # Automated test suite (18 pengujian routing & service)
+│   ├── run_tests.php            # Automated test suite (routing & service)
+│   └── role_authorization_tests.php # Uji integrasi izin Owner/Admin/Editor/Viewer
 ├── index.php                    # Front Controller & Native Router
 ├── project.md                   # Dokumentasi panduan arsitektur & AI agent handoff
 └── README.md                    # Petunjuk instalasi & menjalankan aplikasi

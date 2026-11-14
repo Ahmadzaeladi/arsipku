@@ -20,6 +20,8 @@ if (!isset($currentWs, $allWorkspaces, $wsStats) || !is_array($currentWs) || !is
     throw new LogicException('Data workspace wajib dimuat dari database sebelum layout dirender.');
 }
 $currentUser = currentUser();
+$canWriteWorkspaceContent = in_array($currentWorkspaceRole ?? null, ['Owner', 'Admin', 'Editor'], true);
+$canManageWorkspace = ($currentWorkspaceRole ?? null) === 'Owner';
 
 /** Inisial dua huruf untuk penanda workspace dan avatar (tanpa gambar eksternal). */
 $initialsOf = static function (string $name): string {
@@ -194,6 +196,14 @@ if (!isset($csrfToken) || !is_string($csrfToken) || $csrfToken === '') {
                             <span data-icon="settings"></span>
                             <span class="ark-menu__text">Pengaturan workspace</span>
                         </a>
+                        <?php if (($currentWorkspaceRole ?? null) !== 'Owner' && count($allWorkspaces) > 1): ?>
+                        <div class="ark-menu__separator" role="separator"></div>
+                        <button type="button" class="ark-menu__item ark-menu__item--danger" role="menuitem"
+                            data-leave-workspace>
+                            <span data-icon="log-out"></span>
+                            <span class="ark-menu__text">Keluar dari workspace</span>
+                        </button>
+                        <?php endif; ?>
                         <button type="button" class="ark-menu__item" role="menuitem"
                             onclick="openModal('modal-create-workspace')">
                             <span data-icon="plus"></span>
@@ -370,11 +380,13 @@ if (!isset($csrfToken) || !is_string($csrfToken) || $csrfToken === '') {
                         </div>
                     </div>
 
+                    <?php if ($canWriteWorkspaceContent): ?>
                     <button type="button" class="ark-btn ark-btn--primary ark-btn--sm"
                         onclick="openModal('modal-upload')">
                         <span data-icon="upload-cloud"></span>
                         <span class="ark-btn__label">Unggah</span>
                     </button>
+                    <?php endif; ?>
 
                     <div class="ark-menu-wrap">
                         <button type="button" class="ark-account__trigger" data-menu="#account-menu"
@@ -445,6 +457,7 @@ if (!isset($csrfToken) || !is_string($csrfToken) || $csrfToken === '') {
     </div>
 
     <!-- Floating Multi-Select Toolbar (dikendalikan assets/js/documents.js) -->
+    <?php if ($canWriteWorkspaceContent): ?>
     <div id="multi-select-bar" class="fixed bottom-6 inset-x-0 mx-auto max-w-lg z-40 px-4">
         <div
             class="bg-slate-900 text-white rounded-2xl shadow-2xl p-3 flex items-center justify-between border border-slate-800">
@@ -453,6 +466,7 @@ if (!isset($csrfToken) || !is_string($csrfToken) || $csrfToken === '') {
                     class="w-5 h-5 rounded-full bg-indigo-500 text-white font-bold flex items-center justify-center text-[10px]">0</span>
                 <span class="font-medium">Item dipilih</span>
             </div>
+            <?php endif; ?>
             <div class="flex items-center gap-2">
                 <?php if ($page === 'trash'): ?>
                 <button type="button" id="btn-multi-restore"

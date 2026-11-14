@@ -148,6 +148,53 @@ try {
         },
         'admin cannot remove themselves from a workspace'
     );
+    $switchUser($owner);
+    $expectConflict(
+        static function () use ($members, $ownerWorkspace): void {
+            $members->leaveWorkspace($ownerWorkspace);
+        },
+        'workspace owner cannot leave without transferring ownership'
+    );
+    $switchUser($approvalMember);
+    $members->leaveWorkspace($ownerWorkspace);
+    $stmt = $db->prepare("SELECT id FROM members WHERE workspace_id = ? AND email = ? AND status = 'active'");
+    $stmt->execute([$ownerWorkspace, $approvalMember['email']]);
+    $assert(!$stmt->fetch(), 'member can leave through the dedicated self-leave action');
+
+    $authenticatedUser = $approvalMember;
+    $joinInfo = [
+        'workspace_name' => 'Invitation workspace',
+        'role' => 'Viewer',
+        'approval_required' => false,
+    ];
+    $joinError = null;
+    $joinToken = 'test-invite-token';
+    $csrfToken = 'test-csrf-token';
+    ob_start();
+    include $rootDir . '/views/pages/join.php';
+    $joinHtml = ob_get_clean();
+    $assert(
+        strpos($joinHtml, 'role="dialog"') !== false
+            && strpos($joinHtml, 'aria-modal="true"') !== false
+            && strpos($joinHtml, 'data-join-link') !== false
+            && strpos($joinHtml, 'id="join-result"') !== false,
+        'invite dialog contains the join action and an in-dialog result state'
+    );
+    $assert(
+        strpos($joinHtml, 'ark-btn--primary') !== false
+            && strpos($joinHtml, 'ark-btn--secondary') !== false,
+        'invitation dialog actions use primary and secondary design-system colors'
+    );
+    $authenticatedUser = null;
+    ob_start();
+    include $rootDir . '/views/pages/join.php';
+    $anonymousJoinHtml = ob_get_clean();
+    $assert(
+        strpos($anonymousJoinHtml, 'Masuk untuk Bergabung') !== false
+            && strpos($anonymousJoinHtml, 'Buat Akun ArsipKu') !== false
+            && strpos($anonymousJoinHtml, 'invite=test-invite-token') !== false,
+        'signed-out invitees can sign in or register and return to the same invite'
+    );
 
     $switchUser($linkMember);
     try {

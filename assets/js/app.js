@@ -279,7 +279,9 @@ function setupMemberInvitationActions() {
                 });
                 const result = document.getElementById('invite-link-result');
                 const input = document.getElementById('invite-link-url');
-                input.value = new URL(data.data.invite_url, window.location.href).href;
+                const inviteUrl = new URL(data.data.invite_url, window.location.href).href;
+                input.value = inviteUrl;
+                document.getElementById('invite-link-open').href = inviteUrl;
                 result.hidden = false;
                 showToast(data.message);
             } catch (error) {
@@ -291,7 +293,7 @@ function setupMemberInvitationActions() {
     }
 
     document.addEventListener('click', async (event) => {
-        const target = event.target.closest('[data-invitation-action], [data-resolve-invitation], [data-cancel-invitation], [data-revoke-invite-link], [data-remove-member], [data-copy-invite-link], [data-join-link]');
+        const target = event.target.closest('[data-invitation-action], [data-resolve-invitation], [data-cancel-invitation], [data-revoke-invite-link], [data-remove-member], [data-leave-workspace], [data-copy-invite-link], [data-join-link]');
         if (!target) return;
 
         if (target.hasAttribute('data-copy-invite-link')) {
@@ -308,6 +310,7 @@ function setupMemberInvitationActions() {
         }
 
         if (target.hasAttribute('data-remove-member') && !window.confirm('Keluarkan anggota ini dari workspace?')) return;
+        if (target.hasAttribute('data-leave-workspace') && !window.confirm('Keluar dari workspace ini? Anda akan kehilangan akses ke dokumen dan foldernya.')) return;
         if (target.hasAttribute('data-revoke-invite-link') && !window.confirm('Nonaktifkan link undangan ini?')) return;
 
         let payload;
@@ -321,6 +324,8 @@ function setupMemberInvitationActions() {
             payload = {action: 'revoke_link', id: target.dataset.id};
         } else if (target.hasAttribute('data-remove-member')) {
             payload = {action: 'remove', id: target.dataset.id};
+        } else if (target.hasAttribute('data-leave-workspace')) {
+            payload = {action: 'leave'};
         } else if (target.hasAttribute('data-join-link')) {
             payload = {action: 'join_link', token: target.dataset.token};
         }
@@ -329,16 +334,56 @@ function setupMemberInvitationActions() {
         target.disabled = true;
         try {
             const data = await post(payload);
-            showToast(data.message);
-            if ((payload.action === 'join_link' || payload.action === 'respond_invitation')
+            if (payload.action === 'join_link') {
+                if (data.data.status !== 'accepted' && data.data.status !== 'pending') {
+                    throw new Error('Status undangan dari server tidak valid.');
+                }
+
+                const prompt = document.getElementById('join-invitation-prompt');
+                const result = document.getElementById('join-result');
+                const resultTitle = document.getElementById('join-result-title');
+                const resultMessage = document.getElementById('join-result-message');
+                const resultAction = document.getElementById('join-result-action');
+                const accepted = data.data.status === 'accepted';
+                if (accepted && !data.data.workspace_slug) {
+                    throw new Error('Workspace tujuan tidak ditemukan pada respons server.');
+                }
+
+                resultTitle.textContent = accepted ? 'Berhasil bergabung!' : 'Permintaan berhasil dikirim';
+                resultMessage.textContent = data.message;
+                result.classList.toggle('join-result--pending', !accepted);
+                resultAction.href = accepted
+                    ? `index.php?ws=${encodeURIComponent(data.data.workspace_slug)}`
+                    : 'index.php';
+                resultAction.textContent = accepted ? 'Buka workspace' : 'Kembali ke ArsipKu';
+                prompt.hidden = true;
+                result.hidden = false;
+                result.focus();
+            } else if (payload.action === 'respond_invitation'
                 && data.data.status === 'accepted' && data.data.workspace_slug) {
+                showToast(data.message);
+                window.location.href = `index.php?ws=${encodeURIComponent(data.data.workspace_slug)}`;
+            } else if (payload.action === 'leave' && data.data.workspace_slug) {
+                showToast(data.message);
                 window.location.href = `index.php?ws=${encodeURIComponent(data.data.workspace_slug)}`;
             } else {
+                showToast(data.message);
                 window.location.reload();
             }
         } catch (error) {
             target.disabled = false;
-            showError(error);
+            if (payload.action === 'join_link') {
+                const feedback = document.getElementById('join-feedback');
+                if (feedback) {
+                    feedback.textContent = error.message || 'Permintaan gagal diproses.';
+                    feedback.classList.add('join-feedback--error');
+                    feedback.hidden = false;
+                } else {
+                    showError(error);
+                }
+            } else {
+                showError(error);
+            }
         }
     });
 

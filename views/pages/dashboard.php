@@ -23,12 +23,14 @@ $recentForTable = array_slice($recentDocuments, 0, 6);
         </p>
     </div>
     <div class="ark-page-head__actions">
+        <?php if ($canWriteWorkspaceContent): ?>
         <button type="button" class="ark-btn" onclick="openModal('modal-create-folder')">
             <span data-icon="folder-plus"></span><span class="ark-btn__label">Buat Folder</span>
         </button>
         <button type="button" class="ark-btn ark-btn--primary ark-btn--lg" onclick="openModal('modal-upload')">
             <span data-icon="upload"></span><span class="ark-btn__label">Unggah Dokumen</span>
         </button>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -44,7 +46,9 @@ $recentForTable = array_slice($recentDocuments, 0, 6);
         $emptyIcon = 'file-text';
         $emptyTitle = 'Belum ada dokumen tersimpan';
         $emptyDesc = 'Mulai simpan dokumen penting seperti surat, kontrak, dan laporan ke workspace ini.';
-        $emptyAction = ['label' => 'Unggah dokumen pertama', 'icon' => 'upload', 'onclick' => "openModal('modal-upload')"];
+        $emptyAction = $canWriteWorkspaceContent
+            ? ['label' => 'Unggah dokumen pertama', 'icon' => 'upload', 'onclick' => "openModal('modal-upload')"]
+            : null;
         include __DIR__ . '/../components/empty-state.php';
         ?>
     <?php else: ?>
@@ -60,7 +64,9 @@ $recentForTable = array_slice($recentDocuments, 0, 6);
     </div>
 
     <?php if (empty($quickFolders)): ?>
-        <p class="ark-helper">Belum ada folder. Buat folder untuk memisahkan arsip per proyek atau periode.</p>
+        <p class="ark-helper"><?= $canWriteWorkspaceContent
+            ? 'Belum ada folder. Buat folder untuk memisahkan arsip per proyek atau periode.'
+            : 'Belum ada folder di workspace ini.' ?></p>
     <?php else: ?>
         <div class="ark-tile-grid">
             <?php foreach ($quickFolders as $folder): ?>

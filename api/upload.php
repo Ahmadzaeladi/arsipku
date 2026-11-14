@@ -19,6 +19,7 @@ try {
     $currentWs = $workspaceService->getCurrentWorkspace();
     $workspaceId = $currentWs['id'];
     $documentService = new DocumentService();
+    $documentService->assertCanUpload($workspaceId);
 
     $folderId = $_POST['folder_id'] ?? null;
     if ($folderId === 'root' || empty($folderId)) {
@@ -113,6 +114,8 @@ try {
         'errors' => $errors
     ]);
 
+} catch (DocumentAuthorizationException $e) {
+    jsonResponse(['success' => false, 'message' => $e->getMessage()], 403);
 } catch (Exception $e) {
     jsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
 }

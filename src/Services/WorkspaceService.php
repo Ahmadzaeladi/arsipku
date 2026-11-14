@@ -252,6 +252,7 @@ class WorkspaceService
 
     public function changePlan(string $workspaceId, string $planName, int $limitBytes): bool
     {
+        $this->assertWorkspaceOwner($workspaceId);
         $stmt = $this->db->prepare("
             UPDATE workspaces 
             SET plan_name = ?, storage_limit_bytes = ? 

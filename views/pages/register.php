@@ -20,7 +20,7 @@
 <body>
     <div class="login-backdrop" aria-hidden="true"></div>
     <div class="login-scene" aria-hidden="true">
-        <img class="login-illustration" src="assets/images/ilu.png" alt="">
+        <img class="login-illustration" src="assets/images/ilu4.png" alt="">
     </div>
 
     <header class="login-brand" aria-label="ArsipKu">
@@ -42,13 +42,13 @@
         <p class="login-panel__intro">Daftar untuk mulai mengelola arsip Anda</p>
 
         <?php if ($loginError !== null): ?>
-            <div class="login-error" role="alert"><?= htmlspecialchars($loginError, ENT_QUOTES, 'UTF-8') ?></div>
+        <div class="login-error" role="alert"><?= htmlspecialchars($loginError, ENT_QUOTES, 'UTF-8') ?></div>
         <?php endif; ?>
 
         <form class="login-form" method="post" action="index.php?page=register">
             <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
             <?php if ($inviteToken !== ''): ?>
-                <input type="hidden" name="invite" value="<?= htmlspecialchars($inviteToken, ENT_QUOTES, 'UTF-8') ?>">
+            <input type="hidden" name="invite" value="<?= htmlspecialchars($inviteToken, ENT_QUOTES, 'UTF-8') ?>">
             <?php endif; ?>
 
             <label class="login-field" for="name">
@@ -57,7 +57,8 @@
                     <path d="M4 20a8 8 0 0 1 16 0v1H4v-1Z"></path>
                 </svg>
                 <span class="ark-sr-only">Nama</span>
-                <input id="name" name="name" type="text" maxlength="150" autocomplete="name" placeholder="Nama lengkap" required autofocus>
+                <input id="name" name="name" type="text" maxlength="150" autocomplete="name" placeholder="Nama lengkap"
+                    required autofocus>
             </label>
 
             <label class="login-field" for="email">
@@ -67,20 +68,23 @@
                     <path d="m4 7 8 6 8-6"></path>
                 </svg>
                 <span class="ark-sr-only">Email</span>
-                <input id="email" name="email" type="email" maxlength="191" autocomplete="email" placeholder="Email" required>
+                <input id="email" name="email" type="email" maxlength="191" autocomplete="email" placeholder="Email"
+                    required>
             </label>
 
             <label class="login-field" for="password">
                 <svg class="login-field__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M7 10V7a5 5 0 0 1 10 0v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1Zm2 0h6V7a3 3 0 0 0-6 0v3Zm3 4a2 2 0 0 0-1 3.73V19h2v-1.27A2 2 0 0 0 12 14Z"></path>
+                    <path
+                        d="M7 10V7a5 5 0 0 1 10 0v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1Zm2 0h6V7a3 3 0 0 0-6 0v3Zm3 4a2 2 0 0 0-1 3.73V19h2v-1.27A2 2 0 0 0 12 14Z">
+                    </path>
                 </svg>
                 <span class="ark-sr-only">Kata sandi, minimal 8 karakter</span>
                 <input id="password" name="password" type="password" minlength="8" autocomplete="new-password"
                     placeholder="Kata sandi (min. 8 karakter)" required>
-                <button class="login-field__toggle" type="button" aria-label="Tampilkan kata sandi"
-                    aria-pressed="false" aria-controls="password">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <button class="login-field__toggle" type="button" aria-label="Tampilkan kata sandi" aria-pressed="false"
+                    aria-controls="password">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" aria-hidden="true">
                         <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"></path>
                         <circle cx="12" cy="12" r="2.6"></circle>
                         <path class="login-eye-slash" d="m3 3 18 18"></path>
@@ -90,15 +94,17 @@
 
             <label class="login-field" for="password_confirmation">
                 <svg class="login-field__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M7 10V7a5 5 0 0 1 10 0v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1Zm2 0h6V7a3 3 0 0 0-6 0v3Zm3 4a2 2 0 0 0-1 3.73V19h2v-1.27A2 2 0 0 0 12 14Z"></path>
+                    <path
+                        d="M7 10V7a5 5 0 0 1 10 0v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1Zm2 0h6V7a3 3 0 0 0-6 0v3Zm3 4a2 2 0 0 0-1 3.73V19h2v-1.27A2 2 0 0 0 12 14Z">
+                    </path>
                 </svg>
                 <span class="ark-sr-only">Ulangi kata sandi</span>
                 <input id="password_confirmation" name="password_confirmation" type="password" minlength="8"
                     autocomplete="new-password" placeholder="Ulangi kata sandi" required>
-                <button class="login-field__toggle" type="button" aria-label="Tampilkan kata sandi"
-                    aria-pressed="false" aria-controls="password_confirmation">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <button class="login-field__toggle" type="button" aria-label="Tampilkan kata sandi" aria-pressed="false"
+                    aria-controls="password_confirmation">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" aria-hidden="true">
                         <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"></path>
                         <circle cx="12" cy="12" r="2.6"></circle>
                         <path class="login-eye-slash" d="m3 3 18 18"></path>
@@ -127,23 +133,25 @@
         </div>
         <p class="login-register">
             Sudah punya akun?
-            <a href="index.php?page=login<?= $inviteToken !== '' ? '&amp;invite=' . rawurlencode($inviteToken) : '' ?>">Masuk</a>
+            <a
+                href="index.php?page=login<?= $inviteToken !== '' ? '&amp;invite=' . rawurlencode($inviteToken) : '' ?>">Masuk</a>
         </p>
     </main>
 
     <script>
-        document.querySelectorAll('.login-field__toggle').forEach(function (toggle) {
-            var password = document.getElementById(toggle.getAttribute('aria-controls'));
-            var slash = toggle.querySelector('.login-eye-slash');
+    document.querySelectorAll('.login-field__toggle').forEach(function(toggle) {
+        var password = document.getElementById(toggle.getAttribute('aria-controls'));
+        var slash = toggle.querySelector('.login-eye-slash');
 
-            toggle.addEventListener('click', function () {
-                var isVisible = password.type === 'text';
-                password.type = isVisible ? 'password' : 'text';
-                toggle.setAttribute('aria-pressed', String(!isVisible));
-                toggle.setAttribute('aria-label', isVisible ? 'Tampilkan kata sandi' : 'Sembunyikan kata sandi');
-                slash.style.display = isVisible ? '' : 'none';
-            });
+        toggle.addEventListener('click', function() {
+            var isVisible = password.type === 'text';
+            password.type = isVisible ? 'password' : 'text';
+            toggle.setAttribute('aria-pressed', String(!isVisible));
+            toggle.setAttribute('aria-label', isVisible ? 'Tampilkan kata sandi' :
+                'Sembunyikan kata sandi');
+            slash.style.display = isVisible ? '' : 'none';
         });
+    });
     </script>
 </body>
 

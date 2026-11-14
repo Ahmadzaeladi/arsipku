@@ -403,9 +403,11 @@ class DocumentService
 
     public function create(array $data): array
     {
+        $user = currentUser();
+        $this->assertCanUpload((string) $data['workspace_id']);
+
         $id = 'doc_' . substr(md5(uniqid((string)mt_rand(), true)), 0, 12);
         $now = date('Y-m-d H:i:s');
-        $user = currentUser();
 
         $stmt = $this->db->prepare("
             INSERT INTO documents (
@@ -434,6 +436,17 @@ class DocumentService
         $this->recordActivity($data['workspace_id'], 'upload', 'Mengunggah dokumen "' . $data['name'] . '"');
 
         return $this->getById($id, $data['workspace_id']);
+    }
+
+    public function assertCanUpload(string $workspaceId): void
+    {
+        $role = $this->workspaceRole($workspaceId, currentUser());
+        if ($role === null) {
+            throw new DocumentAuthorizationException('Anda bukan anggota aktif workspace ini.');
+        }
+        if (!in_array($role, ['Owner', 'Admin', 'Editor'], true)) {
+            throw new DocumentAuthorizationException('Role Viewer tidak dapat mengunggah dokumen.');
+        }
     }
 
     public function rename(string $id, string $workspaceId, string $newName): array
@@ -602,6 +615,9 @@ class DocumentService
         if ($role === null) {
             throw new DocumentAuthorizationException('Anda bukan anggota aktif workspace ini.');
         }
+        if ($role === 'Viewer') {
+            throw new DocumentAuthorizationException('Role Viewer tidak dapat mengosongkan tempat sampah.');
+        }
         $sql = "
             SELECT id, storage_path FROM documents
             WHERE workspace_id = ? AND deleted_at IS NOT NULL
@@ -742,14 +758,18 @@ class DocumentService
 
     private function assertCanEdit(array $doc, string $workspaceId): void
     {
-        if (empty($doc['is_shared'])) {
-            return;
-        }
         $user = currentUser();
         $role = $this->workspaceRole($workspaceId, $user);
-        if (in_array($role, ['Owner', 'Admin'], true)
-            || $doc['uploaded_by'] === $user['id']
-            || ($doc['recipient_permission'] ?? null) === 'edit') {
+        if ($role === null) {
+            throw new DocumentAuthorizationException('Anda bukan anggota aktif workspace ini.');
+        }
+        if (in_array($role, ['Owner', 'Admin'], true) || $doc['uploaded_by'] === $user['id']) {
+            return;
+        }
+        if (empty($doc['is_shared']) && $role === 'Editor') {
+            return;
+        }
+        if (!empty($doc['is_shared']) && ($doc['recipient_permission'] ?? null) === 'edit') {
             return;
         }
         throw new DocumentAuthorizationException('Anda hanya memiliki izin untuk melihat dokumen ini.');
@@ -757,15 +777,18 @@ class DocumentService
 
     private function assertCanDelete(array $doc, string $workspaceId): void
     {
-        if (empty($doc['is_shared'])) {
-            return;
-        }
         $user = currentUser();
         $role = $this->workspaceRole($workspaceId, $user);
+        if ($role === null) {
+            throw new DocumentAuthorizationException('Anda bukan anggota aktif workspace ini.');
+        }
         if (in_array($role, ['Owner', 'Admin'], true) || $doc['uploaded_by'] === $user['id']) {
             return;
         }
-        throw new DocumentAuthorizationException('Hanya pemilik dokumen atau Owner/Admin yang dapat menghapusnya.');
+        if (empty($doc['is_shared']) && $role === 'Editor') {
+            return;
+        }
+        throw new DocumentAuthorizationException('Role Anda tidak dapat menghapus dokumen ini.');
     }
 
     private function assertCanManageSharing(array $doc, string $workspaceId): void
@@ -794,11 +817,15 @@ class DocumentService
     {
         $user = currentUser();
         $role = $this->workspaceRole((string) $doc['workspace_id'], $user);
-        $manager = in_array($role, ['Owner', 'Admin'], true) || $doc['uploaded_by'] === $user['id'];
+        $manager = in_array($role, ['Owner', 'Admin'], true);
+        $ownsDocument = $doc['uploaded_by'] === $user['id'];
         $restricted = !empty($doc['is_shared']);
-        $doc['can_edit'] = !$restricted || $manager || ($doc['recipient_permission'] ?? null) === 'edit';
-        $doc['can_delete'] = !$restricted || $manager;
-        $doc['can_share'] = $manager;
+        $doc['can_edit'] = $manager
+            || $ownsDocument
+            || (!$restricted && $role === 'Editor')
+            || ($restricted && ($doc['recipient_permission'] ?? null) === 'edit');
+        $doc['can_delete'] = $manager || $ownsDocument || (!$restricted && $role === 'Editor');
+        $doc['can_share'] = $manager || $ownsDocument;
         $doc['formatted_size'] = formatBytes((int) $doc['size_bytes']);
         $doc['formatted_date'] = formatIndoDate($doc['updated_at']);
         $doc['time_ago'] = timeAgoIndo($doc['updated_at']);

@@ -135,7 +135,7 @@ Tidak ada dependensi runtime lain yang bisa dibuang — `assets/js/` hari ini su
   - `api/documents.php` — `detail, rename, move, delete, restore, permanent_delete, empty_trash, toggle_favorite, multi_action`
   - `api/folders.php` — `create, rename, delete, all_flat, breadcrumbs`
   - `api/workspaces.php` — `current, switch, create, update, delete, change_plan`
-  - `api/members.php` — `invite, update_role, remove`
+  - `api/members.php` — `invite, update_role, remove, leave`
   - `api/upload.php` — multipart, XHR, `FormData`
 - Context workspace lewat **sesi PHP** (`$_SESSION['active_workspace']`), bukan parameter URL.
 

@@ -21,6 +21,7 @@ $folderNameHtml = htmlspecialchars((string) $folder['name']);
         </div>
     </div>
 
+    <?php if ($canWriteWorkspaceContent): ?>
     <div class="ark-tile__actions">
         <div class="ark-menu-wrap">
             <button type="button" class="ark-icon-btn ark-icon-btn--sm" data-menu="#folder-menu-<?= $folderIdHtml ?>" aria-haspopup="menu" aria-expanded="false" aria-controls="folder-menu-<?= $folderIdHtml ?>" aria-label="Tindakan untuk <?= $folderNameHtml ?>">
@@ -41,4 +42,5 @@ $folderNameHtml = htmlspecialchars((string) $folder['name']);
             </div>
         </div>
     </div>
+    <?php endif; ?>
 </article>

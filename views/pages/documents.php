@@ -24,12 +24,14 @@ $hasFilter = !empty($currentQ) || !empty($currentType) || !empty($currentDate);
         </p>
     </div>
     <div class="ark-page-head__actions">
+        <?php if ($canWriteWorkspaceContent): ?>
         <button type="button" class="ark-btn" onclick="openModal('modal-create-folder')">
             <span data-icon="folder-plus"></span><span class="ark-btn__label">Buat Folder</span>
         </button>
         <button type="button" class="ark-btn ark-btn--primary ark-btn--lg" onclick="openModal('modal-upload')">
             <span data-icon="upload"></span><span class="ark-btn__label">Unggah Dokumen</span>
         </button>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -135,7 +137,9 @@ $hasFilter = !empty($currentQ) || !empty($currentType) || !empty($currentDate);
         : 'Unggah dokumen pertama Anda untuk mulai mengelola arsip secara terstruktur.';
     $emptyAction = !empty($currentQ) || $hasFilter
         ? ['label' => 'Bersihkan penyaring', 'icon' => 'x', 'href' => url('documents')]
-        : ['label' => 'Unggah dokumen', 'icon' => 'upload', 'onclick' => "openModal('modal-upload')"];
+        : ($canWriteWorkspaceContent
+            ? ['label' => 'Unggah dokumen', 'icon' => 'upload', 'onclick' => "openModal('modal-upload')"]
+            : null);
     include __DIR__ . '/../components/empty-state.php';
     ?>
 <?php else: ?>

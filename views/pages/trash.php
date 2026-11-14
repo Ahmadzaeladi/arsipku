@@ -11,7 +11,7 @@ $isTrashView = true;
             <?= count($documents) ?> dokumen dihapus · dapat dipulihkan sebelum dibersihkan permanen
         </p>
     </div>
-    <?php if (!empty($documents)): ?>
+    <?php if (!empty($documents) && $currentWorkspaceRole !== 'Viewer'): ?>
         <div class="ark-page-head__actions">
             <button type="button" class="ark-btn ark-btn--danger" onclick="openModal('modal-empty-trash')">
                 <span data-icon="trash"></span><span class="ark-btn__label">Kosongkan Tempat Sampah</span>

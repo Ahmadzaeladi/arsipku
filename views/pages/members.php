@@ -69,6 +69,7 @@ $canManageMembers = in_array($currentWorkspaceRole ?? null, ['Owner', 'Admin'], 
                 <?php else: ?>
                 <?php foreach ($members as $m): ?>
                 <?php $isOwner = $m['role'] === 'Owner'; ?>
+                <?php $isCurrentUser = strtolower($m['email']) === strtolower($currentUser['email']); ?>
                 <tr>
                     <td>
                         <div class="ark-file">
@@ -109,9 +110,11 @@ $canManageMembers = in_array($currentWorkspaceRole ?? null, ['Owner', 'Admin'], 
                             class="ark-meta"><?= date('d M Y', strtotime($m['joined_at'])) ?></span></td>
 
                     <td class="ark-td--actions">
-                        <?php if (!$isOwner && $canManageMembers): ?>
+                        <?php if (!$isOwner && !$isCurrentUser && $canManageMembers): ?>
                         <button type="button" class="ark-btn ark-btn--danger-ghost ark-btn--sm" data-remove-member
                             data-id="<?= htmlspecialchars($m['id'], ENT_QUOTES, 'UTF-8') ?>">Keluarkan</button>
+                        <?php elseif ($isCurrentUser): ?>
+                        <span class="ark-meta">Anda</span>
                         <?php elseif (!$isOwner): ?>
                         <span class="ark-meta">—</span>
                         <?php else: ?>

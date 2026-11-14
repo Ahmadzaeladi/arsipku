@@ -20,7 +20,7 @@
 <body>
     <div class="login-backdrop" aria-hidden="true"></div>
     <div class="login-scene" aria-hidden="true">
-        <img class="login-illustration" src="assets/images/ilu.png" alt="">
+        <img class="login-illustration" src="assets/images/ilu4.png" alt="">
     </div>
 
     <header class="login-brand" aria-label="ArsipKu">

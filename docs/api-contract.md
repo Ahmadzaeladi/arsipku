@@ -358,6 +358,7 @@ di database yang sudah ada; instalasi baru juga mendapat tabel dari `database.sq
 | `revoke_link` | POST | `id` | Menonaktifkan tautan (Owner/Admin) |
 | `update_role` | POST | `id`, `role` | `message` |
 | `remove` | POST | `id` | `message` |
+| `leave` | POST | — | `message`, next `workspace_slug` |
 
 Undangan email hanya dapat dibuat untuk email pengguna yang sudah terdaftar. Undangan masuk ke
 notifikasi akun tersebut dan akses baru diberikan sesudah penerima memilih Terima. Share link
@@ -389,6 +390,8 @@ Aturan:
 - Hanya `Owner`/`Admin` yang boleh memanggil `invite`, `update_role`, `remove`; sisanya `403`.
 - Menurunkan `Owner` atau menghapus diri sendiri/Owner → `409 CONFLICT` dengan
   `message` yang menjelaskan alasannya.
+- Anggota non-Owner dapat memakai `leave` untuk keluar sendiri; Owner dan anggota pada
+  workspace terakhir tidak dapat keluar.
 - Email yang tidak terdaftar atau role tidak valid → `422`; undangan ganda/anggota yang sudah
   aktif → `409`.
 - Link yang kadaluarsa, dicabut, atau habis kuota tidak dapat digunakan. Penerima link harus

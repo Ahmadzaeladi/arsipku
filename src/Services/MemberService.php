@@ -453,6 +453,60 @@ class MemberService
         }
     }
 
+    public function leaveWorkspace(string $workspaceId): void
+    {
+        $user = currentUser();
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare("
+                SELECT id, role FROM members
+                WHERE workspace_id = ? AND LOWER(email) = LOWER(?) AND status = 'active'
+                LIMIT 1
+                FOR UPDATE
+            ");
+            $stmt->execute([$workspaceId, $user['email']]);
+            $member = $stmt->fetch();
+            if (!$member) {
+                throw new MemberAuthorizationException('Anda bukan anggota aktif workspace ini.');
+            }
+            if ($member['role'] === 'Owner') {
+                throw new MemberConflictException('Owner tidak dapat keluar sebelum mengalihkan kepemilikan workspace.');
+            }
+
+            $stmt = $this->db->prepare("
+                SELECT COUNT(DISTINCT workspace_id)
+                FROM members
+                WHERE LOWER(email) = LOWER(?) AND status = 'active'
+            ");
+            $stmt->execute([$user['email']]);
+            if ((int) $stmt->fetchColumn() <= 1) {
+                throw new MemberConflictException('Anda tidak dapat keluar dari workspace terakhir di akun Anda.');
+            }
+
+            $shareStmt = $this->db->prepare("
+                DELETE FROM document_shares
+                WHERE workspace_id = ? AND shared_with_user_id = ?
+            ");
+            $shareStmt->execute([$workspaceId, $user['id']]);
+
+            $deleteStmt = $this->db->prepare("
+                DELETE FROM members
+                WHERE id = ? AND workspace_id = ? AND role != 'Owner'
+            ");
+            $deleteStmt->execute([$member['id'], $workspaceId]);
+            if ($deleteStmt->rowCount() === 0) {
+                throw new MemberConflictException('Keanggotaan workspace sudah berubah.');
+            }
+
+            $this->db->commit();
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw $e;
+        }
+    }
+
     private function findUsableLink(string $token): array
     {
         if (!preg_match('/^[a-f0-9]{64}$/', $token)) {

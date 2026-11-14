@@ -83,6 +83,8 @@ try {
                 jsonResponse(['success' => false, 'message' => 'Aksi folder tidak valid'], 400);
         }
     }
+} catch (FolderAuthorizationException $e) {
+    jsonResponse(['success' => false, 'message' => $e->getMessage()], 403);
 } catch (Exception $e) {
     jsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
 }

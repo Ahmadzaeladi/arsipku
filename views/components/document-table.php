@@ -12,19 +12,24 @@
  * .ark-fav[aria-pressed] dan ikon bintang di dalam [data-icon].
  */
 $isTrash = !empty($isTrashView);
-$colCount = $isTrash ? 6 : 7;
+$canSelectDocuments = $canWriteWorkspaceContent;
+$colCount = $isTrash
+    ? ($canSelectDocuments ? 6 : 5)
+    : ($canSelectDocuments ? 7 : 6);
 ?>
 <div class="ark-table-wrap">
     <table class="ark-table">
         <caption class="ark-sr-only"><?= $isTrash ? 'Dokumen di tempat sampah' : 'Daftar dokumen' ?></caption>
         <thead class="ark-table__head">
             <tr>
+                <?php if ($canSelectDocuments): ?>
                 <th class="ark-th--check" scope="col">
                     <span class="ark-check">
                         <input class="ark-check__input" type="checkbox" id="select-all-docs" aria-label="Pilih semua dokumen">
                         <span class="ark-check__box"></span>
                     </span>
                 </th>
+                <?php endif; ?>
                 <th scope="col" class="ark-th--file-name<?= !$isTrash ? ' ark-th--file-name--favorite' : '' ?>">Nama dokumen</th>
                 <?php if (!$isTrash): ?>
                     <th scope="col" class="ark-th--center ark-table__col--hide-md">Folder</th>
@@ -51,12 +56,14 @@ $colCount = $isTrash ? 6 : 7;
             <?php else: ?>
                 <?php foreach ($documents as $doc): ?>
                     <tr class="document-row" data-doc-id="<?= $doc['id'] ?>">
+                        <?php if ($canSelectDocuments): ?>
                         <td class="ark-td--check">
                             <span class="ark-check">
                                 <input class="ark-check__input doc-checkbox" type="checkbox" data-doc-id="<?= $doc['id'] ?>" aria-label="Pilih <?= htmlspecialchars($doc['name']) ?>">
                                 <span class="ark-check__box"></span>
                             </span>
                         </td>
+                        <?php endif; ?>
 
                         <td>
                             <div class="ark-file">
@@ -92,6 +99,7 @@ $colCount = $isTrash ? 6 : 7;
                         <td class="ark-td--center ark-table__col--hide-sm ark-num"><?= htmlspecialchars($doc['formatted_size']) ?></td>
 
                         <td class="ark-td--center ark-td--actions">
+                            <?php if (!$isTrash || !empty($doc['can_delete'])): ?>
                             <div class="ark-menu-wrap">
                                 <button type="button" class="ark-icon-btn ark-icon-btn--sm" data-menu="#doc-menu-<?= $doc['id'] ?>" aria-haspopup="menu" aria-expanded="false" aria-controls="doc-menu-<?= $doc['id'] ?>" aria-label="Tindakan untuk <?= htmlspecialchars($doc['name']) ?>">
                                     <span data-icon="dots"></span>
@@ -136,6 +144,7 @@ $colCount = $isTrash ? 6 : 7;
                                     <?php endif; ?>
                                 </div>
                             </div>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

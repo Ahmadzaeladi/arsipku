@@ -36,6 +36,7 @@ $isTrash = !empty($isTrashView);
                         </button>
                     <?php endif; ?>
 
+                    <?php if (!$isTrash || !empty($doc['can_delete'])): ?>
                     <div class="ark-menu-wrap">
                         <button type="button" class="ark-icon-btn ark-icon-btn--sm" data-menu="#doc-tile-menu-<?= $doc['id'] ?>" aria-haspopup="menu" aria-expanded="false" aria-controls="doc-tile-menu-<?= $doc['id'] ?>" aria-label="Tindakan untuk <?= htmlspecialchars($doc['name']) ?>">
                             <span data-icon="dots"></span>
@@ -79,6 +80,7 @@ $isTrash = !empty($isTrashView);
                                 <?php endif; ?>
                             <?php endif; ?>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </article>

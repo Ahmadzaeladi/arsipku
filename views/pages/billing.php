@@ -116,10 +116,12 @@ $plans = [
                             <td class="ark-td--actions">
                                 <?php if ($isActive): ?>
                                     <span class="ark-meta">Sedang dipakai</span>
-                                <?php else: ?>
+                                <?php elseif ($canManageWorkspace): ?>
                                     <button type="button" class="ark-btn ark-btn--sm" onclick="fetch('api/workspaces.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'change_plan', plan:'<?= addslashes($plan['name']) ?>', limit_bytes: <?= (int) $plan['limit'] ?>})}).then(r=>r.json()).then(d=>{showToast(d.message); setTimeout(()=>location.reload(), 400);});">
                                         <span class="ark-btn__label">Beralih ke paket ini</span>
                                     </button>
+                                <?php else: ?>
+                                    <span class="ark-meta">Hanya Owner yang dapat mengubah paket</span>
                                 <?php endif; ?>
                             </td>
                         </tr>

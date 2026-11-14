@@ -156,6 +156,15 @@ try {
         }
         jsonResponse(['success' => true, 'message' => 'Anggota berhasil dihapus dari workspace.']);
     }
+    if ($action === 'leave') {
+        $memberService->leaveWorkspace($workspaceId);
+        $nextWorkspace = $workspaceService->getCurrentWorkspace();
+        jsonResponse([
+            'success' => true,
+            'message' => 'Anda berhasil keluar dari workspace.',
+            'data' => ['workspace_slug' => $nextWorkspace['slug']],
+        ]);
+    }
 
     jsonResponse(['success' => false, 'message' => 'Aksi anggota tidak valid.'], 400);
 } catch (MemberAuthorizationException $e) {

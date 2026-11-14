@@ -20,6 +20,7 @@ $folderName = $isSubFolder ? (string) $currentFolder['name'] : 'Folder Saya';
         </p>
     </div>
 
+    <?php if ($canWriteWorkspaceContent): ?>
     <div class="ark-page-head__actions">
         <button type="button" class="ark-btn" onclick="openModal('modal-create-folder')">
             <span data-icon="folder-plus"></span><span class="ark-btn__label"><?= $isSubFolder ? 'Buat Subfolder' : 'Folder Baru' ?></span>
@@ -28,6 +29,7 @@ $folderName = $isSubFolder ? (string) $currentFolder['name'] : 'Folder Saya';
             <span data-icon="upload"></span><span class="ark-btn__label">Unggah ke Folder Ini</span>
         </button>
     </div>
+    <?php endif; ?>
 </div>
 
 <?php if (!empty($folders)): ?>
@@ -55,7 +57,9 @@ $folderName = $isSubFolder ? (string) $currentFolder['name'] : 'Folder Saya';
         $emptyIcon = 'folder';
         $emptyTitle = 'Folder ini masih kosong';
         $emptyDesc = 'Belum ada dokumen yang tersimpan di folder ini. Unggah berkas untuk mengisi arsip folder ini.';
-        $emptyAction = ['label' => 'Unggah dokumen ke sini', 'icon' => 'upload', 'onclick' => "openModal('modal-upload')"];
+        $emptyAction = $canWriteWorkspaceContent
+            ? ['label' => 'Unggah dokumen ke sini', 'icon' => 'upload', 'onclick' => "openModal('modal-upload')"]
+            : null;
         include __DIR__ . '/../components/empty-state.php';
         ?>
     <?php else: ?>

@@ -45,7 +45,7 @@ export type EndpointName = keyof typeof endpoints;
 /** Actions the current PHP scripts recognise. Keep in sync with api/*.php. */
 export const legacyActions = {
   workspaces: ['list', 'current', 'switch', 'update', 'create', 'change_plan', 'delete'],
-  members: ['list', 'invite', 'update_role', 'remove'],
+  members: ['list', 'invite', 'update_role', 'remove', 'leave'],
   documents_get: ['list', 'detail', 'share_info'],
   documents_post: [
     'rename', 'move', 'toggle_favorite', 'delete', 'restore',

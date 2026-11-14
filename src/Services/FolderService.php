@@ -9,6 +9,10 @@ declare(strict_types=1);
 require_once __DIR__ . '/../Database.php';
 require_once __DIR__ . '/../Helpers.php';
 
+class FolderAuthorizationException extends RuntimeException
+{
+}
+
 class FolderService
 {
     private PDO $db;
@@ -20,6 +24,7 @@ class FolderService
 
     public function getByWorkspace(string $workspaceId, ?string $parentId = null): array
     {
+        $this->assertWorkspaceMember($workspaceId);
         if ($parentId === null) {
             $stmt = $this->db->prepare("
                 SELECT f.*, 
@@ -46,6 +51,7 @@ class FolderService
 
     public function getAllFlat(string $workspaceId): array
     {
+        $this->assertWorkspaceMember($workspaceId);
         $stmt = $this->db->prepare("
             SELECT id, name, parent_id 
             FROM folders 
@@ -58,6 +64,7 @@ class FolderService
 
     public function searchByName(string $workspaceId, string $query): array
     {
+        $this->assertWorkspaceMember($workspaceId);
         $stmt = $this->db->prepare("
             SELECT id, name, parent_id
             FROM folders
@@ -70,6 +77,7 @@ class FolderService
 
     public function getById(string $id, string $workspaceId): ?array
     {
+        $this->assertWorkspaceMember($workspaceId);
         $stmt = $this->db->prepare("
             SELECT f.*,
                 (SELECT COUNT(*) FROM documents d WHERE d.folder_id = f.id AND d.deleted_at IS NULL) as doc_count
@@ -104,6 +112,7 @@ class FolderService
 
     public function create(string $workspaceId, string $name, ?string $parentId = null, string $color = 'indigo'): array
     {
+        $this->assertCanManage($workspaceId);
         $name = trim($name);
         if (empty($name)) {
             throw new InvalidArgumentException('Nama folder tidak boleh kosong.');
@@ -126,6 +135,7 @@ class FolderService
 
     public function rename(string $id, string $workspaceId, string $newName): bool
     {
+        $this->assertCanManage($workspaceId);
         $newName = trim($newName);
         if (empty($newName)) {
             throw new InvalidArgumentException('Nama folder tidak boleh kosong.');
@@ -153,6 +163,7 @@ class FolderService
 
     public function delete(string $id, string $workspaceId): bool
     {
+        $this->assertCanManage($workspaceId);
         $folder = $this->getById($id, $workspaceId);
         if (!$folder) {
             throw new RuntimeException('Folder tidak ditemukan.');
@@ -192,5 +203,27 @@ class FolderService
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([$actId, $workspaceId, $user['name'], $user['avatar'], $type, $description, $now]);
+    }
+
+    private function assertWorkspaceMember(string $workspaceId): string
+    {
+        $stmt = $this->db->prepare("
+            SELECT role FROM members
+            WHERE workspace_id = ? AND LOWER(email) = LOWER(?) AND status = 'active'
+            LIMIT 1
+        ");
+        $stmt->execute([$workspaceId, currentUser()['email']]);
+        $role = $stmt->fetchColumn();
+        if (!is_string($role)) {
+            throw new FolderAuthorizationException('Anda bukan anggota aktif workspace ini.');
+        }
+        return $role;
+    }
+
+    private function assertCanManage(string $workspaceId): void
+    {
+        if (!in_array($this->assertWorkspaceMember($workspaceId), ['Owner', 'Admin', 'Editor'], true)) {
+            throw new FolderAuthorizationException('Role Viewer tidak dapat mengubah folder.');
+        }
     }
 }
