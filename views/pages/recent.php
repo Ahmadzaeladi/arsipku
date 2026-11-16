@@ -6,9 +6,7 @@
 <div class="ark-page-head">
     <div class="ark-page-head__text">
         <h1 class="ark-title-page">Dokumen Terbaru</h1>
-        <p class="ark-title-sub">
-            <?= count($documents) ?> berkas terakhir yang dibuat, diunggah, atau diubah
-        </p>
+
     </div>
     <?php if ($canWriteWorkspaceContent): ?>
     <div class="ark-page-head__actions">
@@ -20,7 +18,7 @@
 </div>
 
 <?php if (empty($documents)): ?>
-    <?php
+<?php
     $emptyIcon = 'clock';
     $emptyTitle = 'Belum ada aktivitas dokumen terbaru';
     $emptyDesc = 'Dokumen yang baru saja Anda buat atau ubah akan muncul di daftar ini secara kronologis.';
@@ -30,5 +28,5 @@
     include __DIR__ . '/../components/empty-state.php';
     ?>
 <?php else: ?>
-    <?php include __DIR__ . '/../components/document-table.php'; ?>
+<?php include __DIR__ . '/../components/document-table.php'; ?>
 <?php endif; ?>

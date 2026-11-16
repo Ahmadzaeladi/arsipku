@@ -56,7 +56,7 @@
                     <circle cx="12" cy="8" r="4"></circle>
                     <path d="M4 20a8 8 0 0 1 16 0v1H4v-1Z"></path>
                 </svg>
-                <span class="ark-sr-only">Username atau Email</span>
+                <!-- <span class="ark-sr-only">Username atau Email</span> -->
                 <input id="username" name="username" type="text" autocomplete="username"
                     placeholder="Username atau Email" required autofocus>
             </label>
@@ -67,7 +67,7 @@
                         d="M7 10V7a5 5 0 0 1 10 0v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1Zm2 0h6V7a3 3 0 0 0-6 0v3Zm3 4a2 2 0 0 0-1 3.73V19h2v-1.27A2 2 0 0 0 12 14Z">
                     </path>
                 </svg>
-                <span class="ark-sr-only">Password</span>
+                <!-- <span class="ark-sr-only">Password</span> -->
                 <input id="password" name="password" type="password" autocomplete="current-password"
                     placeholder="Password" required>
                 <button class="login-field__toggle" type="button" aria-label="Tampilkan password" aria-pressed="false"

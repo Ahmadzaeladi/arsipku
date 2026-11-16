@@ -17,10 +17,7 @@ $canManageMembers = in_array($currentWorkspaceRole ?? null, ['Owner', 'Admin'], 
 <div class="ark-page-head">
     <div class="ark-page-head__text">
         <h1 class="ark-title-page">Anggota Workspace</h1>
-        <p class="ark-title-sub">
-            <?= $memberCount ?> anggota di <?= htmlspecialchars($currentWs['name']) ?> — atur peran dan akses
-            kolaborasi.
-        </p>
+
     </div>
     <?php if ($canManageMembers): ?>
     <div class="ark-page-head__actions">
